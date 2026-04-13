@@ -1,6 +1,6 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '@/lib/store/authStore';
 import { useGameStore } from '@/lib/store/gameStore';
@@ -14,15 +14,16 @@ import { TrueLie } from '@/components/puzzles/TrueLie';
 import { CodeBreak } from '@/components/puzzles/CodeBreak';
 import type { PuzzleType } from '@/types';
 
-const TIME_LIMIT = 60;
 type Phase = 'countdown' | 'playing' | 'done';
 
 /** Thin wrapper — incrementing gameKey forces full remount, fixing Play Again */
 export default function TimeAttackPage() {
-  const params = useParams();
-  const { user } = useAuthStore();
-  const router   = useRouter();
-  const type     = params?.type as PuzzleType;
+  const params       = useParams();
+  const searchParams = useSearchParams();
+  const { user }     = useAuthStore();
+  const router       = useRouter();
+  const type         = params?.type as PuzzleType;
+  const timeLimit    = parseInt(searchParams?.get('t') ?? '60', 10);
 
   const [gameKey, setGameKey] = useState(0);
 
@@ -32,15 +33,18 @@ export default function TimeAttackPage() {
     <TimeAttackGame
       key={gameKey}
       type={type}
+      timeLimit={timeLimit}
       onRestart={() => setGameKey(k => k + 1)}
     />
   );
 }
 
-function TimeAttackGame({ type, onRestart }: { type: PuzzleType; onRestart: () => void }) {
+function TimeAttackGame({ type, timeLimit, onRestart }: { type: PuzzleType; timeLimit: number; onRestart: () => void }) {
   const router  = useRouter();
   const { user } = useAuthStore();
   const { startTimeAttack, incrementSolved, addTimeAttackMistake, endTimeAttack, setLastResult } = useGameStore();
+
+  const TIME_LIMIT = timeLimit;
 
   const [phase, setPhase]         = useState<Phase>('countdown');
   const [countdown, setCountdown] = useState(3);
@@ -152,7 +156,9 @@ function TimeAttackGame({ type, onRestart }: { type: PuzzleType; onRestart: () =
             >
               {countdown > 0 ? countdown : 'GO!'}
             </motion.div>
-            <p className="text-[#333] text-sm font-semibold">Solve as many as you can in 60 seconds</p>
+            <p className="text-[#333] text-sm font-semibold">
+              Solve as many as you can in {TIME_LIMIT >= 60 ? `${TIME_LIMIT / 60} minute${TIME_LIMIT > 60 ? 's' : ''}` : `${TIME_LIMIT} seconds`}
+            </p>
           </motion.div>
         )}
       </AnimatePresence>

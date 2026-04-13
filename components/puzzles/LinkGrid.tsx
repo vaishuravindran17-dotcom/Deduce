@@ -15,11 +15,11 @@ interface LinkGridProps {
 export function LinkGrid({ puzzle, onSolve, onMistake }: LinkGridProps) {
   const { people, categoryA, categoryB, clues, question, answer } = puzzle;
 
-  const [gridA, setGridA]       = useState<CellState[][]>(() => people.map(() => categoryA.map(() => 'empty')));
-  const [gridB, setGridB]       = useState<CellState[][]>(() => people.map(() => categoryB.map(() => 'empty')));
+  const [gridA, setGridA]         = useState<CellState[][]>(() => people.map(() => categoryA.map(() => 'empty')));
+  const [gridB, setGridB]         = useState<CellState[][]>(() => people.map(() => categoryB.map(() => 'empty')));
   const [submitted, setSubmitted] = useState(false);
-  const [selected, setSelected] = useState<string | null>(null);
-  const [shake, setShake]       = useState(false);
+  const [selected, setSelected]   = useState<string | null>(null);
+  const [shake, setShake]         = useState(false);
 
   const tap = (
     grid: CellState[][],
@@ -43,13 +43,13 @@ export function LinkGrid({ puzzle, onSolve, onMistake }: LinkGridProps) {
   };
 
   return (
-    <div className="flex flex-col gap-5 px-5 py-6">
+    <div className="flex flex-col gap-6 py-6">
 
       {/* ── Clues ──────────────────────────────────────────────────── */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl bg-[#181818] p-5"
+        className="rounded-2xl bg-[#1A1A1A] border border-[#2A2A2A] p-6 mx-1"
       >
         <p className="font-game text-[#A855F7] text-lg mb-4" style={{ letterSpacing: '0.1em' }}>CLUES</p>
         <ul className="space-y-3">
@@ -59,9 +59,9 @@ export function LinkGrid({ puzzle, onSolve, onMistake }: LinkGridProps) {
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.07 }}
-              className="flex items-start gap-3 text-sm text-[#CCC] leading-relaxed"
+              className="flex items-start gap-3 text-sm text-[#DDD] leading-relaxed"
             >
-              <span className="text-[#A855F7] font-black shrink-0 mt-0.5">›</span>
+              <span className="text-[#A855F7] font-black shrink-0 mt-0.5 text-base">›</span>
               {clue}
             </motion.li>
           ))}
@@ -69,7 +69,8 @@ export function LinkGrid({ puzzle, onSolve, onMistake }: LinkGridProps) {
       </motion.div>
 
       {/* ── Grid A ─────────────────────────────────────────────────── */}
-      <GridTable label="People × Locations" color="#A855F7"
+      <GridTable label={`People × ${categoryA[0].includes('Desk') || categoryA[0].includes('Room') || categoryA[0].includes('Gate') || categoryA[0].includes('Studio') || categoryA[0].includes('Coach') || categoryA[0].includes('Hall') || categoryA[0].includes('Table') ? 'Locations' : 'Locations'}`}
+        color="#A855F7"
         rows={people} cols={categoryA} cells={gridA}
         onTap={(r,c) => tap(gridA, setGridA, r, c)} disabled={submitted} />
 
@@ -78,27 +79,27 @@ export function LinkGrid({ puzzle, onSolve, onMistake }: LinkGridProps) {
         rows={people} cols={categoryB} cells={gridB}
         onTap={(r,c) => tap(gridB, setGridB, r, c)} disabled={submitted} />
 
-      {/* ── Answer selection ────────────────────────────────────────── */}
+      {/* ── Answer selection ───────────────────────────────────────── */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="rounded-2xl bg-[#181818] p-5"
+        className="rounded-2xl bg-[#1A1A1A] border border-[#2A2A2A] p-6 mx-1"
       >
         <p className="font-game text-[#A855F7] text-lg mb-2" style={{ letterSpacing: '0.1em' }}>ANSWER</p>
-        <p className="text-sm text-[#888] mb-4">{question}</p>
+        <p className="text-sm text-[#999] mb-5">{question}</p>
 
-        <div className="flex flex-wrap gap-2 mb-5">
+        <div className="flex flex-wrap gap-3 mb-6">
           {people.map(person => (
             <motion.button
               key={person}
               whileTap={{ scale: 0.9 }}
               onClick={() => !submitted && setSelected(person)}
-              className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+              className="px-6 py-3 rounded-xl text-sm font-bold transition-all"
               style={
                 selected === person
                   ? { background: '#A855F7', color: '#fff', boxShadow: '0 0 20px rgba(168,85,247,0.3)' }
-                  : { background: '#252525', color: '#888' }
+                  : { background: '#2A2A2A', color: '#CCCCCC', border: '1px solid #363636' }
               }
             >
               {person}
@@ -123,7 +124,7 @@ export function LinkGrid({ puzzle, onSolve, onMistake }: LinkGridProps) {
           className="w-full py-4 rounded-2xl font-black text-base tracking-wide transition-all"
           style={{
             background: selected ? '#A855F7' : '#252525',
-            color: selected ? '#fff' : '#333',
+            color: selected ? '#fff' : '#444',
             boxShadow: selected ? '0 0 28px rgba(168,85,247,0.25)' : 'none',
           }}
         >
@@ -144,15 +145,15 @@ function GridTable({ label, color, rows, cols, cells, onTap, disabled }: {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.15 }}
-      className="rounded-2xl bg-[#181818] p-5 overflow-x-auto"
+      className="rounded-2xl bg-[#1A1A1A] border border-[#2A2A2A] p-6 mx-1 overflow-x-auto"
     >
-      <p className="text-xs font-bold uppercase tracking-[0.2em] mb-4" style={{ color }}>{label}</p>
+      <p className="text-xs font-bold uppercase tracking-[0.2em] mb-5" style={{ color }}>{label}</p>
       <table className="w-full border-collapse min-w-[240px]">
         <thead>
           <tr>
             <th className="w-20" />
             {cols.map(col => (
-              <th key={col} className="text-[10px] text-[#444] font-bold pb-2 text-center px-1 min-w-[48px] uppercase tracking-wider">
+              <th key={col} className="text-[11px] text-[#888] font-bold pb-3 text-center px-1 min-w-[52px] uppercase tracking-wider">
                 {col}
               </th>
             ))}
@@ -161,19 +162,19 @@ function GridTable({ label, color, rows, cols, cells, onTap, disabled }: {
         <tbody>
           {rows.map((row, ri) => (
             <tr key={row}>
-              <td className="text-xs text-[#CCC] py-1.5 pr-3 font-semibold whitespace-nowrap">{row}</td>
+              <td className="text-sm text-[#CCC] py-2 pr-4 font-semibold whitespace-nowrap">{row}</td>
               {cols.map((_, ci) => (
-                <td key={ci} className="p-1 text-center">
+                <td key={ci} className="p-1.5 text-center">
                   <motion.button
                     whileTap={{ scale: 0.78 }}
                     onClick={() => !disabled && onTap(ri, ci)}
-                    className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black transition-all"
+                    className="w-11 h-11 rounded-xl flex items-center justify-center text-sm font-black transition-all"
                     style={
                       cells[ri][ci] === 'check'
                         ? { background: `${color}25`, border: `2px solid ${color}`, color }
                         : cells[ri][ci] === 'cross'
-                        ? { background: '#EF444415', border: '2px solid #EF444440', color: '#EF4444' }
-                        : { background: '#252525', border: '2px solid transparent', color: '#333' }
+                        ? { background: '#EF444418', border: '2px solid #EF444445', color: '#EF4444' }
+                        : { background: '#282828', border: '2px solid #383838', color: '#555' }
                     }
                   >
                     {cells[ri][ci] === 'check' ? '✓' : cells[ri][ci] === 'cross' ? '✕' : ''}

@@ -13,12 +13,12 @@ export function CodeBreak({ puzzle, onSolve, onMistake }: CodeBreakProps) {
   const { clues, answer } = puzzle;
   const codeLength = answer.length;
 
-  const [input, setInput]       = useState('');
-  const [guesses, setGuesses]   = useState<string[]>([]);
+  const [input, setInput]         = useState('');
+  const [guesses, setGuesses]     = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
-  const [error, setError]       = useState('');
-  const [shake, setShake]       = useState(false);
-  const [flashIdx, setFlashIdx] = useState<number | null>(null);
+  const [error, setError]         = useState('');
+  const [shake, setShake]         = useState(false);
+  const [flashIdx, setFlashIdx]   = useState<number | null>(null);
 
   const press = (digit: string) => {
     if (submitted || input.length >= codeLength) return;
@@ -51,15 +51,15 @@ export function CodeBreak({ puzzle, onSolve, onMistake }: CodeBreakProps) {
   const ready = input.length === codeLength && !submitted;
 
   return (
-    <div className="flex flex-col gap-6 px-5 py-6">
+    <div className="flex flex-col gap-6 py-6">
 
       {/* ── Clue table ─────────────────────────────────────────────── */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl bg-[#181818] p-5"
+        className="rounded-2xl bg-[#1A1A1A] border border-[#2A2A2A] p-6 mx-1"
       >
-        <p className="font-game text-[#5CE1E6] text-lg mb-4" style={{ letterSpacing: '0.1em' }}>CLUES</p>
+        <p className="font-game text-[#06B6D4] text-lg mb-5" style={{ letterSpacing: '0.1em' }}>CLUES</p>
         <div className="space-y-4">
           {clues.map((clue, i) => (
             <motion.div
@@ -67,19 +67,19 @@ export function CodeBreak({ puzzle, onSolve, onMistake }: CodeBreakProps) {
               initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.08 }}
-              className="flex items-center gap-4"
+              className="flex items-center gap-5"
             >
               <div className="flex gap-2 shrink-0">
                 {clue.guess.split('').map((d, di) => (
                   <div
                     key={di}
-                    className="w-10 h-10 flex items-center justify-center rounded-xl bg-[#252525] font-mono font-black text-base text-white"
+                    className="w-11 h-11 flex items-center justify-center rounded-xl bg-[#252525] border border-[#333] font-mono font-black text-base text-white"
                   >
                     {d}
                   </div>
                 ))}
               </div>
-              <p className="text-sm text-[#888] leading-relaxed">{clue.hint}</p>
+              <p className="text-sm text-[#CCCCCC] leading-relaxed">{clue.hint}</p>
             </motion.div>
           ))}
         </div>
@@ -88,11 +88,13 @@ export function CodeBreak({ puzzle, onSolve, onMistake }: CodeBreakProps) {
       {/* ── Previous wrong guesses ─────────────────────────────────── */}
       <AnimatePresence>
         {guesses.filter(g => g !== answer).length > 0 && (
-          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
-            className="flex flex-wrap gap-2 items-center">
-            <span className="text-[10px] text-[#333] uppercase tracking-widest font-bold">Tried:</span>
+          <motion.div
+            initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
+            className="flex flex-wrap gap-2 items-center mx-1"
+          >
+            <span className="text-[10px] text-[#555] uppercase tracking-widest font-bold">Tried:</span>
             {guesses.filter(g => g !== answer).map((g, i) => (
-              <span key={i} className="px-3 py-1.5 rounded-xl bg-[#EF4444]/10 text-xs font-mono font-black text-[#EF4444]">
+              <span key={i} className="px-3 py-1.5 rounded-xl bg-[#EF4444]/10 border border-[#EF4444]/20 text-xs font-mono font-black text-[#EF4444]">
                 {g}
               </span>
             ))}
@@ -104,7 +106,7 @@ export function CodeBreak({ puzzle, onSolve, onMistake }: CodeBreakProps) {
       <motion.div
         animate={shake ? { x: [-12, 12, -9, 9, -5, 5, 0] } : {}}
         transition={{ duration: 0.45 }}
-        className="flex items-center justify-center gap-4 py-4"
+        className="flex items-center justify-center gap-5 py-4"
       >
         {Array.from({ length: codeLength }).map((_, i) => {
           const filled    = i < input.length;
@@ -114,26 +116,22 @@ export function CodeBreak({ puzzle, onSolve, onMistake }: CodeBreakProps) {
           return (
             <motion.div
               key={i}
-              animate={isFlashed ? { scale: [0.85, 1.12, 1] } : filled ? {} : {}}
+              animate={isFlashed ? { scale: [0.85, 1.12, 1] } : {}}
               transition={{ duration: 0.2 }}
               className="relative flex items-center justify-center rounded-2xl font-mono font-black transition-all duration-150"
               style={{
-                width: 80,
-                height: 80,
-                fontSize: 40,
-                background: filled ? '#5CE1E615' : '#1E1E1E',
-                border: `2.5px solid ${
-                  filled ? '#5CE1E6' : isCursor ? '#5CE1E640' : '#252525'
-                }`,
-                color: filled ? '#5CE1E6' : '#333',
-                boxShadow: filled ? '0 0 24px rgba(92,225,230,0.15)' : 'none',
+                width: 80, height: 80, fontSize: 40,
+                background: filled ? '#06B6D415' : '#1E1E1E',
+                border: `2.5px solid ${filled ? '#06B6D4' : isCursor ? '#06B6D450' : '#2A2A2A'}`,
+                color: filled ? '#06B6D4' : '#444',
+                boxShadow: filled ? '0 0 24px rgba(6,182,212,0.15)' : 'none',
               }}
             >
               {input[i] ?? ''}
               {isCursor && (
                 <span
                   className="absolute bottom-3 left-1/2 -translate-x-1/2 w-5 h-0.5 rounded-full animate-pulse"
-                  style={{ background: '#5CE1E680' }}
+                  style={{ background: '#06B6D480' }}
                 />
               )}
             </motion.div>
@@ -146,7 +144,7 @@ export function CodeBreak({ puzzle, onSolve, onMistake }: CodeBreakProps) {
         {error && (
           <motion.p
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="text-sm text-[#EF4444] text-center font-semibold -mt-3"
+            className="text-sm text-[#EF4444] text-center font-semibold -mt-2"
           >
             {error}
           </motion.p>
@@ -154,7 +152,7 @@ export function CodeBreak({ puzzle, onSolve, onMistake }: CodeBreakProps) {
       </AnimatePresence>
 
       {/* ── Keypad ─────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-3 gap-3 max-w-xs mx-auto w-full">
+      <div className="grid grid-cols-3 gap-3 max-w-xs mx-auto w-full px-1">
         {['1','2','3','4','5','6','7','8','9'].map(d => (
           <KeyBtn key={d} label={d} onPress={() => press(d)} disabled={submitted} />
         ))}
@@ -169,11 +167,11 @@ export function CodeBreak({ puzzle, onSolve, onMistake }: CodeBreakProps) {
         whileTap={ready ? { scale: 0.97 } : {}}
         onClick={handleSubmit}
         disabled={!ready}
-        className="w-full py-4 rounded-2xl font-black text-base tracking-wide transition-all"
+        className="mx-1 py-4 rounded-2xl font-black text-base tracking-wide transition-all"
         style={{
-          background: ready ? '#5CE1E6' : '#1E1E1E',
-          color: ready ? '#0D0D0D' : '#333',
-          boxShadow: ready ? '0 0 32px rgba(92,225,230,0.25)' : 'none',
+          background: ready ? '#06B6D4' : '#1E1E1E',
+          color: ready ? '#0D0D0D' : '#444',
+          boxShadow: ready ? '0 0 32px rgba(6,182,212,0.25)' : 'none',
         }}
       >
         CRACK THE CODE
@@ -193,8 +191,9 @@ function KeyBtn({ label, onPress, disabled, dim }: {
       className="h-16 rounded-2xl font-black text-xl transition-all select-none"
       style={{
         background: dim ? '#181818' : '#252525',
-        color: dim ? '#444' : '#fff',
-        opacity: disabled ? 0.2 : 1,
+        color: dim ? '#666' : '#EEE',
+        border: dim ? '1px solid #222' : '1px solid #333',
+        opacity: disabled ? 0.25 : 1,
         cursor: disabled ? 'not-allowed' : 'pointer',
       }}
     >

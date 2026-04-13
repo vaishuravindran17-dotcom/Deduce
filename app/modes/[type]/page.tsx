@@ -1,23 +1,41 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/lib/store/authStore';
 import { PUZZLE_META } from '@/lib/data/cases';
+import { LinkGridIcon, TimeTraceIcon, TrueLieIcon, CodeBreakIcon } from '@/components/ui/GameIcons';
+import type { PuzzleType } from '@/types';
 
 const COLORS: Record<string, string> = {
-  linkGrid: '#A855F7', timeTrace: '#F97316',
-  trueLie:  '#EC4899', codeBreak: '#5CE1E6',
+  linkGrid: '#8B5CF6', timeTrace: '#F97316',
+  trueLie:  '#EC4899', codeBreak: '#06B6D4',
 };
-const ICONS: Record<string, string> = {
-  linkGrid: '⊞', timeTrace: '⊙', trueLie: '⊡', codeBreak: '◈',
-};
+
+const DURATIONS = [
+  { seconds: 60,  label: '1 MIN',  sub: '60 seconds' },
+  { seconds: 180, label: '3 MIN',  sub: '3 minutes' },
+  { seconds: 300, label: '5 MIN',  sub: '5 minutes' },
+];
+
+function PuzzleIcon({ type, size }: { type: string; size: number }) {
+  const c = COLORS[type] ?? '#06B6D4';
+  switch (type) {
+    case 'linkGrid':  return <LinkGridIcon  size={size} color={c} />;
+    case 'timeTrace': return <TimeTraceIcon size={size} color={c} />;
+    case 'trueLie':   return <TrueLieIcon   size={size} color={c} />;
+    case 'codeBreak': return <CodeBreakIcon size={size} color={c} />;
+    default:          return null;
+  }
+}
 
 export default function PuzzleTypePage() {
   const router = useRouter();
   const params = useParams();
   const { user } = useAuthStore();
   const type  = params?.type as string;
+
+  const [selectedDuration, setSelectedDuration] = useState<number | null>(null);
 
   useEffect(() => {
     if (!user) router.replace('/auth');
@@ -26,18 +44,17 @@ export default function PuzzleTypePage() {
   if (!user || !PUZZLE_META[type]) { router.replace('/modes'); return null; }
 
   const meta  = PUZZLE_META[type];
-  const color = COLORS[type] ?? '#5CE1E6';
-  const icon  = ICONS[type] ?? '◈';
+  const color = COLORS[type] ?? '#06B6D4';
 
   return (
     <div className="min-h-dvh bg-[#0D0D0D] grid-bg flex flex-col">
 
       {/* Header */}
-      <header className="border-b border-[#1A1A1A] bg-[#0D0D0D]/95 backdrop-blur">
-        <div className="game-container h-14 flex items-center gap-4">
+      <header className="border-b border-[#1E1E1E] bg-[#0D0D0D]/95 backdrop-blur sticky top-0 z-10">
+        <div className="game-container h-16 flex items-center gap-4">
           <button
             onClick={() => router.push('/home')}
-            className="w-9 h-9 flex items-center justify-center rounded-xl bg-[#1E1E1E] text-[#666] hover:text-white transition-all"
+            className="w-9 h-9 flex items-center justify-center rounded-xl bg-[#1E1E1E] border border-[#2A2A2A] text-[#888] hover:text-white transition-all"
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
               <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -49,7 +66,7 @@ export default function PuzzleTypePage() {
 
       <div className="flex-1 game-container py-12 flex flex-col items-center gap-10">
 
-        {/* Big icon */}
+        {/* Puzzle icon + title */}
         <motion.div
           initial={{ scale: 0.7, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -57,76 +74,97 @@ export default function PuzzleTypePage() {
           className="flex flex-col items-center gap-6"
         >
           <div
-            className="w-32 h-32 rounded-3xl flex items-center justify-center"
-            style={{ background: `${color}15`, boxShadow: `0 0 60px ${color}20` }}
+            className="w-28 h-28 rounded-3xl flex items-center justify-center"
+            style={{ background: `${color}15`, border: `1px solid ${color}30`, boxShadow: `0 0 60px ${color}15` }}
           >
-            <span className="text-7xl" style={{ color }}>{icon}</span>
+            <PuzzleIcon type={type} size={52} />
           </div>
           <div className="text-center">
-            <h1 className="font-game text-white mb-2" style={{ fontSize: '52px', letterSpacing: '0.05em' }}>
+            <h1 className="font-game text-white mb-3" style={{ fontSize: '48px', letterSpacing: '0.05em' }}>
               {meta.label.toUpperCase()}
             </h1>
-            <p className="text-[#555] text-sm leading-relaxed max-w-xs">{meta.description}</p>
+            <p className="text-[#666] text-sm leading-relaxed max-w-xs">{meta.description}</p>
           </div>
         </motion.div>
 
-        {/* Mode selection */}
-        <div className="w-full space-y-3 max-w-sm">
-          <p className="font-game text-[#333] text-center mb-4" style={{ fontSize: '14px', letterSpacing: '0.25em' }}>
+        {/* Mode section */}
+        <div className="w-full space-y-5 max-w-md">
+          <p className="font-game text-[#444] text-center mb-2" style={{ fontSize: '13px', letterSpacing: '0.25em' }}>
             CHOOSE MODE
           </p>
 
-          {/* Time Attack — active */}
-          <motion.button
+          {/* Time Attack */}
+          <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, type: 'spring' as const, stiffness: 280, damping: 24 }}
-            whileHover={{ scale: 1.02, y: -2 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => router.push(`/modes/${type}/time-attack`)}
-            className="w-full text-left rounded-2xl bg-[#181818] p-6 transition-all hover:bg-[#1E1E1E] group"
+            className="rounded-2xl bg-[#161616] border border-[#2A2A2A] p-6"
           >
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-4">
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform"
-                  style={{ background: '#FFD60A15' }}
-                >
-                  ⏱
-                </div>
-                <div>
-                  <p className="font-game text-white text-2xl" style={{ letterSpacing: '0.05em' }}>TIME ATTACK</p>
-                  <p className="text-xs text-[#444] mt-0.5">60 seconds · solve as many as possible</p>
-                </div>
-              </div>
-              <span
-                className="font-game text-lg px-3 py-1 rounded-xl"
-                style={{ background: '#FFD60A20', color: '#FFD60A' }}
+            {/* Header row */}
+            <div className="flex items-center gap-4 mb-5">
+              <div
+                className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0"
+                style={{ background: '#FFD60A15', border: '1px solid #FFD60A20' }}
               >
-                60s
-              </span>
+                ⏱
+              </div>
+              <div className="flex-1">
+                <p className="font-game text-white text-xl" style={{ letterSpacing: '0.05em' }}>TIME ATTACK</p>
+                <p className="text-xs text-[#666] mt-0.5">Solve as many puzzles as possible</p>
+              </div>
             </div>
-            <p className="text-sm text-[#444] leading-relaxed">
-              Race the clock. Score = puzzles solved × speed bonus.
-            </p>
-          </motion.button>
+
+            {/* Duration picker */}
+            <p className="text-xs font-bold text-[#555] uppercase tracking-[0.2em] mb-3">Select duration</p>
+            <div className="grid grid-cols-3 gap-3 mb-5">
+              {DURATIONS.map(d => (
+                <motion.button
+                  key={d.seconds}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setSelectedDuration(d.seconds)}
+                  className="py-3 rounded-xl text-center transition-all"
+                  style={
+                    selectedDuration === d.seconds
+                      ? { background: `${color}20`, border: `1.5px solid ${color}`, color }
+                      : { background: '#222', border: '1.5px solid #333', color: '#888' }
+                  }
+                >
+                  <p className="font-game text-lg leading-none">{d.label}</p>
+                  <p className="text-[10px] mt-1 opacity-70">{d.sub}</p>
+                </motion.button>
+              ))}
+            </div>
+
+            <motion.button
+              whileHover={selectedDuration ? { scale: 1.02 } : {}}
+              whileTap={selectedDuration ? { scale: 0.97 } : {}}
+              onClick={() => selectedDuration && router.push(`/modes/${type}/time-attack?t=${selectedDuration}`)}
+              disabled={!selectedDuration}
+              className="w-full py-4 rounded-xl font-black text-base tracking-wide transition-all"
+              style={
+                selectedDuration
+                  ? { background: '#FFD60A', color: '#0D0D0D', boxShadow: '0 0 24px rgba(255,214,10,0.2)' }
+                  : { background: '#1C1C1C', color: '#444' }
+              }
+            >
+              {selectedDuration ? `START ${DURATIONS.find(d => d.seconds === selectedDuration)?.label}` : 'SELECT A DURATION'}
+            </motion.button>
+          </motion.div>
 
           {/* Online — coming soon */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="w-full rounded-2xl bg-[#141414] p-6 opacity-30"
+            className="w-full rounded-2xl bg-[#111] border border-[#1E1E1E] p-6 opacity-25 pointer-events-none"
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-[#252525] flex items-center justify-center text-2xl">🌐</div>
-                <div>
-                  <p className="font-game text-white text-2xl" style={{ letterSpacing: '0.05em' }}>ONLINE DUEL</p>
-                  <p className="text-xs text-[#333] mt-0.5">Live vs global leaderboard</p>
-                </div>
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-[#1E1E1E] flex items-center justify-center text-xl">🌐</div>
+              <div>
+                <p className="font-game text-white text-xl" style={{ letterSpacing: '0.05em' }}>ONLINE DUEL</p>
+                <p className="text-xs text-[#444] mt-0.5">Live vs global leaderboard</p>
               </div>
-              <span className="font-game text-sm px-3 py-1 rounded-xl bg-[#252525] text-[#333]">SOON</span>
+              <span className="ml-auto font-game text-xs px-3 py-1.5 rounded-xl bg-[#252525] text-[#444]">SOON</span>
             </div>
           </motion.div>
         </div>

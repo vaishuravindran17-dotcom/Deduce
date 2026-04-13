@@ -1,4 +1,18 @@
 import type { Case } from '@/types';
+import { LINK_GRID_POOL, TIME_TRACE_POOL, TRUE_LIE_POOL, CODE_BREAK_POOL } from './puzzlePools';
+
+/** Seeded Fisher-Yates shuffle — seed changes every 30 min so players get fresh order each session */
+function seededShuffle<T>(arr: T[]): T[] {
+  const seed = Math.floor(Date.now() / (1000 * 60 * 30));
+  const a = [...arr];
+  let s = (seed * 1664525 + 1013904223) & 0x7fffffff;
+  for (let i = a.length - 1; i > 0; i--) {
+    s = (s * 1664525 + 1013904223) & 0x7fffffff;
+    const j = s % (i + 1);
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 export const CASES: Case[] = [
   // ─── Case 1: The Office Heist ────────────────────────────────────────────────
@@ -529,11 +543,17 @@ export function getCaseById(id: number): Case | undefined {
   return CASES.find((c) => c.id === id);
 }
 
-/** Returns puzzles of a given type across all cases (for Time Attack) */
+/** Returns a shuffled pool of puzzles of the given type (for Time Attack) */
 export function getAllPuzzlesOfType<T extends keyof Case['puzzles']>(
   type: T,
 ): Case['puzzles'][T][] {
-  return CASES.map((c) => c.puzzles[type]);
+  switch (type) {
+    case 'linkGrid':  return seededShuffle(LINK_GRID_POOL)  as Case['puzzles'][T][];
+    case 'timeTrace': return seededShuffle(TIME_TRACE_POOL) as Case['puzzles'][T][];
+    case 'trueLie':   return seededShuffle(TRUE_LIE_POOL)   as Case['puzzles'][T][];
+    case 'codeBreak': return seededShuffle(CODE_BREAK_POOL) as Case['puzzles'][T][];
+    default:          return CASES.map(c => c.puzzles[type]);
+  }
 }
 
 export const PUZZLE_META: Record<
