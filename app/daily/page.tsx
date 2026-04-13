@@ -108,25 +108,42 @@ export default function DailyPage() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 z-40 flex items-center justify-center"
-            style={{ background: 'rgba(20,20,20,0.88)', backdropFilter: 'blur(8px)' }}
+            exit={{ opacity: 0, transition: { duration: 0.3 } }}
+            className="absolute inset-0 z-40 flex flex-col items-center justify-center gap-6"
+            style={{ background: 'rgba(13,13,13,0.92)', backdropFilter: 'blur(12px)' }}
           >
-            <motion.div
-              initial={{ scale: 0.6, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: 'spring' as const, stiffness: 320, damping: 22 }}
-              className="flex flex-col items-center gap-4"
-            >
-              <div
-                className="w-24 h-24 rounded-3xl flex items-center justify-center"
-                style={{ background: '#C8FF57', boxShadow: '0 0 60px rgba(200,255,87,0.35)' }}
+            {/* Animated rings */}
+            <div className="relative flex items-center justify-center">
+              {[1,2,3].map(i => (
+                <motion.div
+                  key={i}
+                  className="absolute rounded-full border"
+                  initial={{ scale: 0.8, opacity: 0.6 }}
+                  animate={{ scale: 2.5 + i * 0.5, opacity: 0 }}
+                  transition={{ duration: 1.2, delay: i * 0.15, ease: 'easeOut' }}
+                  style={{ width: 80, height: 80, borderColor: '#C8FF5740' }}
+                />
+              ))}
+              <motion.div
+                initial={{ scale: 0.4, opacity: 0, rotate: -20 }}
+                animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                transition={{ type: 'spring' as const, stiffness: 300, damping: 20 }}
+                className="w-20 h-20 rounded-2xl flex items-center justify-center relative z-10"
+                style={{ background: '#C8FF57', boxShadow: '0 0 60px rgba(200,255,87,0.4)' }}
               >
-                <span className="text-5xl font-black text-[#141414]">✓</span>
-              </div>
-              <p className="font-black text-xl text-white">Solved!</p>
+                <span className="font-game text-[#0D0D0D]" style={{ fontSize: '40px' }}>✓</span>
+              </motion.div>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-center"
+            >
+              <p className="font-game text-white" style={{ fontSize: '48px', letterSpacing: '0.05em' }}>SOLVED!</p>
               {activeIdx < PUZZLE_TYPES.length - 1 && (
-                <p className="text-[#888] text-sm">Next: {PUZZLE_LABELS[activeIdx + 1]}</p>
+                <p className="text-[#555] text-sm mt-2">Next up: {PUZZLE_LABELS[activeIdx + 1]}</p>
               )}
             </motion.div>
           </motion.div>
@@ -141,9 +158,11 @@ export default function DailyPage() {
           exit={{ opacity: 0, x: -32 }}
           transition={{ duration: 0.25, ease: 'easeInOut' }}
         >
-          <div className="px-4 pt-5 pb-2">
-            <h2 className="text-xl font-black text-white">{PUZZLE_LABELS[activeIdx]}</h2>
-            <p className="text-sm text-[#555] mt-0.5">{PUZZLE_DESCS[activeIdx]}</p>
+          <div className="px-5 pt-6 pb-2">
+            <h2 className="font-game text-white" style={{ fontSize: '36px', letterSpacing: '0.05em', lineHeight: 1 }}>
+              {PUZZLE_LABELS[activeIdx].toUpperCase()}
+            </h2>
+            <p className="text-sm text-[#444] mt-1">{PUZZLE_DESCS[activeIdx]}</p>
           </div>
           {renderPuzzle()}
         </motion.div>

@@ -18,16 +18,12 @@ export function TrueLie({ puzzle, onSolve, onMistake }: TrueLieProps) {
 
   const mark = (i: number, value: boolean) => {
     if (submitted) return;
-    setMarked(prev => {
-      const n = [...prev];
-      n[i] = n[i] === value ? null : value;
-      return n;
-    });
+    setMarked(prev => { const n = [...prev]; n[i] = n[i] === value ? null : value; return n; });
   };
 
   const lieCount   = marked.filter(m => m === true).length;
   const liarPerson = lieCount === 1 ? statements[marked.findIndex(m => m === true)]?.person : null;
-  const canSubmit  = liarPerson !== null;
+  const canSubmit  = liarPerson !== null && lieCount === 1;
 
   const handleSubmit = () => {
     if (!canSubmit) return;
@@ -42,19 +38,24 @@ export function TrueLie({ puzzle, onSolve, onMistake }: TrueLieProps) {
   };
 
   return (
-    <div className="flex flex-col gap-4 p-4 pb-8">
+    <div className="flex flex-col gap-5 px-5 py-6">
 
       {/* ── Rule banner ────────────────────────────────────────────── */}
-      <div className="rounded-2xl bg-[#F472B6]/8 border border-[#F472B6]/20 p-4">
-        <p className="text-[10px] font-bold text-[#F472B6] uppercase tracking-[0.2em] mb-1">Rule</p>
-        <p className="text-sm text-[#D0D0D0] leading-relaxed">
-          Exactly <span className="text-[#F472B6] font-bold">one person</span> is lying.
-          Mark each statement — find the liar.
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-2xl p-5"
+        style={{ background: 'rgba(236,72,153,0.08)', border: '1px solid rgba(236,72,153,0.2)' }}
+      >
+        <p className="font-game text-[#EC4899] text-lg mb-2" style={{ letterSpacing: '0.1em' }}>THE RULE</p>
+        <p className="text-sm text-[#CCC] leading-relaxed">
+          Exactly <span className="text-[#EC4899] font-bold">one person</span> is lying.
+          Mark each statement as TRUE or LIE to find the liar.
         </p>
-      </div>
+      </motion.div>
 
       {/* ── Statements ─────────────────────────────────────────────── */}
-      <div className="space-y-2.5">
+      <div className="space-y-3">
         {statements.map((stmt, i) => {
           const state   = marked[i];
           const isLie   = state === true;
@@ -63,48 +64,63 @@ export function TrueLie({ puzzle, onSolve, onMistake }: TrueLieProps) {
           return (
             <motion.div
               key={stmt.person}
+              initial={{ opacity: 0, x: -16 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.07 }}
               layout
-              className={[
-                'rounded-2xl p-4 transition-all',
-                isLie   ? 'bg-[#F472B6]/10 border border-[#F472B6]/40'
-                : isTruth ? 'bg-[#C8FF57]/5 border border-[#C8FF57]/20'
-                : 'bg-[#1E1E1E] border border-transparent',
-              ].join(' ')}
+              className="rounded-2xl p-5 transition-all"
+              style={{
+                background: isLie
+                  ? 'rgba(236,72,153,0.1)'
+                  : isTruth
+                  ? 'rgba(200,255,87,0.06)'
+                  : '#181818',
+                border: `1.5px solid ${
+                  isLie ? 'rgba(236,72,153,0.4)'
+                  : isTruth ? 'rgba(200,255,87,0.2)'
+                  : 'transparent'
+                }`,
+              }}
             >
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-4">
                 <div className="flex-1 min-w-0">
-                  <p className="text-[11px] font-black text-[#888] uppercase tracking-wider mb-2">
-                    {stmt.person}
+                  <p className="font-game text-sm mb-2" style={{
+                    color: isLie ? '#EC4899' : isTruth ? '#C8FF57' : '#666',
+                    letterSpacing: '0.1em',
+                  }}>
+                    {stmt.person.toUpperCase()}
                   </p>
-                  <p className="text-sm text-[#E0E0E0] leading-relaxed">
+                  <p className="text-sm text-[#DDD] leading-relaxed">
                     &ldquo;{stmt.text}&rdquo;
                   </p>
                 </div>
 
-                {/* Truth / Lie toggle buttons */}
-                <div className="flex flex-col gap-1.5 shrink-0">
-                  <button
+                {/* TRUE / LIE buttons */}
+                <div className="flex gap-2 shrink-0">
+                  <motion.button
+                    whileTap={{ scale: 0.88 }}
                     onClick={() => mark(i, false)}
-                    className="px-3 py-1.5 rounded-xl text-[11px] font-black transition-all"
+                    className="px-3 py-2 rounded-xl text-xs font-black transition-all"
                     style={
                       isTruth
-                        ? { background: '#C8FF57', color: '#141414' }
+                        ? { background: '#C8FF57', color: '#0D0D0D' }
                         : { background: '#252525', color: '#555' }
                     }
                   >
                     TRUE
-                  </button>
-                  <button
+                  </motion.button>
+                  <motion.button
+                    whileTap={{ scale: 0.88 }}
                     onClick={() => mark(i, true)}
-                    className="px-3 py-1.5 rounded-xl text-[11px] font-black transition-all"
+                    className="px-3 py-2 rounded-xl text-xs font-black transition-all"
                     style={
                       isLie
-                        ? { background: '#F472B6', color: '#141414' }
+                        ? { background: '#EC4899', color: '#fff' }
                         : { background: '#252525', color: '#555' }
                     }
                   >
                     LIE
-                  </button>
+                  </motion.button>
                 </div>
               </div>
             </motion.div>
@@ -113,41 +129,45 @@ export function TrueLie({ puzzle, onSolve, onMistake }: TrueLieProps) {
       </div>
 
       {/* Warnings */}
-      {lieCount > 1 && (
-        <motion.p
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          className="text-xs text-[#FBBF24] text-center font-semibold"
-        >
-          ⚠ Only one person can be the liar
-        </motion.p>
-      )}
-
-      {question && (
-        <p className="text-sm text-[#888] text-center">{question}</p>
-      )}
-
       <AnimatePresence>
-        {error && (
-          <motion.p
-            initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="text-xs text-[#F87171] text-center font-semibold"
+        {lieCount > 1 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            className="rounded-xl bg-[#FFD60A]/10 border border-[#FFD60A]/20 px-4 py-3 text-center"
           >
-            Wrong — reconsider the statements
-          </motion.p>
+            <p className="text-sm font-bold text-[#FFD60A]">⚠ Only one person can be the liar</p>
+          </motion.div>
+        )}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            className="rounded-xl bg-[#EF4444]/10 border border-[#EF4444]/20 px-4 py-3 text-center"
+          >
+            <p className="text-sm font-bold text-[#EF4444]">Wrong — reconsider the statements</p>
+          </motion.div>
         )}
       </AnimatePresence>
 
-      <button
+      {question && <p className="text-sm text-[#555] text-center">{question}</p>}
+
+      <motion.button
+        whileHover={canSubmit ? { scale: 1.02 } : {}}
+        whileTap={canSubmit ? { scale: 0.97 } : {}}
         onClick={handleSubmit}
-        disabled={!canSubmit || lieCount > 1}
-        className="w-full py-4 rounded-2xl font-black text-sm transition-all active:scale-95 disabled:opacity-30"
+        disabled={!canSubmit}
+        className="w-full py-4 rounded-2xl font-black text-base tracking-wide transition-all"
         style={{
-          background: canSubmit && lieCount === 1 ? '#F472B6' : '#1E1E1E',
-          color: canSubmit && lieCount === 1 ? '#141414' : '#444',
+          background: canSubmit ? '#EC4899' : '#1E1E1E',
+          color: canSubmit ? '#fff' : '#333',
+          boxShadow: canSubmit ? '0 0 28px rgba(236,72,153,0.25)' : 'none',
         }}
       >
-        Expose the Liar
-      </button>
+        EXPOSE THE LIAR
+      </motion.button>
     </div>
   );
 }

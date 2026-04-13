@@ -5,7 +5,13 @@ import { motion } from 'framer-motion';
 import { PUZZLE_META } from '@/lib/data/cases';
 import type { PuzzleStatus, PuzzleType } from '@/types';
 
-const STEP_COLORS = ['#A78BFA', '#FB923C', '#F472B6', '#67E8F9'];
+const STEP_COLORS: Record<PuzzleType, string> = {
+  linkGrid:  '#A855F7',
+  timeTrace: '#F97316',
+  trueLie:   '#EC4899',
+  codeBreak: '#5CE1E6',
+};
+const PUZZLE_TYPES: PuzzleType[] = ['linkGrid', 'timeTrace', 'trueLie', 'codeBreak'];
 
 function fmt(s: number) {
   const m = Math.floor(s / 60);
@@ -34,103 +40,113 @@ export function PuzzleLayout({
 }: PuzzleLayoutProps) {
   const router  = useRouter();
   const meta    = PUZZLE_META[puzzleType];
-  const color   = STEP_COLORS[puzzleIndex ?? 0] ?? '#67E8F9';
+  const color   = STEP_COLORS[puzzleType];
   const back    = onBack ?? (() => router.back());
   const isLow   = timeAttack && (timeLeft ?? 60) <= 10;
   const isWarn  = timeAttack && (timeLeft ?? 60) <= 20 && (timeLeft ?? 60) > 10;
 
   return (
-    <div className="min-h-dvh flex flex-col bg-[#141414]">
+    <div className="min-h-dvh flex flex-col bg-[#0D0D0D] grid-overlay">
 
-      {/* ── Top bar (Matiks game-screen style) ─────────────────────── */}
-      <header className="bg-[#141414] border-b border-[#1E1E1E] pt-safe pt-3 pb-3">
-        <div className="flex items-center px-4 gap-3">
+      {/* ── Header ─────────────────────────────────────────────────── */}
+      <header className="border-b border-[#1A1A1A] bg-[#0D0D0D]/95 backdrop-blur sticky top-0 z-10">
+        <div className="max-w-3xl mx-auto px-5 h-16 flex items-center gap-4">
 
-          {/* Left: back + puzzle info */}
-          <button onClick={back}
-            className="w-8 h-8 flex items-center justify-center rounded-xl bg-[#1E1E1E] text-[#888] hover:text-white transition-colors shrink-0">
+          {/* Back */}
+          <button
+            onClick={back}
+            className="w-9 h-9 flex items-center justify-center rounded-xl bg-[#1E1E1E] text-[#666] hover:text-white hover:bg-[#252525] transition-all shrink-0"
+          >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-              <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
 
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5">
-              <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
-              <span className="text-[10px] font-bold text-[#555] uppercase tracking-[0.15em] truncate">
-                {meta.label}
-                {puzzleIndex !== undefined && totalPuzzles !== undefined && ` · ${puzzleIndex + 1} / ${totalPuzzles}`}
+          {/* Puzzle label */}
+          <div className="flex-1 min-w-0 flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
+            <span className="font-game text-lg text-white truncate" style={{ letterSpacing: '0.05em' }}>
+              {meta.label.toUpperCase()}
+            </span>
+            {puzzleIndex !== undefined && totalPuzzles !== undefined && (
+              <span className="text-xs text-[#444] font-mono shrink-0">
+                {puzzleIndex + 1}/{totalPuzzles}
               </span>
-            </div>
-            <h1 className="text-sm font-bold text-white truncate">{title}</h1>
+            )}
           </div>
 
-          {/* Right: timer + mistakes */}
+          {/* Timer + score */}
           <div className="flex items-center gap-2 shrink-0">
-            {/* Mistakes badge */}
             {mistakes > 0 && (
-              <div className="px-2.5 py-1 rounded-xl bg-[#1E1E1E] text-xs font-black text-[#F87171]">
+              <div className="px-3 py-1.5 rounded-xl bg-[#EF4444]/10 border border-[#EF4444]/20 text-xs font-black text-[#EF4444]">
                 ×{mistakes}
               </div>
             )}
 
-            {/* Timer — Matiks style: cyan dot + MM:SS */}
             {timeAttack && timeLeft !== undefined ? (
               <motion.div
-                animate={isLow ? { scale: [1, 1.06, 1] } : {}}
-                transition={{ repeat: Infinity, duration: 0.7 }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1E1E1E]"
+                animate={isLow ? { scale: [1, 1.08, 1] } : {}}
+                transition={{ repeat: Infinity, duration: 0.65 }}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl"
+                style={{
+                  background: isLow ? '#EF444415' : isWarn ? '#F9731615' : '#1E1E1E',
+                  border: `1px solid ${isLow ? '#EF444430' : isWarn ? '#F9731630' : 'transparent'}`,
+                }}
               >
-                <div className={`w-1.5 h-1.5 rounded-full ${
-                  isLow ? 'bg-[#F87171]' : isWarn ? 'bg-[#FB923C]' : 'bg-[#67E8F9]'
-                }`} />
-                <span className={`font-mono text-sm font-bold ${
-                  isLow ? 'text-[#F87171]' : isWarn ? 'text-[#FB923C]' : 'text-white'
-                }`}>
+                <span
+                  className="w-2 h-2 rounded-full"
+                  style={{ background: isLow ? '#EF4444' : isWarn ? '#F97316' : '#5CE1E6' }}
+                />
+                <span
+                  className="font-mono font-black text-base"
+                  style={{ color: isLow ? '#EF4444' : isWarn ? '#F97316' : '#fff' }}
+                >
                   {fmt(timeLeft)}
                 </span>
               </motion.div>
             ) : elapsedSeconds !== undefined ? (
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1E1E1E]">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#67E8F9]" />
-                <span className="font-mono text-sm font-bold text-white">{fmt(elapsedSeconds)}</span>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1E1E1E]">
+                <span className="w-2 h-2 rounded-full bg-[#5CE1E6]" />
+                <span className="font-mono font-black text-base text-white">{fmt(elapsedSeconds)}</span>
               </div>
             ) : null}
 
-            {/* Solved count (time attack) */}
             {timeAttack && solvedCount !== undefined && (
-              <div className="px-2.5 py-1.5 rounded-xl bg-[#C8FF57]/15 text-xs font-black text-[#C8FF57]">
-                {solvedCount}✓
+              <div className="px-3 py-2 rounded-xl text-sm font-black"
+                style={{ background: '#C8FF5720', color: '#C8FF57' }}>
+                {solvedCount} ✓
               </div>
             )}
           </div>
         </div>
 
-        {/* Step progress — 4 colored bars (daily only) */}
+        {/* Step progress (daily) */}
         {puzzleStatuses && !timeAttack && (
-          <div className="flex gap-1.5 px-4 mt-3">
-            {puzzleStatuses.map((status, i) => (
-              <motion.div
-                key={i}
-                className="flex-1 h-1 rounded-full overflow-hidden bg-[#252525]"
-              >
-                <motion.div
-                  className="h-full rounded-full"
-                  style={{ backgroundColor: STEP_COLORS[i] }}
-                  initial={{ width: 0 }}
-                  animate={{
-                    width: status === 'solved' ? '100%' : status === 'active' ? '35%' : '0%',
-                  }}
-                  transition={{ duration: 0.5, ease: 'easeOut' }}
-                />
-              </motion.div>
-            ))}
+          <div className="max-w-3xl mx-auto px-5 pb-2 flex gap-1.5">
+            {PUZZLE_TYPES.map((t, i) => {
+              const status = puzzleStatuses[i];
+              return (
+                <motion.div key={t} className="flex-1 h-1 rounded-full overflow-hidden bg-[#1E1E1E]">
+                  <motion.div
+                    className="h-full rounded-full"
+                    style={{ backgroundColor: STEP_COLORS[t] }}
+                    initial={{ width: 0 }}
+                    animate={{
+                      width: status === 'solved' ? '100%' : status === 'active' ? '30%' : '0%',
+                    }}
+                    transition={{ duration: 0.6, ease: 'easeOut' }}
+                  />
+                </motion.div>
+              );
+            })}
           </div>
         )}
       </header>
 
       {/* ── Content ──────────────────────────────────────────────────── */}
-      <main className="flex-1 flex flex-col overflow-auto">{children}</main>
+      <main className="flex-1 flex flex-col overflow-auto max-w-3xl mx-auto w-full">
+        {children}
+      </main>
     </div>
   );
 }

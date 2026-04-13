@@ -6,8 +6,8 @@ import { useAuthStore } from '@/lib/store/authStore';
 import { PUZZLE_META } from '@/lib/data/cases';
 
 const COLORS: Record<string, string> = {
-  linkGrid: '#A78BFA', timeTrace: '#FB923C',
-  trueLie:  '#F472B6', codeBreak: '#67E8F9',
+  linkGrid: '#A855F7', timeTrace: '#F97316',
+  trueLie:  '#EC4899', codeBreak: '#5CE1E6',
 };
 const ICONS: Record<string, string> = {
   linkGrid: '⊞', timeTrace: '⊙', trueLie: '⊡', codeBreak: '◈',
@@ -26,98 +26,107 @@ export default function PuzzleTypePage() {
   if (!user || !PUZZLE_META[type]) { router.replace('/modes'); return null; }
 
   const meta  = PUZZLE_META[type];
-  const color = COLORS[type] ?? '#67E8F9';
+  const color = COLORS[type] ?? '#5CE1E6';
   const icon  = ICONS[type] ?? '◈';
 
   return (
-    <div className="min-h-dvh bg-[#141414] flex flex-col">
+    <div className="min-h-dvh bg-[#0D0D0D] grid-overlay flex flex-col">
 
       {/* Header */}
-      <header className="flex items-center gap-3 px-4 pt-safe pt-5 pb-4 border-b border-[#1E1E1E]">
-        <button
-          onClick={() => router.push('/home')}
-          className="w-8 h-8 flex items-center justify-center rounded-xl bg-[#1E1E1E] text-[#888] hover:text-white transition-all"
-        >
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-            <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
-        <h1 className="font-black text-white">{meta.label}</h1>
+      <header className="border-b border-[#1A1A1A] bg-[#0D0D0D]/95 backdrop-blur">
+        <div className="max-w-3xl mx-auto px-5 h-14 flex items-center gap-4">
+          <button
+            onClick={() => router.push('/home')}
+            className="w-9 h-9 flex items-center justify-center rounded-xl bg-[#1E1E1E] text-[#666] hover:text-white transition-all"
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+          <span className="font-game text-white text-xl tracking-wider">{meta.label.toUpperCase()}</span>
+        </div>
       </header>
 
-      <div className="flex-1 px-4 py-10 flex flex-col items-center gap-8">
+      <div className="flex-1 max-w-3xl mx-auto w-full px-5 py-12 flex flex-col items-center gap-10">
 
-        {/* Icon tile */}
+        {/* Big icon */}
         <motion.div
-          initial={{ scale: 0.75, opacity: 0 }}
+          initial={{ scale: 0.7, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: 'spring' as const, stiffness: 300, damping: 22 }}
-          className="w-28 h-28 rounded-3xl flex items-center justify-center text-6xl"
-          style={{ background: `${color}15` }}
+          transition={{ type: 'spring' as const, stiffness: 280, damping: 22 }}
+          className="flex flex-col items-center gap-6"
         >
-          <span style={{ color }}>{icon}</span>
+          <div
+            className="w-32 h-32 rounded-3xl flex items-center justify-center"
+            style={{ background: `${color}15`, boxShadow: `0 0 60px ${color}20` }}
+          >
+            <span className="text-7xl" style={{ color }}>{icon}</span>
+          </div>
+          <div className="text-center">
+            <h1 className="font-game text-white mb-2" style={{ fontSize: '52px', letterSpacing: '0.05em' }}>
+              {meta.label.toUpperCase()}
+            </h1>
+            <p className="text-[#555] text-sm leading-relaxed max-w-xs">{meta.description}</p>
+          </div>
         </motion.div>
 
-        <div className="text-center">
-          <h2 className="text-3xl font-black text-white mb-2">{meta.label}</h2>
-          <p className="text-[#666] text-sm leading-relaxed max-w-[240px]">{meta.description}</p>
-        </div>
-
-        {/* Mode cards */}
-        <div className="w-full space-y-3">
-          <p className="text-[10px] font-bold text-[#444] uppercase tracking-[0.2em] text-center mb-3">Choose Mode</p>
+        {/* Mode selection */}
+        <div className="w-full space-y-3 max-w-sm">
+          <p className="font-game text-[#333] text-center mb-4" style={{ fontSize: '14px', letterSpacing: '0.25em' }}>
+            CHOOSE MODE
+          </p>
 
           {/* Time Attack — active */}
           <motion.button
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            whileTap={{ scale: 0.98 }}
+            transition={{ delay: 0.1, type: 'spring' as const, stiffness: 280, damping: 24 }}
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => router.push(`/modes/${type}/time-attack`)}
-            className="w-full text-left rounded-2xl bg-[#1E1E1E] p-5 transition-all hover:bg-[#252525]"
+            className="w-full text-left rounded-2xl bg-[#181818] p-6 transition-all hover:bg-[#1E1E1E] group"
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-[#FFD600]/15 flex items-center justify-center text-xl">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-4">
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform"
+                  style={{ background: '#FFD60A15' }}
+                >
                   ⏱
                 </div>
                 <div>
-                  <p className="font-black text-white">Time Attack</p>
-                  <p className="text-xs text-[#555] mt-0.5">60 seconds · max puzzles</p>
+                  <p className="font-game text-white text-2xl" style={{ letterSpacing: '0.05em' }}>TIME ATTACK</p>
+                  <p className="text-xs text-[#444] mt-0.5">60 seconds · solve as many as possible</p>
                 </div>
               </div>
-              <div
-                className="px-2.5 py-1 rounded-xl text-[10px] font-black"
-                style={{ background: '#FFD60020', color: '#FFD600' }}
+              <span
+                className="font-game text-lg px-3 py-1 rounded-xl"
+                style={{ background: '#FFD60A20', color: '#FFD60A' }}
               >
                 60s
-              </div>
+              </span>
             </div>
-            <p className="text-sm text-[#555] mt-3">
-              Solve as many as you can before time runs out.
+            <p className="text-sm text-[#444] leading-relaxed">
+              Race the clock. Score = puzzles solved × speed bonus.
             </p>
           </motion.button>
 
           {/* Online — coming soon */}
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.18 }}
-            className="w-full rounded-2xl bg-[#1A1A1A] p-5 opacity-35"
+            transition={{ delay: 0.2 }}
+            className="w-full rounded-2xl bg-[#141414] p-6 opacity-30"
           >
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-[#444]/20 flex items-center justify-center text-xl">
-                  🌐
-                </div>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-[#252525] flex items-center justify-center text-2xl">🌐</div>
                 <div>
-                  <p className="font-black text-white">Online Duel</p>
-                  <p className="text-xs text-[#555] mt-0.5">Live vs leaderboard</p>
+                  <p className="font-game text-white text-2xl" style={{ letterSpacing: '0.05em' }}>ONLINE DUEL</p>
+                  <p className="text-xs text-[#333] mt-0.5">Live vs global leaderboard</p>
                 </div>
               </div>
-              <div className="px-2.5 py-1 rounded-xl bg-[#252525] text-[10px] font-black text-[#444]">
-                Soon
-              </div>
+              <span className="font-game text-sm px-3 py-1 rounded-xl bg-[#252525] text-[#333]">SOON</span>
             </div>
           </motion.div>
         </div>

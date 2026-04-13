@@ -23,13 +23,10 @@ export function TimeTrace({ puzzle, onSolve, onMistake }: TimeTraceProps) {
     const prevSlot = assignments.findIndex(a => a === selected);
     const newA = [...assignments];
     const newU = [...unassigned];
-
     if (newA[slotIndex] !== null) newU.push(newA[slotIndex]!);
     newA[slotIndex] = selected;
-
     if (prevSlot >= 0) newA[prevSlot] = null;
     else { const idx = newU.indexOf(selected); if (idx !== -1) newU.splice(idx, 1); }
-
     setAssignments(newA);
     setUnassigned(newU);
     setSelected(null);
@@ -62,31 +59,35 @@ export function TimeTrace({ puzzle, onSolve, onMistake }: TimeTraceProps) {
   };
 
   return (
-    <div className="flex flex-col gap-4 p-4 pb-8">
+    <div className="flex flex-col gap-5 px-5 py-6">
 
       {/* ── Clues ──────────────────────────────────────────────────── */}
-      <div className="rounded-2xl bg-[#1E1E1E] p-4">
-        <p className="text-[10px] font-bold text-[#FB923C] uppercase tracking-[0.2em] mb-3">Clues</p>
-        <ul className="space-y-2.5">
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-2xl bg-[#181818] p-5"
+      >
+        <p className="font-game text-[#F97316] text-lg mb-4" style={{ letterSpacing: '0.1em' }}>CLUES</p>
+        <ul className="space-y-3">
           {clues.map((clue, i) => (
             <motion.li
               key={i}
-              initial={{ opacity: 0, x: -8 }}
+              initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.06 }}
-              className="flex items-start gap-2.5 text-sm text-[#D0D0D0]"
+              transition={{ delay: i * 0.07 }}
+              className="flex items-start gap-3 text-sm text-[#CCC] leading-relaxed"
             >
-              <span className="text-[#FB923C] shrink-0 font-black leading-5">›</span>
+              <span className="text-[#F97316] font-black shrink-0 mt-0.5">›</span>
               {clue}
             </motion.li>
           ))}
         </ul>
-      </div>
+      </motion.div>
 
-      {/* ── Entity tokens ───────────────────────────────────────────── */}
+      {/* ── Entity tokens ──────────────────────────────────────────── */}
       <div>
-        <p className="text-[10px] font-bold text-[#555] uppercase tracking-[0.15em] mb-3">
-          {selected ? `Tap a time slot to place "${selected}"` : 'Tap a person, then a time slot'}
+        <p className="text-xs font-bold text-[#444] uppercase tracking-[0.2em] mb-3">
+          {selected ? `Place "${selected}" into a time slot` : 'Select a person to place'}
         </p>
         <div className="flex flex-wrap gap-2">
           {entities.map(entity => {
@@ -95,15 +96,15 @@ export function TimeTrace({ puzzle, onSolve, onMistake }: TimeTraceProps) {
             return (
               <motion.button
                 key={entity}
-                whileTap={{ scale: 0.9 }}
+                whileTap={{ scale: 0.88 }}
                 onClick={() => { if (submitted || isAssigned) return; setSelected(isSel ? null : entity); }}
                 disabled={isAssigned}
-                className="px-4 py-2.5 rounded-xl text-sm font-bold transition-all"
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
                 style={
                   isAssigned
-                    ? { background: '#1A1A1A', color: '#333', cursor: 'not-allowed' }
+                    ? { background: '#181818', color: '#2E2E2E', cursor: 'not-allowed' }
                     : isSel
-                    ? { background: '#FB923C', color: '#141414' }
+                    ? { background: '#F97316', color: '#fff', boxShadow: '0 0 20px rgba(249,115,22,0.3)' }
                     : { background: '#252525', color: '#CCC' }
                 }
               >
@@ -115,8 +116,15 @@ export function TimeTrace({ puzzle, onSolve, onMistake }: TimeTraceProps) {
       </div>
 
       {/* ── Timeline ────────────────────────────────────────────────── */}
-      <div className="rounded-2xl bg-[#1E1E1E] p-4">
-        <div className="space-y-2.5">
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="rounded-2xl bg-[#181818] p-5"
+      >
+        <p className="font-game text-[#F97316] text-lg mb-5" style={{ letterSpacing: '0.1em' }}>TIMELINE</p>
+
+        <div className="space-y-3">
           {slots.map((slot, i) => {
             const isCrimeSlot = i === 1;
             const assigned    = assignments[i];
@@ -125,54 +133,55 @@ export function TimeTrace({ puzzle, onSolve, onMistake }: TimeTraceProps) {
             return (
               <motion.div
                 key={slot}
-                animate={error && submitted ? { x: [0, -8, 8, -5, 5, 0] } : {}}
+                animate={error && submitted ? { x: [0, -10, 10, -6, 6, 0] } : {}}
                 transition={{ duration: 0.4 }}
-                className="flex items-center gap-3"
+                className="flex items-center gap-4"
               >
-                {/* Time label */}
+                {/* Time */}
                 <div className="w-16 shrink-0 text-right">
-                  <p className={`text-xs font-black font-mono ${isCrimeSlot ? 'text-[#FB923C]' : 'text-[#555]'}`}>
+                  <p className="font-mono font-black text-sm"
+                    style={{ color: isCrimeSlot ? '#F97316' : '#444' }}>
                     {slot}
                   </p>
                   {isCrimeSlot && (
-                    <p className="text-[8px] font-bold text-[#FB923C]/60 uppercase tracking-wider">crime</p>
+                    <p className="text-[9px] font-bold uppercase tracking-wider text-[#F97316]/60">
+                      crime
+                    </p>
                   )}
                 </div>
 
-                {/* Dot */}
-                <div
-                  className="w-2.5 h-2.5 rounded-full shrink-0 border-2 transition-all"
-                  style={
-                    assigned
-                      ? { borderColor: '#FB923C', background: '#FB923C' }
-                      : isCrimeSlot
-                      ? { borderColor: '#FB923C60', background: '#141414' }
-                      : { borderColor: '#303030', background: '#141414' }
-                  }
-                />
+                {/* Dot on line */}
+                <div className="relative flex items-center justify-center shrink-0">
+                  <div className="absolute w-px h-16 -top-8 bg-[#252525] -z-10" />
+                  <div
+                    className="w-3 h-3 rounded-full border-2 z-10 transition-all"
+                    style={
+                      assigned
+                        ? { borderColor: '#F97316', background: '#F97316' }
+                        : isCrimeSlot
+                        ? { borderColor: '#F9731660', background: '#0D0D0D' }
+                        : { borderColor: '#2E2E2E', background: '#0D0D0D' }
+                    }
+                  />
+                </div>
 
-                {/* Slot button */}
+                {/* Slot */}
                 <motion.button
                   whileTap={{ scale: 0.97 }}
                   onClick={() => assigned ? removeFromSlot(i) : assignToSlot(i)}
-                  className="flex-1 min-h-[50px] rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-all"
+                  className="flex-1 min-h-[52px] rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-all"
                   style={
                     assigned
-                      ? { background: '#FB923C18', border: '1.5px solid #FB923C', color: '#FB923C' }
+                      ? { background: '#F9731618', border: '1.5px solid #F97316', color: '#F97316' }
                       : isTarget
-                      ? { background: '#252525', border: '1.5px dashed #FB923C60', color: '#555' }
+                      ? { background: '#252525', border: '1.5px dashed #F9731640', color: '#555' }
                       : { background: '#252525', border: '1.5px solid transparent', color: '#333' }
                   }
                 >
                   {assigned ? (
-                    <>
-                      {assigned}
-                      <span className="text-[#FB923C]/40 text-xs">✕</span>
-                    </>
+                    <>{assigned} <span className="opacity-40 text-xs ml-1">✕</span></>
                   ) : (
-                    <span className="text-xs opacity-50">
-                      {isTarget ? 'place here' : '—'}
-                    </span>
+                    <span className="text-xs opacity-40">{isTarget ? 'place here' : '—'}</span>
                   )}
                 </motion.button>
               </motion.div>
@@ -180,33 +189,34 @@ export function TimeTrace({ puzzle, onSolve, onMistake }: TimeTraceProps) {
           })}
         </div>
 
-        {question && (
-          <p className="text-xs text-[#555] mt-4 text-center">{question}</p>
-        )}
+        {question && <p className="text-xs text-[#444] mt-5 text-center">{question}</p>}
 
         <AnimatePresence>
           {error && (
-            <motion.p
-              initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-              className="text-xs text-[#F87171] mt-3 text-center font-semibold"
+            <motion.div
+              initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+              className="mt-4 rounded-xl bg-[#EF4444]/10 border border-[#EF4444]/20 px-4 py-3 text-center"
             >
-              Wrong order — try again
-            </motion.p>
+              <p className="text-sm font-bold text-[#EF4444]">Wrong order — try again</p>
+            </motion.div>
           )}
         </AnimatePresence>
 
-        <button
+        <motion.button
+          whileHover={allFilled ? { scale: 1.02 } : {}}
+          whileTap={allFilled ? { scale: 0.97 } : {}}
           onClick={handleSubmit}
           disabled={!allFilled}
-          className="w-full mt-4 py-4 rounded-2xl font-black text-sm transition-all active:scale-95 disabled:opacity-30"
+          className="w-full mt-5 py-4 rounded-2xl font-black text-base tracking-wide transition-all"
           style={{
-            background: allFilled ? '#FB923C' : '#252525',
-            color: allFilled ? '#141414' : '#444',
+            background: allFilled ? '#F97316' : '#252525',
+            color: allFilled ? '#fff' : '#333',
+            boxShadow: allFilled ? '0 0 28px rgba(249,115,22,0.25)' : 'none',
           }}
         >
-          Lock In Timeline
-        </button>
-      </div>
+          LOCK IN TIMELINE
+        </motion.button>
+      </motion.div>
     </div>
   );
 }
