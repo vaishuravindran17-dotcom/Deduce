@@ -9,6 +9,7 @@ import { formatTime, calculateDailyScore, calculateTimeAttackScore } from '@/lib
 import { shareResult, generateShareText } from '@/lib/utils/share';
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 import { Confetti } from '@/components/ui/Confetti';
+import { FlameIcon } from '@/components/ui/GameIcons';
 
 const VERDICT_COLORS = ['#A855F7', '#F97316', '#EC4899', '#5CE1E6'];
 const VERDICT_KEYS   = ['culprit', 'time', 'location', 'code'] as const;
@@ -56,12 +57,12 @@ export default function ResultPage() {
   };
 
   return (
-    <div className="min-h-dvh bg-[#0D0D0D] grid-overlay flex flex-col">
+    <div className="min-h-dvh bg-[#0D0D0D] grid-bg flex flex-col">
       <Confetti trigger={showConfetti} type={isPerfect ? 'celebration' : 'subtle'} />
 
       {/* Header */}
       <header className="border-b border-[#1A1A1A] bg-[#0D0D0D]/95 backdrop-blur">
-        <div className="max-w-3xl mx-auto px-5 h-14 flex items-center justify-between">
+        <div className="game-container h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <svg width="22" height="22" viewBox="0 0 72 72" fill="none">
               <circle cx="32" cy="32" r="20" stroke="#C8FF57" strokeWidth="3.5" strokeLinecap="round" />
@@ -77,7 +78,7 @@ export default function ResultPage() {
         </div>
       </header>
 
-      <div className="flex-1 max-w-3xl mx-auto w-full px-5 py-8 flex flex-col gap-6">
+      <div className="flex-1 game-container py-8 flex flex-col gap-6">
 
         {/* ── RESULT HERO ─────────────────────────────────────────── */}
         <motion.div
@@ -214,7 +215,7 @@ export default function ResultPage() {
               {[
                 { label: 'TIME',     value: formatTime(lastResult.timeSeconds),         color: '#F97316' },
                 { label: 'MISTAKES', value: String(lastResult.mistakes),                 color: lastResult.mistakes === 0 ? '#C8FF57' : '#EF4444' },
-                { label: 'STREAK',   value: `${streak}🔥`,                              color: '#F97316' },
+                { label: 'STREAK',   value: String(streak),                               color: '#F97316' },
               ].map(s => (
                 <div key={s.label} className="rounded-2xl bg-[#181818] p-4 text-center">
                   <p className="font-game text-3xl leading-none mb-1" style={{ color: s.color }}>{s.value}</p>

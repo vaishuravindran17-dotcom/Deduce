@@ -17,12 +17,30 @@ import type { PuzzleType } from '@/types';
 const TIME_LIMIT = 60;
 type Phase = 'countdown' | 'playing' | 'done';
 
+/** Thin wrapper — incrementing gameKey forces full remount, fixing Play Again */
 export default function TimeAttackPage() {
+  const params = useParams();
+  const { user } = useAuthStore();
+  const router   = useRouter();
+  const type     = params?.type as PuzzleType;
+
+  const [gameKey, setGameKey] = useState(0);
+
+  if (!user || !type || !PUZZLE_META[type]) return null;
+
+  return (
+    <TimeAttackGame
+      key={gameKey}
+      type={type}
+      onRestart={() => setGameKey(k => k + 1)}
+    />
+  );
+}
+
+function TimeAttackGame({ type, onRestart }: { type: PuzzleType; onRestart: () => void }) {
   const router  = useRouter();
-  const params  = useParams();
   const { user } = useAuthStore();
   const { startTimeAttack, incrementSolved, addTimeAttackMistake, endTimeAttack, setLastResult } = useGameStore();
-  const type = params?.type as PuzzleType;
 
   const [phase, setPhase]         = useState<Phase>('countdown');
   const [countdown, setCountdown] = useState(3);
@@ -33,10 +51,16 @@ export default function TimeAttackPage() {
 
   const puzzles = useRef(getAllPuzzlesOfType(type as 'linkGrid' | 'timeTrace' | 'trueLie' | 'codeBreak'));
 
+  // solvedRef / mistakesRef so the onComplete closure always sees current values
+  const solvedRef   = useRef(0);
+  const mistakesRef = useRef(0);
+  solvedRef.current   = solved;
+  mistakesRef.current = mistakes;
+
   const { seconds: timeLeft, start: startTimer } = useTimer({
     initialSeconds: TIME_LIMIT,
     countDown: true,
-    onComplete: () => handleTimeUp(solved, mistakes),
+    onComplete: () => handleTimeUp(solvedRef.current, mistakesRef.current),
   });
 
   function handleTimeUp(s: number, m: number) {
@@ -65,7 +89,8 @@ export default function TimeAttackPage() {
       if (c <= 0) { clearInterval(iv); setPhase('playing'); startTimer(); }
     }, 1000);
     return () => clearInterval(iv);
-  }, [user, type, router, startTimeAttack, startTimer]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // intentionally empty — this component is remounted fresh on restart
 
   const handleSolve = useCallback(() => {
     incrementSolved();
@@ -78,8 +103,6 @@ export default function TimeAttackPage() {
     addTimeAttackMistake();
     setMistakes(p => p + 1);
   }, [addTimeAttackMistake]);
-
-  if (!user || !type || !PUZZLE_META[type]) return null;
 
   const meta    = PUZZLE_META[type];
   const all     = puzzles.current ?? [];
@@ -113,7 +136,7 @@ export default function TimeAttackPage() {
         {phase === 'countdown' && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.3 } }}
-            className="absolute inset-0 z-50 bg-[#0D0D0D] grid-overlay flex flex-col items-center justify-center gap-4"
+            className="absolute inset-0 z-50 bg-[#0D0D0D] grid-bg flex flex-col items-center justify-center gap-4"
           >
             <p className="font-game text-[#444] text-xl tracking-[0.4em]">STARTING IN</p>
             <motion.div
@@ -124,7 +147,7 @@ export default function TimeAttackPage() {
               className="font-game leading-none"
               style={{
                 fontSize: 'clamp(100px, 20vw, 160px)',
-                color: countdown > 1 ? '#5CE1E6' : countdown === 1 ? '#F97316' : '#C8FF57',
+                color: countdown > 1 ? '#06B6D4' : countdown === 1 ? '#F97316' : '#C8FF57',
               }}
             >
               {countdown > 0 ? countdown : 'GO!'}
@@ -140,7 +163,7 @@ export default function TimeAttackPage() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="absolute inset-0 z-50 bg-[#0D0D0D] grid-overlay flex flex-col items-center justify-center gap-8 px-8"
+            className="absolute inset-0 z-50 bg-[#0D0D0D] grid-bg flex flex-col items-center justify-center gap-8 px-8"
           >
             {/* Time's up label */}
             <motion.div
@@ -181,7 +204,7 @@ export default function TimeAttackPage() {
                 SEE FULL SCORE →
               </motion.button>
               <button
-                onClick={() => { setPhase('countdown'); setCountdown(3); setSolved(0); setMistakes(0); setKey(0); setPuzzleIdx(0); }}
+                onClick={onRestart}
                 className="w-full py-4 rounded-2xl font-black text-sm bg-[#181818] text-[#888] hover:text-white hover:bg-[#1E1E1E] transition-all"
               >
                 PLAY AGAIN

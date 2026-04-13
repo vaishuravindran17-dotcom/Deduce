@@ -3,160 +3,134 @@
 /* ─── Design Tokens ─────────────────────────────────────────────────────────── */
 @theme {
   --color-bg:        #0D0D0D;
-  --color-surface:   #181818;
-  --color-card:      #1E1E1E;
-  --color-tile:      #252525;
-  --color-rim:       #2E2E2E;
+  --color-surface:   #111111;
+  --color-card:      #171717;
+  --color-elevated:  #1E1E1E;
+  --color-border:    #222222;
+  --color-rim:       #2A2A2A;
   --color-ink:       #FFFFFF;
-  --color-muted:     #666666;
-  --color-ghost:     #333333;
+  --color-sub:       #888888;
+  --color-ghost:     #444444;
   --color-lime:      #C8FF57;
-  --color-cyan:      #5CE1E6;
-  --color-yellow:    #FFD60A;
-  --color-purple:    #A855F7;
+  --color-cyan:      #06B6D4;
+  --color-purple:    #8B5CF6;
   --color-orange:    #F97316;
   --color-pink:      #EC4899;
   --color-red:       #EF4444;
+  --color-yellow:    #EAB308;
   --font-game: 'Bebas Neue', 'Impact', 'Arial Black', sans-serif;
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-/* ─── Reset ─────────────────────────────────────────────────────────────────── */
+/* ─── Base ───────────────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { height: 100%; -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+html { height: 100%; -webkit-text-size-adjust: 100%; }
 
 body {
   background: #0D0D0D;
   color: #FFFFFF;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   min-height: 100dvh;
   overscroll-behavior: none;
 }
 
-/* ─── Game font utility ──────────────────────────────────────────────────────── */
+button { cursor: pointer; border: none; background: none; font: inherit; color: inherit; }
+input, textarea { font: inherit; color: inherit; background: none; border: none; outline: none; }
+* { -webkit-tap-highlight-color: transparent; }
+::selection { background: rgba(200,255,87,0.2); }
+
+/* ─── Font utilities ─────────────────────────────────────────────────────────── */
 .font-game {
   font-family: 'Bebas Neue', 'Impact', 'Arial Black', sans-serif;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
+}
+
+/* ─── Layout ─────────────────────────────────────────────────────────────────── */
+.page-container {
+  width: 100%;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+@media (min-width: 1024px) {
+  .page-container { padding-left: 3rem; padding-right: 3rem; }
+}
+@media (min-width: 1280px) {
+  .page-container { padding-left: 4rem; padding-right: 4rem; }
+}
+
+.game-container {
+  width: 100%;
+  max-width: 860px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* ─── Grid texture (game screens) ───────────────────────────────────────────── */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.016) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.016) 1px, transparent 1px);
+  background-size: 56px 56px;
 }
 
 /* ─── Scrollbar ─────────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 3px; height: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #2E2E2E; border-radius: 2px; }
-
-/* ─── Selection ─────────────────────────────────────────────────────────────── */
-::selection { background: rgba(200,255,87,0.25); color: #fff; }
+::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 4px; }
 
 /* ─── Focus ─────────────────────────────────────────────────────────────────── */
-:focus-visible { outline: 2px solid #C8FF57; outline-offset: 2px; border-radius: 6px; }
+:focus-visible { outline: 2px solid #C8FF57; outline-offset: 3px; border-radius: 6px; }
+.pt-safe { padding-top: max(env(safe-area-inset-top), 12px); }
+.pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 16px); }
 
-/* ─── Resets ─────────────────────────────────────────────────────────────────── */
-button { cursor: pointer; border: none; background: none; font: inherit; color: inherit; }
-input, textarea { font: inherit; color: inherit; background: none; border: none; outline: none; }
-* { -webkit-tap-highlight-color: transparent; }
-
-/* ─── Subtle grid overlay (for game screens) ─────────────────────────────────── */
-.grid-overlay {
-  background-image:
-    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
-  background-size: 60px 60px;
-}
-
-/* ─── Keyframe Animations ───────────────────────────────────────────────────── */
+/* ─── Keyframes ─────────────────────────────────────────────────────────────── */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(28px); }
+  from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.75); }
-  to   { opacity: 1; transform: scale(1); }
-}
-@keyframes slideLeft {
-  from { opacity: 0; transform: translateX(40px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from { opacity: 0; transform: scale(0.8) rotate(-5deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0deg); }
 }
 @keyframes shake {
   0%,100% { transform: translateX(0); }
-  15%     { transform: translateX(-10px); }
-  30%     { transform: translateX(10px); }
-  45%     { transform: translateX(-7px); }
-  60%     { transform: translateX(7px); }
-  75%     { transform: translateX(-3px); }
+  15%     { transform: translateX(-8px); }
+  30%     { transform: translateX(8px); }
+  45%     { transform: translateX(-5px); }
+  60%     { transform: translateX(5px); }
 }
 @keyframes pop {
-  0%   { transform: scale(1); }
-  40%  { transform: scale(1.22); }
-  100% { transform: scale(1); }
+  0%  { transform: scale(1); }
+  40% { transform: scale(1.2); }
+  100%{ transform: scale(1); }
 }
-@keyframes tilePress {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(0.87); }
-  100% { transform: scale(1); }
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-10px); }
 }
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
-@keyframes float {
-  0%,100% { transform: translateY(0); }
-  50%      { transform: translateY(-10px); }
-}
-@keyframes limePulse {
-  0%,100% { box-shadow: 0 0 0 0 rgba(200,255,87,0); }
-  50%      { box-shadow: 0 0 40px 8px rgba(200,255,87,0.18); }
-}
-@keyframes cyanPulse {
-  0%,100% { box-shadow: 0 0 0 0 rgba(92,225,230,0); }
-  50%      { box-shadow: 0 0 32px 6px rgba(92,225,230,0.2); }
-}
-@keyframes radar {
+@keyframes ring {
   from { transform: scale(0.9); opacity: 0.7; }
-  to   { transform: scale(2.4); opacity: 0; }
+  to   { transform: scale(2.6); opacity: 0; }
 }
-@keyframes countIn {
-  from { transform: scale(1.8) translateY(-20px); opacity: 0; }
-  to   { transform: scale(1) translateY(0); opacity: 1; }
-}
-@keyframes resultReveal {
-  from { transform: scale(0.6) rotate(-8deg); opacity: 0; }
-  to   { transform: scale(1) rotate(0deg); opacity: 1; }
-}
-@keyframes scoreCount {
-  from { transform: translateY(20px); opacity: 0; }
-  to   { transform: translateY(0); opacity: 1; }
-}
-@keyframes shimmer {
-  from { background-position: -200% center; }
-  to   { background-position: 200% center; }
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
-/* ─── Animation utilities ───────────────────────────────────────────────────── */
-.animate-fadeUp   { animation: fadeUp 0.45s cubic-bezier(0.16,1,0.3,1) forwards; }
-.animate-fadeIn   { animation: fadeIn 0.3s ease forwards; }
-.animate-scaleIn  { animation: scaleIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards; }
-.animate-shake    { animation: shake 0.45s ease; }
-.animate-pop      { animation: pop 0.3s cubic-bezier(0.34,1.56,0.64,1); }
-.animate-spin     { animation: spin 1s linear infinite; }
-.animate-float    { animation: float 3.5s ease-in-out infinite; }
-.animate-pulse-lime { animation: limePulse 2.5s ease-in-out infinite; }
-.animate-pulse-cyan { animation: cyanPulse 2s ease-in-out infinite; }
-
-/* ─── Glow text (shimmer) ────────────────────────────────────────────────────── */
-.text-shimmer {
-  background: linear-gradient(90deg, #C8FF57 0%, #fff 40%, #C8FF57 80%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: shimmer 3s linear infinite;
-}
-
-/* ─── Safe area ──────────────────────────────────────────────────────────────── */
-.pt-safe { padding-top: max(env(safe-area-inset-top), 12px); }
-.pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 16px); }
+.animate-fadeUp  { animation: fadeUp 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+.animate-scaleIn { animation: scaleIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+.animate-shake   { animation: shake 0.4s ease; }
+.animate-pop     { animation: pop 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+.animate-float   { animation: float 3.5s ease-in-out infinite; }
+.animate-spin    { animation: spin 1s linear infinite; }
+.animate-ring    { animation: ring 1s ease-out forwards; }
+.animate-slideIn { animation: slideIn 0.3s cubic-bezier(0.16,1,0.3,1) forwards; }

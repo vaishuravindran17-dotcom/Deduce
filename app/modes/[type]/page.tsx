@@ -30,11 +30,11 @@ export default function PuzzleTypePage() {
   const icon  = ICONS[type] ?? '◈';
 
   return (
-    <div className="min-h-dvh bg-[#0D0D0D] grid-overlay flex flex-col">
+    <div className="min-h-dvh bg-[#0D0D0D] grid-bg flex flex-col">
 
       {/* Header */}
       <header className="border-b border-[#1A1A1A] bg-[#0D0D0D]/95 backdrop-blur">
-        <div className="max-w-3xl mx-auto px-5 h-14 flex items-center gap-4">
+        <div className="game-container h-14 flex items-center gap-4">
           <button
             onClick={() => router.push('/home')}
             className="w-9 h-9 flex items-center justify-center rounded-xl bg-[#1E1E1E] text-[#666] hover:text-white transition-all"
@@ -47,7 +47,7 @@ export default function PuzzleTypePage() {
         </div>
       </header>
 
-      <div className="flex-1 max-w-3xl mx-auto w-full px-5 py-12 flex flex-col items-center gap-10">
+      <div className="flex-1 game-container py-12 flex flex-col items-center gap-10">
 
         {/* Big icon */}
         <motion.div

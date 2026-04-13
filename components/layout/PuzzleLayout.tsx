@@ -46,11 +46,11 @@ export function PuzzleLayout({
   const isWarn  = timeAttack && (timeLeft ?? 60) <= 20 && (timeLeft ?? 60) > 10;
 
   return (
-    <div className="min-h-dvh flex flex-col bg-[#0D0D0D] grid-overlay">
+    <div className="min-h-dvh flex flex-col bg-[#0D0D0D] grid-bg">
 
       {/* ── Header ─────────────────────────────────────────────────── */}
       <header className="border-b border-[#1A1A1A] bg-[#0D0D0D]/95 backdrop-blur sticky top-0 z-10">
-        <div className="max-w-3xl mx-auto px-5 h-16 flex items-center gap-4">
+        <div className="game-container h-16 flex items-center gap-4">
 
           {/* Back */}
           <button
@@ -122,7 +122,7 @@ export function PuzzleLayout({
 
         {/* Step progress (daily) */}
         {puzzleStatuses && !timeAttack && (
-          <div className="max-w-3xl mx-auto px-5 pb-2 flex gap-1.5">
+          <div className="game-container pb-2 flex gap-1.5">
             {PUZZLE_TYPES.map((t, i) => {
               const status = puzzleStatuses[i];
               return (
@@ -144,7 +144,7 @@ export function PuzzleLayout({
       </header>
 
       {/* ── Content ──────────────────────────────────────────────────── */}
-      <main className="flex-1 flex flex-col overflow-auto max-w-3xl mx-auto w-full">
+      <main className="flex-1 flex flex-col overflow-auto game-container relative">
         {children}
       </main>
     </div>
