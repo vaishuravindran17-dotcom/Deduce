@@ -7,8 +7,7 @@ import { useGameStore } from '@/lib/store/gameStore';
 import { PUZZLE_META, getAllPuzzlesOfType } from '@/lib/data/cases';
 import { useTimer } from '@/lib/hooks/useTimer';
 import { calculateTimeAttackScore } from '@/lib/utils/scoring';
-import { Timer } from '@/components/ui/Timer';
-import { Button } from '@/components/ui/Button';
+import { PuzzleLayout } from '@/components/layout/PuzzleLayout';
 import { LinkGrid } from '@/components/puzzles/LinkGrid';
 import { TimeTrace } from '@/components/puzzles/TimeTrace';
 import { TrueLie } from '@/components/puzzles/TrueLie';
@@ -16,164 +15,161 @@ import { CodeBreak } from '@/components/puzzles/CodeBreak';
 import type { PuzzleType } from '@/types';
 
 const TIME_LIMIT = 60;
-const COUNTDOWN = 3;
 
 type Phase = 'countdown' | 'playing' | 'done';
 
 export default function TimeAttackPage() {
-  const router = useRouter();
-  const params = useParams();
+  const router  = useRouter();
+  const params  = useParams();
   const { user } = useAuthStore();
-  const { startTimeAttack, incrementSolved, addTimeAttackMistake, endTimeAttack, setLastResult, timeAttack } = useGameStore();
+  const { startTimeAttack, incrementSolved, addTimeAttackMistake, endTimeAttack, setLastResult } = useGameStore();
   const type = params?.type as PuzzleType;
 
-  const [phase, setPhase] = useState<Phase>('countdown');
-  const [countdownVal, setCountdownVal] = useState(COUNTDOWN);
+  const [phase, setPhase]         = useState<Phase>('countdown');
+  const [countdown, setCountdown] = useState(3);
   const [puzzleIdx, setPuzzleIdx] = useState(0);
-  const [solvedCount, setSolvedCount] = useState(0);
-  const [mistakeCount, setMistakeCount] = useState(0);
-  const [key, setKey] = useState(0); // force remount puzzle
+  const [solved, setSolved]       = useState(0);
+  const [mistakes, setMistakes]   = useState(0);
+  const [key, setKey]             = useState(0);
 
-  const allPuzzles = useRef(getAllPuzzlesOfType(type as 'linkGrid' | 'timeTrace' | 'trueLie' | 'codeBreak'));
+  const puzzles = useRef(getAllPuzzlesOfType(type as 'linkGrid' | 'timeTrace' | 'trueLie' | 'codeBreak'));
 
-  const { seconds: timeLeft, start: startTimer, stop: stopTimer } = useTimer({
+  const { seconds: timeLeft, start: startTimer } = useTimer({
     initialSeconds: TIME_LIMIT,
     countDown: true,
-    onComplete: handleTimeUp,
+    onComplete: () => handleTimeUp(solved, mistakes),
   });
 
-  function handleTimeUp() {
+  function handleTimeUp(s: number, m: number) {
     setPhase('done');
-    const breakdown = calculateTimeAttackScore(solvedCount, TIME_LIMIT - timeLeft, mistakeCount);
+    const breakdown = calculateTimeAttackScore(s, TIME_LIMIT, m);
     endTimeAttack(breakdown.total);
     setLastResult({
       mode: 'timeAttack',
       puzzleType: type,
       score: breakdown.total,
       timeSeconds: TIME_LIMIT,
-      mistakes: mistakeCount,
-      perfect: mistakeCount === 0,
-      timeAttackSolved: solvedCount,
+      mistakes: m,
+      perfect: m === 0,
+      timeAttackSolved: s,
       streak: useGameStore.getState().streak,
     });
   }
 
   useEffect(() => {
-    if (!user) { router.replace('/auth'); return; }
-    if (!type || !PUZZLE_META[type]) { router.replace('/modes'); return; }
+    if (!user || !type || !PUZZLE_META[type]) { router.replace('/modes'); return; }
     startTimeAttack(type);
-
-    // Countdown
-    let c = COUNTDOWN;
+    let c = 3;
     const iv = setInterval(() => {
       c -= 1;
-      setCountdownVal(c);
-      if (c <= 0) {
-        clearInterval(iv);
-        setPhase('playing');
-        startTimer();
-      }
+      setCountdown(c);
+      if (c <= 0) { clearInterval(iv); setPhase('playing'); startTimer(); }
     }, 1000);
     return () => clearInterval(iv);
   }, [user, type, router, startTimeAttack, startTimer]);
 
   const handleSolve = useCallback(() => {
     incrementSolved();
-    setSolvedCount((p) => p + 1);
-    // Next puzzle
-    setPuzzleIdx((p) => (p + 1) % (allPuzzles.current?.length ?? 1));
-    setKey((k) => k + 1);
+    setSolved(p => { const n = p + 1; return n; });
+    setPuzzleIdx(p => (p + 1) % (puzzles.current?.length ?? 1));
+    setKey(k => k + 1);
   }, [incrementSolved]);
 
   const handleMistake = useCallback(() => {
     addTimeAttackMistake();
-    setMistakeCount((p) => p + 1);
+    setMistakes(p => p + 1);
   }, [addTimeAttackMistake]);
 
-  if (!user || !type) return null;
+  if (!user || !type || !PUZZLE_META[type]) return null;
 
-  const meta = PUZZLE_META[type];
-  const puzzles = allPuzzles.current ?? [];
-  const currentPuzzle = puzzles[puzzleIdx % puzzles.length];
+  const meta    = PUZZLE_META[type];
+  const all     = puzzles.current ?? [];
+  const current = all[puzzleIdx % all.length];
 
   const renderPuzzle = () => {
-    if (!currentPuzzle) return null;
+    if (!current) return null;
+    const props = { key, onSolve: handleSolve, onMistake: handleMistake };
     switch (type) {
-      case 'linkGrid':
-        return <LinkGrid key={key} puzzle={currentPuzzle as any} onSolve={handleSolve} onMistake={handleMistake} />;
-      case 'timeTrace':
-        return <TimeTrace key={key} puzzle={currentPuzzle as any} onSolve={handleSolve} onMistake={handleMistake} />;
-      case 'trueLie':
-        return <TrueLie key={key} puzzle={currentPuzzle as any} onSolve={handleSolve} onMistake={handleMistake} />;
-      case 'codeBreak':
-        return <CodeBreak key={key} puzzle={currentPuzzle as any} onSolve={handleSolve} onMistake={handleMistake} />;
+      case 'linkGrid':  return <LinkGrid  puzzle={current as any} {...props} />;
+      case 'timeTrace': return <TimeTrace puzzle={current as any} {...props} />;
+      case 'trueLie':   return <TrueLie   puzzle={current as any} {...props} />;
+      case 'codeBreak': return <CodeBreak puzzle={current as any} {...props} />;
     }
   };
 
   return (
-    <div className="min-h-dvh bg-[#0D0D0D] flex flex-col">
-      {/* Header */}
-      <header className="flex items-center justify-between px-4 pt-safe pt-4 pb-3 border-b border-[#2A2A2A]">
-        <div>
-          <p className="text-[10px] text-[#9A9A9A] uppercase tracking-widest font-medium">Time Attack</p>
-          <p className="text-sm font-semibold text-[#EAEAEA]">{meta.label}</p>
-        </div>
-        <div className="flex items-center gap-3">
-          {mistakeCount > 0 && (
-            <span className="text-xs text-[#F87171] font-medium">×{mistakeCount}</span>
-          )}
-          <div className="text-sm font-semibold text-[#4ADE80] bg-[#4ADE80]/10 px-2.5 py-1 rounded-lg border border-[#4ADE80]/20">
-            {solvedCount} solved
-          </div>
-          {phase === 'playing' && (
-            <Timer seconds={timeLeft} countDown totalSeconds={TIME_LIMIT} />
-          )}
-        </div>
-      </header>
-
-      {/* Countdown overlay */}
+    <PuzzleLayout
+      title={`${meta.label} — Time Attack`}
+      puzzleType={type}
+      timeAttack
+      timeLeft={timeLeft}
+      solvedCount={solved}
+      mistakes={mistakes}
+      onBack={() => router.push(`/modes/${type}`)}
+    >
+      {/* Countdown */}
       <AnimatePresence>
         {phase === 'countdown' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-[#0D0D0D] flex flex-col items-center justify-center gap-4"
-          >
-            <p className="text-[#9A9A9A] text-sm uppercase tracking-widest">Get ready</p>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="absolute inset-0 z-50 bg-[#0A0A0A] flex flex-col items-center justify-center gap-6">
+            <p className="text-[#555] text-sm font-semibold uppercase tracking-[0.2em]">Get Ready</p>
             <motion.span
-              key={countdownVal}
-              initial={{ scale: 1.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="text-8xl font-bold text-[#EAEAEA]"
+              key={countdown}
+              initial={{ scale: 1.8, opacity: 0 }}
+              animate={{ scale: 1,   opacity: 1 }}
+              transition={{ type: 'spring' as const, stiffness: 300, damping: 18 }}
+              className="text-9xl font-black text-[#F0F0F0]"
             >
-              {countdownVal > 0 ? countdownVal : 'Go!'}
+              {countdown > 0 ? countdown : 'GO!'}
             </motion.span>
+            <div className="flex items-center gap-2 text-[#555] text-sm">
+              <span>⏱</span><span>60 seconds</span>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Done overlay */}
+      {/* Done screen */}
       <AnimatePresence>
         {phase === 'done' && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="absolute inset-0 z-50 bg-[#0D0D0D] flex flex-col items-center justify-center gap-6 px-6"
+            className="absolute inset-0 z-50 bg-[#0A0A0A] flex flex-col items-center justify-center gap-8 px-8"
           >
-            <p className="text-5xl">⏱</p>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring' as const, stiffness: 250, damping: 18, delay: 0.15 }}
+              className="text-7xl"
+            >⏱</motion.div>
+
             <div className="text-center">
-              <p className="text-[#9A9A9A] text-sm mb-1">Time&apos;s up!</p>
-              <p className="text-4xl font-bold text-[#4ADE80]">{solvedCount}</p>
-              <p className="text-[#9A9A9A] text-sm mt-1">puzzles solved</p>
+              <p className="text-[#555] text-sm mb-3 uppercase tracking-widest">Time&apos;s Up!</p>
+              <div className="text-7xl font-black text-[#4ADE80]">{solved}</div>
+              <p className="text-[#888] text-base mt-2">
+                puzzle{solved !== 1 ? 's' : ''} solved
+              </p>
+              {mistakes > 0 && (
+                <p className="text-[#F87171] text-sm mt-1">{mistakes} mistake{mistakes !== 1 ? 's' : ''}</p>
+              )}
             </div>
-            <div className="flex gap-4">
-              <Button variant="secondary" onClick={() => router.push(`/modes/${type}`)}>
+
+            <div className="flex flex-col gap-3 w-full">
+              <motion.div whileTap={{ scale: 0.97 }}>
+                <button
+                  onClick={() => router.push('/result')}
+                  className="w-full py-4 rounded-2xl bg-[#4ADE80] text-[#0A0A0A] font-black text-base shadow-[0_0_28px_rgba(74,222,128,0.25)] hover:bg-[#22c55e] transition-all"
+                >
+                  See Full Score →
+                </button>
+              </motion.div>
+              <button
+                onClick={() => { setPhase('countdown'); setCountdown(3); setSolved(0); setMistakes(0); setKey(0); setPuzzleIdx(0); }}
+                className="w-full py-3.5 rounded-2xl border border-[#242424] text-[#888] hover:text-[#F0F0F0] hover:border-[#333] transition-all font-semibold"
+              >
                 Play Again
-              </Button>
-              <Button onClick={() => router.push('/result')}>
-                See Score
-              </Button>
+              </button>
             </div>
           </motion.div>
         )}
@@ -182,23 +178,21 @@ export default function TimeAttackPage() {
       {/* Puzzle */}
       {phase === 'playing' && (
         <AnimatePresence mode="wait">
-          <motion.div
-            key={key}
-            initial={{ opacity: 0, x: 20 }}
+          <motion.div key={key}
+            initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
+            exit={{ opacity: 0, x: -24 }}
             transition={{ duration: 0.2 }}
             className="flex-1 overflow-auto"
           >
-            <div className="px-4 pt-4 pb-2">
-              <h2 className="text-base font-bold text-[#EAEAEA]">
-                Puzzle {puzzleIdx + 1}
-              </h2>
+            <div className="px-4 pt-5 pb-2">
+              <h2 className="text-xl font-black text-[#F0F0F0]">Puzzle {puzzleIdx + 1}</h2>
+              <p className="text-xs text-[#555] mt-0.5">Solve it fast!</p>
             </div>
             {renderPuzzle()}
           </motion.div>
         </AnimatePresence>
       )}
-    </div>
+    </PuzzleLayout>
   );
 }

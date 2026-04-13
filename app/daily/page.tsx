@@ -16,6 +16,12 @@ import type { PuzzleType, PuzzleStatus } from '@/types';
 
 const PUZZLE_TYPES: PuzzleType[] = ['linkGrid', 'timeTrace', 'trueLie', 'codeBreak'];
 const PUZZLE_LABELS = ['LinkGrid', 'TimeTrace', 'TrueLie', 'CodeBreak'];
+const PUZZLE_DESCS  = [
+  'Eliminate with the grid',
+  'Order the timeline',
+  'Find the liar',
+  'Crack the code',
+];
 
 export default function DailyPage() {
   const router = useRouter();
@@ -25,32 +31,29 @@ export default function DailyPage() {
   const todayCase = getTodaysCase();
   const { seconds, start } = useTimer({ autoStart: false });
 
-  const [activePuzzleIdx, setActivePuzzleIdx] = useState(0);
-  const [justSolved, setJustSolved] = useState(false);
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [solvedOverlay, setSolvedOverlay] = useState(false);
 
   useEffect(() => {
-    if (!user) { router.replace('/auth'); return; }
-    if (!daily) { router.replace('/home'); return; }
+    if (!user)         { router.replace('/auth');   return; }
+    if (!daily)        { router.replace('/home');   return; }
     if (daily.completedAt) { router.replace('/result'); return; }
-    // Find first non-solved puzzle
-    const activeIdx = daily.puzzles.findIndex((p) => p.status === 'active');
-    if (activeIdx >= 0) setActivePuzzleIdx(activeIdx);
+    const idx = daily.puzzles.findIndex(p => p.status === 'active');
+    if (idx >= 0) setActiveIdx(idx);
     start();
   }, [user, daily, router, start]);
 
-  if (!user || !daily) return null;
-  if (daily.completedAt) return null;
+  if (!user || !daily || daily.completedAt) return null;
 
-  const currentPuzzleType = PUZZLE_TYPES[activePuzzleIdx];
-  const puzzleStatuses = daily.puzzles.map((p) => p.status as PuzzleStatus);
+  const currentType   = PUZZLE_TYPES[activeIdx];
+  const statuses      = daily.puzzles.map(p => p.status as PuzzleStatus);
 
   const handleSolve = () => {
-    solvePuzzle(activePuzzleIdx);
-    setJustSolved(true);
+    solvePuzzle(activeIdx);
+    setSolvedOverlay(true);
+    const isLast = activeIdx === PUZZLE_TYPES.length - 1;
 
-    const isLast = activePuzzleIdx === PUZZLE_TYPES.length - 1;
     if (isLast) {
-      // Case complete
       const breakdown = calculateDailyScore(seconds, daily.totalMistakes);
       completeDailyCase(breakdown.total);
       setLastResult({
@@ -62,83 +65,82 @@ export default function DailyPage() {
         mistakes: daily.totalMistakes,
         perfect: daily.totalMistakes === 0,
         puzzleResults: PUZZLE_TYPES.map((t, i) => ({
-          type: t,
-          solved: true,
-          mistakes: daily.puzzles[i]?.mistakes ?? 0,
-          timeSeconds: 0,
+          type: t, solved: true,
+          mistakes: daily.puzzles[i]?.mistakes ?? 0, timeSeconds: 0,
         })),
         streak: useGameStore.getState().streak,
       });
-
-      setTimeout(() => router.push('/result'), 600);
+      setTimeout(() => router.push('/result'), 1200);
     } else {
       setTimeout(() => {
-        setJustSolved(false);
-        setActivePuzzleIdx(activePuzzleIdx + 1);
-      }, 700);
+        setSolvedOverlay(false);
+        setActiveIdx(activeIdx + 1);
+      }, 900);
     }
   };
 
-  const handleMistake = () => {
-    addMistake(activePuzzleIdx);
-  };
-
   const renderPuzzle = () => {
-    const puzzle = todayCase.puzzles;
-    switch (currentPuzzleType) {
-      case 'linkGrid':
-        return <LinkGrid puzzle={puzzle.linkGrid} onSolve={handleSolve} onMistake={handleMistake} />;
-      case 'timeTrace':
-        return <TimeTrace puzzle={puzzle.timeTrace} onSolve={handleSolve} onMistake={handleMistake} />;
-      case 'trueLie':
-        return <TrueLie puzzle={puzzle.trueLie} onSolve={handleSolve} onMistake={handleMistake} />;
-      case 'codeBreak':
-        return <CodeBreak puzzle={puzzle.codeBreak} onSolve={handleSolve} onMistake={handleMistake} />;
+    const p = todayCase.puzzles;
+    const props = { onSolve: handleSolve, onMistake: () => addMistake(activeIdx) };
+    switch (currentType) {
+      case 'linkGrid':  return <LinkGrid  puzzle={p.linkGrid}  {...props} />;
+      case 'timeTrace': return <TimeTrace puzzle={p.timeTrace} {...props} />;
+      case 'trueLie':   return <TrueLie   puzzle={p.trueLie}   {...props} />;
+      case 'codeBreak': return <CodeBreak puzzle={p.codeBreak} {...props} />;
     }
   };
 
   return (
     <PuzzleLayout
       title={todayCase.title}
-      puzzleType={currentPuzzleType}
-      puzzleIndex={activePuzzleIdx}
+      puzzleType={currentType}
+      puzzleIndex={activeIdx}
       totalPuzzles={4}
-      puzzleStatuses={puzzleStatuses}
+      puzzleStatuses={statuses}
       elapsedSeconds={seconds}
       mistakes={daily.totalMistakes}
       onBack={() => router.push('/home')}
       subtitle={`Case #${todayCase.id} · ${todayCase.difficulty}`}
     >
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentPuzzleType}
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -30 }}
-          transition={{ duration: 0.25 }}
-          className="flex flex-col"
-        >
-          {/* Puzzle heading */}
-          <div className="px-4 pt-4 pb-2">
-            <h2 className="text-lg font-bold text-[#EAEAEA]">
-              {PUZZLE_LABELS[activePuzzleIdx]}
-            </h2>
-            <p className="text-xs text-[#9A9A9A] mt-0.5">
-              Puzzle {activePuzzleIdx + 1} of 4
-            </p>
-          </div>
-
-          {/* Solved overlay */}
-          {justSolved && (
+      {/* Solved overlay */}
+      <AnimatePresence>
+        {solvedOverlay && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-40 flex items-center justify-center bg-[#0A0A0A]/80 backdrop-blur-sm"
+          >
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="mx-4 mb-4 p-4 rounded-2xl bg-[#4ADE80]/10 border border-[#4ADE80]/30 text-center"
+              initial={{ scale: 0.7, opacity: 0 }}
+              animate={{ scale: 1,   opacity: 1 }}
+              transition={{ type: 'spring' as const, stiffness: 300, damping: 20 }}
+              className="flex flex-col items-center gap-3"
             >
-              <p className="text-[#4ADE80] font-semibold text-sm">Solved! Moving on…</p>
+              <div className="w-20 h-20 rounded-full bg-[#4ADE80]/15 border-2 border-[#4ADE80] flex items-center justify-center shadow-[0_0_40px_rgba(74,222,128,0.3)]">
+                <span className="text-4xl">✓</span>
+              </div>
+              <p className="text-[#4ADE80] font-black text-lg">Solved!</p>
+              {activeIdx < PUZZLE_TYPES.length - 1 && (
+                <p className="text-[#888] text-sm">Next: {PUZZLE_LABELS[activeIdx + 1]}</p>
+              )}
             </motion.div>
-          )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
+      {/* Puzzle content */}
+      <AnimatePresence mode="wait">
+        <motion.div key={currentType}
+          initial={{ opacity: 0, x: 32 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -32 }}
+          transition={{ duration: 0.25, ease: 'easeInOut' }}
+        >
+          <div className="px-4 pt-5 pb-2">
+            <h2 className="text-xl font-black text-[#F0F0F0]">{PUZZLE_LABELS[activeIdx]}</h2>
+            <p className="text-sm text-[#555] mt-0.5">{PUZZLE_DESCS[activeIdx]}</p>
+          </div>
           {renderPuzzle()}
         </motion.div>
       </AnimatePresence>

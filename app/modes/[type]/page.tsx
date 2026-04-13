@@ -5,22 +5,13 @@ import { motion } from 'framer-motion';
 import { useAuthStore } from '@/lib/store/authStore';
 import { PUZZLE_META } from '@/lib/data/cases';
 import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import { GridIcon, TimelineIcon, TrueLieIcon, CodeIcon } from '@/components/ui/SketchIllustration';
-import type { PuzzleType } from '@/types';
-
-const ICONS: Record<string, React.FC<{ size?: number }>> = {
-  linkGrid: (p) => <GridIcon {...p} />,
-  timeTrace: (p) => <TimelineIcon {...p} />,
-  trueLie: (p) => <TrueLieIcon {...p} />,
-  codeBreak: (p) => <CodeIcon {...p} />,
-};
 
 const COLORS: Record<string, string> = {
-  linkGrid: '#818CF8',
-  timeTrace: '#FB923C',
-  trueLie: '#F472B6',
-  codeBreak: '#4ADE80',
+  linkGrid: '#818CF8', timeTrace: '#FB923C',
+  trueLie:  '#F472B6', codeBreak: '#4ADE80',
+};
+const ICONS: Record<string, string> = {
+  linkGrid: '⊞', timeTrace: '◷', trueLie: '⊡', codeBreak: '◈',
 };
 
 export default function PuzzleTypePage() {
@@ -33,91 +24,85 @@ export default function PuzzleTypePage() {
     if (!user) router.replace('/auth');
   }, [user, router]);
 
-  if (!user) return null;
-  if (!type || !PUZZLE_META[type]) {
-    router.replace('/modes');
-    return null;
-  }
+  if (!user || !PUZZLE_META[type]) { router.replace('/modes'); return null; }
 
-  const meta = PUZZLE_META[type];
-  const Icon = ICONS[type];
+  const meta  = PUZZLE_META[type];
   const color = COLORS[type] ?? '#4ADE80';
+  const icon  = ICONS[type] ?? '◈';
 
   return (
-    <div className="min-h-dvh bg-[#0D0D0D] flex flex-col">
+    <div className="min-h-dvh bg-[#0A0A0A] flex flex-col">
       {/* Header */}
-      <header className="flex items-center gap-3 px-4 pt-safe pt-5 pb-4 border-b border-[#2A2A2A]">
-        <button
-          onClick={() => router.push('/modes')}
-          className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#2A2A2A] text-[#9A9A9A] hover:text-[#EAEAEA] transition-colors"
-        >
+      <header className="flex items-center gap-3 px-5 pt-safe pt-5 pb-4 border-b border-[#1E1E1E]">
+        <button onClick={() => router.push('/home')}
+          className="w-9 h-9 flex items-center justify-center rounded-xl border border-[#242424] text-[#888] hover:text-[#F0F0F0] transition-all">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </button>
-        <h1 className="text-base font-bold text-[#EAEAEA]">{meta.label}</h1>
+        <h1 className="font-bold text-[#F0F0F0]">{meta.label}</h1>
       </header>
 
-      <div className="flex-1 px-4 py-8 flex flex-col items-center gap-8">
-        {/* Puzzle icon */}
+      <div className="flex-1 px-5 py-10 flex flex-col items-center gap-8">
+        {/* Icon */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.85 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-24 h-24 rounded-3xl flex items-center justify-center"
-          style={{ backgroundColor: `${color}18`, border: `1.5px solid ${color}30` }}
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring' as const, stiffness: 280, damping: 20 }}
+          className="w-28 h-28 rounded-3xl flex items-center justify-center text-6xl"
+          style={{ backgroundColor: `${color}12`, border: `1.5px solid ${color}25`, boxShadow: `0 0 40px ${color}15` }}
         >
-          <Icon size={52} />
+          <span style={{ color }}>{icon}</span>
         </motion.div>
 
-        {/* Info */}
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-[#EAEAEA] mb-2">{meta.label}</h2>
-          <p className="text-[#9A9A9A] text-sm leading-relaxed max-w-xs">{meta.description}</p>
+          <h2 className="text-3xl font-black text-[#F0F0F0] mb-2">{meta.label}</h2>
+          <p className="text-[#888] text-sm leading-relaxed max-w-[260px]">{meta.description}</p>
         </div>
 
-        {/* Mode selection */}
+        {/* Mode cards */}
         <div className="w-full space-y-3">
-          <p className="text-xs text-[#9A9A9A] uppercase tracking-widest font-medium text-center">
-            Choose Mode
-          </p>
+          <p className="text-[10px] font-bold text-[#444] uppercase tracking-[0.2em] text-center mb-4">Choose Mode</p>
 
           {/* Time Attack */}
           <motion.button
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
+            whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}
             onClick={() => router.push(`/modes/${type}/time-attack`)}
-            className="w-full rounded-2xl border border-[#2A2A2A] bg-[#161616] p-5 text-left hover:border-[#4A4A4A] active:scale-[0.98] transition-all"
+            className="w-full text-left rounded-2xl border border-[#242424] bg-[#161616] p-5 hover:border-[#333] transition-all"
           >
-            <div className="flex items-start justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">⏱</span>
-                <span className="text-base font-semibold text-[#EAEAEA]">Time Attack</span>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#FBBF24]/10 border border-[#FBBF24]/20 flex items-center justify-center text-xl">⏱</div>
+                <div>
+                  <p className="font-bold text-[#F0F0F0]">Time Attack</p>
+                  <p className="text-xs text-[#555] mt-0.5">60 seconds · max puzzles</p>
+                </div>
               </div>
-              <Badge variant="warn">60s</Badge>
+              <span className="text-[10px] font-black text-[#FBBF24] bg-[#FBBF24]/10 border border-[#FBBF24]/20 px-2 py-1 rounded-lg">60s</span>
             </div>
-            <p className="text-sm text-[#9A9A9A]">
-              Solve as many puzzles as you can in 60 seconds. Score based on count and speed.
+            <p className="text-sm text-[#666] ml-13">
+              Solve as many as you can before time runs out. Score = count × speed.
             </p>
           </motion.button>
 
           {/* Online — coming soon */}
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.18 }}
-            className="w-full rounded-2xl border border-[#2A2A2A] bg-[#161616] p-5 opacity-50 cursor-not-allowed"
+            className="w-full rounded-2xl border border-[#1A1A1A] bg-[#111] p-5 opacity-40"
           >
-            <div className="flex items-start justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">🌐</span>
-                <span className="text-base font-semibold text-[#EAEAEA]">Online</span>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#555]/10 border border-[#555]/20 flex items-center justify-center text-xl">🌐</div>
+                <div>
+                  <p className="font-bold text-[#F0F0F0]">Online</p>
+                  <p className="text-xs text-[#555] mt-0.5">Leaderboard · global ranking</p>
+                </div>
               </div>
-              <Badge variant="muted">Soon</Badge>
+              <span className="text-[10px] font-black text-[#555] bg-[#1A1A1A] border border-[#242424] px-2 py-1 rounded-lg">Soon</span>
             </div>
-            <p className="text-sm text-[#9A9A9A]">
-              Compete on a global leaderboard. Coming soon.
-            </p>
           </motion.div>
         </div>
       </div>

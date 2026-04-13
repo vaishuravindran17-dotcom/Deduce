@@ -1,9 +1,8 @@
 'use client';
 import { useState } from 'react';
-import { motion, AnimatePresence, Reorder } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { TimeTracePuzzle } from '@/types';
 import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
 
 interface TimeTraceProps {
   puzzle: TimeTracePuzzle;
@@ -14,231 +13,169 @@ interface TimeTraceProps {
 export function TimeTrace({ puzzle, onSolve, onMistake }: TimeTraceProps) {
   const { slots, entities, clues, question, answer } = puzzle;
 
-  // assignments[slotIndex] = entityName | null
-  const [assignments, setAssignments] = useState<(string | null)[]>(
-    slots.map(() => null),
-  );
-  const [unassigned, setUnassigned] = useState<string[]>([...entities]);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState(false);
-  const [selectedEntity, setSelectedEntity] = useState<string | null>(null);
+  const [assignments, setAssignments] = useState<(string | null)[]>(slots.map(() => null));
+  const [unassigned, setUnassigned]   = useState<string[]>([...entities]);
+  const [submitted, setSubmitted]     = useState(false);
+  const [error, setError]             = useState(false);
+  const [selected, setSelected]       = useState<string | null>(null);
 
   const assignToSlot = (slotIndex: number) => {
-    if (!selectedEntity || submitted) return;
+    if (!selected || submitted) return;
+    const prevSlot = assignments.findIndex(a => a === selected);
+    const newA = [...assignments];
+    const newU = [...unassigned];
 
-    // Remove entity from wherever it currently is
-    const prevSlot = assignments.findIndex((a) => a === selectedEntity);
+    if (newA[slotIndex] !== null) newU.push(newA[slotIndex]!);
+    newA[slotIndex] = selected;
 
-    const newAssignments = [...assignments];
-    const newUnassigned = [...unassigned];
+    if (prevSlot >= 0) newA[prevSlot] = null;
+    else { const idx = newU.indexOf(selected); if (idx !== -1) newU.splice(idx, 1); }
 
-    // Place back what was in that slot
-    if (newAssignments[slotIndex] !== null) {
-      newUnassigned.push(newAssignments[slotIndex]!);
-    }
-
-    newAssignments[slotIndex] = selectedEntity;
-
-    // Remove from unassigned or previous slot
-    if (prevSlot >= 0) {
-      newAssignments[prevSlot] = null;
-    } else {
-      const idx = newUnassigned.indexOf(selectedEntity);
-      if (idx !== -1) newUnassigned.splice(idx, 1);
-    }
-
-    setAssignments(newAssignments);
-    setUnassigned(newUnassigned);
-    setSelectedEntity(null);
+    setAssignments(newA);
+    setUnassigned(newU);
+    setSelected(null);
   };
 
   const removeFromSlot = (slotIndex: number) => {
     if (submitted) return;
     const entity = assignments[slotIndex];
     if (!entity) return;
-    const newAssignments = [...assignments];
-    newAssignments[slotIndex] = null;
-    setAssignments(newAssignments);
-    setUnassigned((prev) => [...prev, entity]);
-    if (selectedEntity === entity) setSelectedEntity(null);
+    const newA = [...assignments];
+    newA[slotIndex] = null;
+    setAssignments(newA);
+    setUnassigned(p => [...p, entity]);
+    if (selected === entity) setSelected(null);
   };
 
-  const allFilled = assignments.every((a) => a !== null);
+  const allFilled = assignments.every(a => a !== null);
 
   const handleSubmit = () => {
     if (!allFilled) return;
-    // Find which slot has the answer entity
-    const answerSlotIndex = assignments.findIndex((a) => a === answer);
-    const expectedSlotIndex = Math.floor(slots.length / 2); // answer is always at middle slot (theft time)
-    // More precisely: find the slot that corresponds to the answer time
-    // The answer is the entity at the "crime time" slot — always slot index 1 (middle)
-    const correctSlot = 1;
-    const isCorrect = assignments[correctSlot] === answer;
-
+    const isCorrect = assignments[1] === answer; // crime always at middle slot
     setSubmitted(true);
     if (isCorrect) {
       onSolve();
     } else {
       setError(true);
       onMistake();
-      setTimeout(() => {
-        setError(false);
-        setSubmitted(false);
-      }, 900);
+      setTimeout(() => { setError(false); setSubmitted(false); }, 900);
     }
   };
 
   return (
     <div className="flex flex-col gap-4 p-4 pb-8">
       {/* Clues */}
-      <Card compact>
-        <p className="text-[11px] font-medium text-[#9A9A9A] uppercase tracking-wider mb-2">Clues</p>
-        <ul className="space-y-1.5">
+      <div className="rounded-2xl border border-[#242424] bg-[#111] p-4">
+        <p className="text-[10px] font-bold text-[#FB923C] uppercase tracking-[0.15em] mb-3">Clues</p>
+        <ul className="space-y-2">
           {clues.map((clue, i) => (
-            <li key={i} className="flex items-start gap-2 text-sm text-[#EAEAEA]">
-              <span className="text-[#FB923C] mt-0.5 shrink-0">›</span>
+            <motion.li key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.06 }}
+              className="flex items-start gap-2.5 text-sm text-[#D0D0D0]">
+              <span className="text-[#FB923C] shrink-0 font-bold">›</span>
               {clue}
-            </li>
+            </motion.li>
           ))}
         </ul>
-      </Card>
+      </div>
 
-      {/* Instruction */}
-      <p className="text-xs text-[#9A9A9A] text-center">
-        {selectedEntity
-          ? `Tap a time slot to place "${selectedEntity}"`
-          : 'Tap a person to select, then tap a time slot'}
-      </p>
-
-      {/* Unassigned entities */}
-      <div className="flex flex-wrap gap-2 justify-center">
-        {entities.map((entity) => {
-          const isAssigned = !unassigned.includes(entity);
-          const isSelected = selectedEntity === entity;
-          return (
-            <motion.button
-              key={entity}
-              whileTap={{ scale: 0.92 }}
-              onClick={() => {
-                if (submitted) return;
-                if (isAssigned) return;
-                setSelectedEntity(isSelected ? null : entity);
-              }}
-              disabled={isAssigned}
-              className={[
-                'px-4 py-2 rounded-xl text-sm font-medium border transition-all',
-                isAssigned
-                  ? 'opacity-30 cursor-not-allowed border-[#2A2A2A] text-[#9A9A9A]'
-                  : isSelected
-                  ? 'bg-[#FB923C]/15 border-[#FB923C] text-[#FB923C] ring-2 ring-[#FB923C]/20'
-                  : 'border-[#2A2A2A] text-[#EAEAEA] hover:border-[#FB923C]/40',
-              ]
-                .filter(Boolean)
-                .join(' ')}
-            >
-              {entity}
-            </motion.button>
-          );
-        })}
+      {/* People tokens */}
+      <div>
+        <p className="text-[10px] font-bold text-[#555] uppercase tracking-[0.15em] mb-2.5">
+          {selected ? `Place "${selected}" in a time slot` : 'Select a person, then a time slot'}
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {entities.map(entity => {
+            const isAssigned = !unassigned.includes(entity);
+            const isSel      = selected === entity;
+            return (
+              <motion.button key={entity} whileTap={{ scale: 0.92 }}
+                onClick={() => { if (submitted || isAssigned) return; setSelected(isSel ? null : entity); }}
+                disabled={isAssigned}
+                className={`px-4 py-2 rounded-xl text-sm font-bold border transition-all ${
+                  isAssigned ? 'opacity-25 cursor-not-allowed border-[#242424] text-[#555]' :
+                  isSel      ? 'bg-[#FB923C]/15 border-[#FB923C] text-[#FB923C] shadow-[0_0_16px_rgba(251,146,60,0.2)]' :
+                               'border-[#242424] text-[#D0D0D0] hover:border-[#FB923C]/40 hover:text-[#F0F0F0]'
+                }`}>
+                {entity}
+              </motion.button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Timeline */}
-      <Card>
+      <div className="rounded-2xl border border-[#242424] bg-[#161616] p-4">
         <div className="relative">
-          {/* Connecting line */}
-          <div className="absolute left-[2.5rem] top-0 bottom-0 w-px bg-[#2A2A2A]" />
+          {/* Vertical line */}
+          <div className="absolute left-[3.75rem] top-0 bottom-0 w-px bg-[#1E1E1E]" />
 
           <div className="space-y-3">
-            {slots.map((slot, i) => (
-              <motion.div
-                key={slot}
-                className="flex items-center gap-4"
-                animate={
-                  error && submitted ? { x: [0, -6, 6, -4, 4, 0] } : {}
-                }
-                transition={{ duration: 0.4 }}
-              >
-                {/* Time label */}
-                <div className="w-16 text-right shrink-0">
-                  <span
-                    className={`text-xs font-mono font-semibold ${
-                      i === 1 ? 'text-[#FB923C]' : 'text-[#9A9A9A]'
+            {slots.map((slot, i) => {
+              const isCrimeSlot = i === 1;
+              return (
+                <motion.div key={slot}
+                  animate={error && submitted ? { x: [0,-6,6,-4,4,0] } : {}}
+                  transition={{ duration: 0.4 }}
+                  className="flex items-center gap-3"
+                >
+                  {/* Time */}
+                  <div className="w-14 text-right shrink-0">
+                    <span className={`text-xs font-bold font-mono ${isCrimeSlot ? 'text-[#FB923C]' : 'text-[#555]'}`}>
+                      {slot}
+                    </span>
+                    {isCrimeSlot && (
+                      <p className="text-[8px] text-[#FB923C]/60 font-semibold uppercase">crime</p>
+                    )}
+                  </div>
+
+                  {/* Dot */}
+                  <div className={`w-3 h-3 rounded-full border-2 shrink-0 z-10 transition-all ${
+                    assignments[i] ? 'border-[#FB923C] bg-[#FB923C]' :
+                    isCrimeSlot   ? 'border-[#FB923C]/40 bg-[#0A0A0A]' : 'border-[#242424] bg-[#0A0A0A]'
+                  }`} />
+
+                  {/* Slot */}
+                  <motion.button whileTap={{ scale: 0.97 }}
+                    onClick={() => assignments[i] ? removeFromSlot(i) : assignToSlot(i)}
+                    className={`flex-1 min-h-[46px] rounded-xl border text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+                      assignments[i]
+                        ? 'bg-[#FB923C]/10 border-[#FB923C] text-[#FB923C]'
+                        : selected
+                        ? 'border-[#FB923C]/40 border-dashed text-[#555] hover:border-[#FB923C] hover:bg-[#FB923C]/5'
+                        : 'border-[#1E1E1E] text-[#333]'
                     }`}
                   >
-                    {slot}
-                  </span>
-                </div>
-
-                {/* Dot */}
-                <div
-                  className={`w-3 h-3 rounded-full border-2 shrink-0 z-10 ${
-                    assignments[i]
-                      ? 'border-[#FB923C] bg-[#FB923C]'
-                      : 'border-[#2A2A2A] bg-[#0D0D0D]'
-                  }`}
-                />
-
-                {/* Slot */}
-                <motion.button
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => {
-                    if (assignments[i]) {
-                      removeFromSlot(i);
-                    } else {
-                      assignToSlot(i);
-                    }
-                  }}
-                  className={[
-                    'flex-1 min-h-[44px] rounded-xl border text-sm font-medium transition-all flex items-center justify-center gap-1',
-                    assignments[i]
-                      ? 'bg-[#FB923C]/10 border-[#FB923C] text-[#FB923C]'
-                      : selectedEntity
-                      ? 'border-[#FB923C]/40 border-dashed text-[#9A9A9A] hover:border-[#FB923C]'
-                      : 'border-[#2A2A2A] text-[#2A2A2A] hover:border-[#9A9A9A]/40',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
-                >
-                  {assignments[i] ? (
-                    <>
-                      {assignments[i]}
-                      <span className="text-[#FB923C]/50 text-xs ml-1">✕</span>
-                    </>
-                  ) : (
-                    <span className="text-xs opacity-50">place here</span>
-                  )}
-                </motion.button>
-              </motion.div>
-            ))}
+                    {assignments[i] ? (
+                      <>{assignments[i]} <span className="text-[#FB923C]/40 text-xs">✕</span></>
+                    ) : (
+                      <span className="text-xs opacity-40">drop here</span>
+                    )}
+                  </motion.button>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
 
         {question && (
-          <p className="text-xs text-[#9A9A9A] mt-4 text-center italic">{question}</p>
+          <p className="text-xs text-[#555] mt-4 text-center italic">{question}</p>
         )}
 
         <AnimatePresence>
           {error && (
-            <motion.p
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="text-xs text-[#F87171] mt-3 text-center"
-            >
+            <motion.p initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+              className="text-xs text-[#F87171] mt-3 text-center font-semibold">
               Wrong order — try again
             </motion.p>
           )}
         </AnimatePresence>
 
-        <Button
-          onClick={handleSubmit}
-          disabled={!allFilled}
-          fullWidth
-          className="mt-4"
-        >
-          Submit Timeline
+        <Button onClick={handleSubmit} disabled={!allFilled} fullWidth size="lg"
+          className="mt-4 bg-[#FB923C] hover:bg-[#f97316] text-white shadow-[0_0_24px_rgba(251,146,60,0.2)]">
+          Lock In Timeline
         </Button>
-      </Card>
+      </div>
     </div>
   );
 }

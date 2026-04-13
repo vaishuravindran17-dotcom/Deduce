@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TrueLiePuzzle } from '@/types';
 import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
 
 interface TrueLieProps {
   puzzle: TrueLiePuzzle;
@@ -14,140 +13,128 @@ interface TrueLieProps {
 export function TrueLie({ puzzle, onSolve, onMistake }: TrueLieProps) {
   const { statements, question, answer } = puzzle;
 
-  // marked[i] = true means "lie", false means "truth"
-  const [marked, setMarked] = useState<(boolean | null)[]>(
-    statements.map(() => null),
-  );
+  // null = unset, false = truth, true = lie
+  const [marked, setMarked] = useState<(boolean | null)[]>(statements.map(() => null));
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(false);
 
   const toggle = (i: number) => {
     if (submitted) return;
-    setMarked((prev) => {
-      const next = [...prev];
-      next[i] = next[i] === null ? false : !next[i];
-      return next;
-    });
+    setMarked(prev => { const n = [...prev]; n[i] = n[i] === null ? false : !n[i]; return n; });
   };
 
-  // Valid state: exactly one person marked as liar
-  const lieCount = marked.filter((m) => m === true).length;
-  const selectedLiar = lieCount === 1
-    ? statements[marked.findIndex((m) => m === true)]?.person
-    : null;
-  const canSubmit = selectedLiar !== null;
+  const lieCount   = marked.filter(m => m === true).length;
+  const liarPerson = lieCount === 1 ? statements[marked.findIndex(m => m === true)]?.person : null;
+  const canSubmit  = liarPerson !== null;
 
   const handleSubmit = () => {
     if (!canSubmit) return;
     setSubmitted(true);
-
-    if (selectedLiar === answer) {
+    if (liarPerson === answer) {
       onSolve();
     } else {
       setError(true);
       onMistake();
-      setTimeout(() => {
-        setError(false);
-        setSubmitted(false);
-        setMarked(statements.map(() => null));
-      }, 900);
+      setTimeout(() => { setError(false); setSubmitted(false); setMarked(statements.map(() => null)); }, 900);
     }
   };
 
   return (
     <div className="flex flex-col gap-4 p-4 pb-8">
-      <Card compact>
-        <p className="text-[11px] font-medium text-[#9A9A9A] uppercase tracking-wider mb-1">Rule</p>
-        <p className="text-sm text-[#EAEAEA]">
-          Exactly <span className="text-[#F472B6] font-semibold">one person</span> is lying.
-          Toggle each statement to reveal the liar.
+      {/* Rule card */}
+      <div className="rounded-2xl border border-[#F472B6]/20 bg-[#F472B6]/5 p-4">
+        <p className="text-[10px] font-bold text-[#F472B6] uppercase tracking-[0.15em] mb-1.5">The Rule</p>
+        <p className="text-sm text-[#D0D0D0] leading-relaxed">
+          Exactly <span className="text-[#F472B6] font-bold">one person</span> is lying.
+          Toggle each statement — find the liar.
         </p>
-      </Card>
+      </div>
+
+      {/* Legend */}
+      <div className="flex items-center justify-center gap-4 text-xs">
+        <div className="flex items-center gap-1.5">
+          <div className="w-2 h-2 rounded-full bg-[#555]" />
+          <span className="text-[#555]">Unknown</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-2 h-2 rounded-full bg-[#4ADE80]" />
+          <span className="text-[#888]">Truth</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-2 h-2 rounded-full bg-[#F472B6]" />
+          <span className="text-[#888]">Lie</span>
+        </div>
+      </div>
 
       {/* Statements */}
       <div className="space-y-3">
         {statements.map((stmt, i) => {
-          const state = marked[i]; // null=unset, false=truth, true=lie
+          const state = marked[i];
+          const isLie = state === true;
+          const isTruth = state === false;
+
           return (
             <motion.div
               key={stmt.person}
               layout
-              className={[
-                'rounded-2xl border p-4 cursor-pointer transition-all select-none',
-                state === true
-                  ? 'bg-[#F472B6]/8 border-[#F472B6]'
-                  : state === false
-                  ? 'bg-[#4ADE80]/5 border-[#4ADE80]/40'
-                  : 'bg-[#161616] border-[#2A2A2A] hover:border-[#9A9A9A]/40',
-              ]
-                .filter(Boolean)
-                .join(' ')}
+              whileTap={{ scale: 0.98 }}
               onClick={() => toggle(i)}
               role="button"
-              aria-pressed={state === true}
+              className={`rounded-2xl border p-4 cursor-pointer transition-all select-none ${
+                isLie   ? 'bg-[#F472B6]/8 border-[#F472B6]/60' :
+                isTruth ? 'bg-[#4ADE80]/5 border-[#4ADE80]/30' :
+                          'bg-[#161616] border-[#242424] hover:border-[#333]'
+              }`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">
-                  <p className="text-xs font-semibold text-[#9A9A9A] mb-1">{stmt.person}</p>
-                  <p className="text-sm text-[#EAEAEA] leading-relaxed">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <div className={`w-1.5 h-1.5 rounded-full ${isLie ? 'bg-[#F472B6]' : isTruth ? 'bg-[#4ADE80]' : 'bg-[#333]'}`} />
+                    <p className="text-xs font-bold text-[#888] uppercase tracking-wider">{stmt.person}</p>
+                  </div>
+                  <p className="text-sm text-[#E0E0E0] leading-relaxed">
                     &ldquo;{stmt.text}&rdquo;
                   </p>
                 </div>
 
-                {/* Toggle badge */}
-                <div
-                  className={[
-                    'shrink-0 px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all',
-                    state === true
-                      ? 'bg-[#F472B6]/15 border-[#F472B6] text-[#F472B6]'
-                      : state === false
-                      ? 'bg-[#4ADE80]/10 border-[#4ADE80]/50 text-[#4ADE80]'
-                      : 'border-[#2A2A2A] text-[#2A2A2A]',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
+                <motion.div
+                  animate={{ scale: state !== null ? [1, 1.15, 1] : 1 }}
+                  className={`shrink-0 w-14 py-1.5 rounded-xl text-xs font-black text-center border transition-all ${
+                    isLie   ? 'bg-[#F472B6]/15 border-[#F472B6] text-[#F472B6]' :
+                    isTruth ? 'bg-[#4ADE80]/10 border-[#4ADE80]/50 text-[#4ADE80]' :
+                              'bg-[#1A1A1A] border-[#242424] text-[#333]'
+                  }`}
                 >
-                  {state === true ? 'LIE' : state === false ? 'TRUTH' : '?'}
-                </div>
+                  {isLie ? 'LIE' : isTruth ? 'TRUE' : '?'}
+                </motion.div>
               </div>
             </motion.div>
           );
         })}
       </div>
 
-      {/* Hint */}
-      <p className="text-[11px] text-[#9A9A9A] text-center">
-        Tap to cycle: <span className="text-[#EAEAEA]">?</span> → <span className="text-[#4ADE80]">Truth</span> → <span className="text-[#F472B6]">Lie</span>
-      </p>
-
       {lieCount > 1 && (
-        <p className="text-xs text-[#FBBF24] text-center">
-          Only one person can be lying
-        </p>
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          className="text-xs text-[#FBBF24] text-center font-semibold">
+          ⚠ Only one person can be the liar
+        </motion.p>
       )}
 
       {question && (
-        <p className="text-sm text-[#EAEAEA] text-center font-medium">{question}</p>
+        <p className="text-sm text-[#F0F0F0] text-center font-semibold">{question}</p>
       )}
 
       <AnimatePresence>
         {error && (
-          <motion.p
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="text-xs text-[#F87171] text-center"
-          >
-            That&apos;s not the liar — reconsider the statements
+          <motion.p initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            className="text-xs text-[#F87171] text-center font-semibold">
+            Wrong — reconsider the statements
           </motion.p>
         )}
       </AnimatePresence>
 
-      <Button
-        onClick={handleSubmit}
-        disabled={!canSubmit || lieCount > 1}
-        fullWidth
-      >
+      <Button onClick={handleSubmit} disabled={!canSubmit || lieCount > 1} fullWidth size="lg"
+        className="bg-[#F472B6] hover:bg-[#ec4899] text-white shadow-[0_0_24px_rgba(244,114,182,0.2)]">
         Expose the Liar
       </Button>
     </div>

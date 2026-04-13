@@ -1,104 +1,169 @@
 @import "tailwindcss";
 
+/* ─── Design Tokens ─────────────────────────────────────────────────────────── */
 @theme {
-  --color-bg: #0D0D0D;
-  --color-surface: #161616;
-  --color-rim: #2A2A2A;
-  --color-ink: #EAEAEA;
-  --color-muted: #9A9A9A;
-  --color-accent: #4ADE80;
-  --color-accent-glow: rgba(74, 222, 128, 0.12);
-  --color-danger: #F87171;
-  --color-warn: #FBBF24;
+  --color-bg:         #0A0A0A;
+  --color-surface:    #111111;
+  --color-card:       #161616;
+  --color-card-hover: #1C1C1C;
+  --color-rim:        #242424;
+  --color-rim-bright: #333333;
+  --color-ink:        #F0F0F0;
+  --color-muted:      #888888;
+  --color-ghost:      #444444;
+  --color-accent:     #4ADE80;
+  --color-accent-dim: rgba(74,222,128,0.12);
+  --color-accent-glow:rgba(74,222,128,0.25);
+  --color-purple:     #818CF8;
+  --color-orange:     #FB923C;
+  --color-pink:       #F472B6;
+  --color-red:        #F87171;
+  --color-yellow:     #FBBF24;
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
 }
 
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html {
-  height: 100%;
-  -webkit-text-size-adjust: 100%;
-}
+/* ─── Reset ─────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; -webkit-text-size-adjust: 100%; }
 
 body {
-  background: #0D0D0D;
-  color: #EAEAEA;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0A0A0A;
+  color: #F0F0F0;
+  font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100dvh;
   overscroll-behavior: none;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 3px; height: 3px; }
+/* ─── App shell — centered column for web ──────────────────────────────────── */
+.app-shell {
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  background: #0A0A0A;
+  /* Subtle dot-grid texture */
+  background-image: radial-gradient(circle, #1E1E1E 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.app-shell > * {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100dvh;
+  background: #0A0A0A;
+  position: relative;
+  box-shadow: 0 0 80px rgba(0,0,0,0.8);
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: #242424; border-radius: 2px; }
 
-/* Selection */
-::selection { background: rgba(74, 222, 128, 0.25); color: #EAEAEA; }
+/* ─── Selection ─────────────────────────────────────────────────────────────── */
+::selection { background: rgba(74,222,128,0.2); color: #F0F0F0; }
 
-/* Focus ring */
-:focus-visible {
-  outline: 1.5px solid #4ADE80;
-  outline-offset: 2px;
-  border-radius: 4px;
-}
+/* ─── Focus ─────────────────────────────────────────────────────────────────── */
+:focus-visible { outline: 1.5px solid #4ADE80; outline-offset: 2px; border-radius: 6px; }
 
-/* Button reset */
-button {
-  cursor: pointer;
-  border: none;
-  background: none;
-  font: inherit;
-  color: inherit;
-}
+/* ─── Resets ─────────────────────────────────────────────────────────────────── */
+button { cursor: pointer; border: none; background: none; font: inherit; color: inherit; }
+input, textarea { font: inherit; color: inherit; background: none; border: none; outline: none; }
+* { -webkit-tap-highlight-color: transparent; }
 
-/* Input reset */
-input, textarea {
-  font: inherit;
-  color: inherit;
-  background: none;
-  border: none;
-  outline: none;
-}
-
-/* Smooth transitions for interactive elements */
-button, a, [role="button"] {
-  transition: opacity 0.15s ease, transform 0.15s ease;
-}
-button:active, [role="button"]:active {
-  transform: scale(0.97);
-}
-
-/* Tap highlight off on mobile */
-* {
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Keyframe animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
+/* ─── Keyframe Animations ───────────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
-  50%       { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0.12); }
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
-
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+  50%       { box-shadow: 0 0 0 8px rgba(74,222,128,0.1); }
+}
+@keyframes ticker {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-2px); }
+}
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
-
-@keyframes countdown {
-  from { stroke-dashoffset: 0; }
-  to   { stroke-dashoffset: 283; }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%     { transform: translateX(-6px); }
+  40%     { transform: translateX(6px); }
+  60%     { transform: translateX(-4px); }
+  80%     { transform: translateX(4px); }
+}
+@keyframes pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+@keyframes glow-pulse {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+@keyframes float {
+  0%,100% { transform: translateY(0px); }
+  50%      { transform: translateY(-6px); }
+}
+@keyframes ripple {
+  to { transform: scale(2); opacity: 0; }
 }
 
-.animate-fade-in { animation: fadeIn 0.3s ease forwards; }
-.animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
-.animate-spin { animation: spin 1s linear infinite; }
+.animate-fadeUp    { animation: fadeUp 0.4s ease forwards; }
+.animate-fadeIn    { animation: fadeIn 0.3s ease forwards; }
+.animate-scaleIn   { animation: scaleIn 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+.animate-shake     { animation: shake 0.4s ease; }
+.animate-pop       { animation: pop 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+.animate-float     { animation: float 3s ease-in-out infinite; }
+.animate-spin      { animation: spin 1s linear infinite; }
+.animate-glow      { animation: pulse-glow 2s ease-in-out infinite; }
+
+/* ─── Glow utilities ─────────────────────────────────────────────────────────── */
+.glow-accent  { box-shadow: 0 0 24px rgba(74,222,128,0.2), 0 0 48px rgba(74,222,128,0.08); }
+.glow-red     { box-shadow: 0 0 24px rgba(248,113,113,0.2); }
+.glow-purple  { box-shadow: 0 0 24px rgba(129,140,248,0.2); }
+
+/* ─── Glass card ─────────────────────────────────────────────────────────────── */
+.glass {
+  background: rgba(22,22,22,0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ─── Gradient text ──────────────────────────────────────────────────────────── */
+.text-gradient-accent {
+  background: linear-gradient(135deg, #4ADE80, #22c55e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Noise overlay (subtle texture) ────────────────────────────────────────── */
+.noise::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0.4;
+}
+
+/* ─── Safe area padding ──────────────────────────────────────────────────────── */
+.pt-safe { padding-top: max(env(safe-area-inset-top), 16px); }
+.pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 16px); }

@@ -4,8 +4,7 @@ import { Providers } from './providers';
 
 export const metadata: Metadata = {
   title: 'Deduce — Daily Logic Puzzles',
-  description:
-    'Solve a daily mystery using 4 logic mini-games: LinkGrid, TimeTrace, TrueLie, and CodeBreak.',
+  description: 'Solve a daily mystery using 4 logic mini-games: LinkGrid, TimeTrace, TrueLie, and CodeBreak.',
   keywords: ['logic puzzle', 'deduction game', 'daily puzzle', 'mystery game'],
   openGraph: {
     title: 'Deduce',
@@ -21,16 +20,12 @@ export const viewport: Viewport = {
   themeColor: '#0D0D0D',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="bg-[#0D0D0D]">
+    <html lang="en">
       <body>
         <Providers>
-          <div className="max-w-md mx-auto min-h-dvh relative">
+          <div className="app-shell">
             {children}
           </div>
         </Providers>
