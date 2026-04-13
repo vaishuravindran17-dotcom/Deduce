@@ -5,8 +5,12 @@ import { motion } from 'framer-motion';
 import { PUZZLE_META } from '@/lib/data/cases';
 import type { PuzzleStatus, PuzzleType } from '@/types';
 
-const STEP_COLORS = ['#818CF8', '#FB923C', '#F472B6', '#4ADE80'];
-const STEP_LABELS = ['Link', 'Time', 'Truth', 'Code'];
+const STEP_COLORS = ['#A78BFA', '#FB923C', '#F472B6', '#67E8F9'];
+
+function fmt(s: number) {
+  const m = Math.floor(s / 60);
+  return `${m}:${String(s % 60).padStart(2, '0')}`;
+}
 
 interface PuzzleLayoutProps {
   title: string;
@@ -18,117 +22,114 @@ interface PuzzleLayoutProps {
   mistakes?: number;
   children: ReactNode;
   onBack?: () => void;
-  subtitle?: string;
   timeAttack?: boolean;
   timeLeft?: number;
   solvedCount?: number;
 }
 
-function formatTime(s: number) {
-  const m = Math.floor(s / 60);
-  const sec = s % 60;
-  return `${m}:${String(sec).padStart(2,'0')}`;
-}
-
 export function PuzzleLayout({
   title, puzzleType, puzzleIndex, totalPuzzles, puzzleStatuses,
-  elapsedSeconds, mistakes = 0, children, onBack, subtitle,
+  elapsedSeconds, mistakes = 0, children, onBack,
   timeAttack, timeLeft, solvedCount,
 }: PuzzleLayoutProps) {
-  const router = useRouter();
-  const meta   = PUZZLE_META[puzzleType];
-  const color  = STEP_COLORS[puzzleIndex ?? 0] ?? '#4ADE80';
-
-  const handleBack = onBack ?? (() => router.back());
-  const isLow = timeAttack && (timeLeft ?? 60) <= 10;
+  const router  = useRouter();
+  const meta    = PUZZLE_META[puzzleType];
+  const color   = STEP_COLORS[puzzleIndex ?? 0] ?? '#67E8F9';
+  const back    = onBack ?? (() => router.back());
+  const isLow   = timeAttack && (timeLeft ?? 60) <= 10;
+  const isWarn  = timeAttack && (timeLeft ?? 60) <= 20 && (timeLeft ?? 60) > 10;
 
   return (
-    <div className="min-h-dvh flex flex-col bg-[#0A0A0A]">
-      {/* ── Header ─────────────────────────────────────────────────── */}
-      <header className="flex items-center gap-3 px-4 pt-safe pt-4 pb-3 border-b border-[#1E1E1E]">
-        <button
-          onClick={handleBack}
-          className="w-9 h-9 flex items-center justify-center rounded-xl border border-[#242424] text-[#888] hover:text-[#F0F0F0] hover:border-[#333] transition-all shrink-0"
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
+    <div className="min-h-dvh flex flex-col bg-[#141414]">
 
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
-            <span className="text-[10px] font-bold text-[#555] uppercase tracking-[0.15em]">
-              {meta.label}
-              {puzzleIndex !== undefined && totalPuzzles !== undefined && ` · ${puzzleIndex + 1}/${totalPuzzles}`}
-            </span>
+      {/* ── Top bar (Matiks game-screen style) ─────────────────────── */}
+      <header className="bg-[#141414] border-b border-[#1E1E1E] pt-safe pt-3 pb-3">
+        <div className="flex items-center px-4 gap-3">
+
+          {/* Left: back + puzzle info */}
+          <button onClick={back}
+            className="w-8 h-8 flex items-center justify-center rounded-xl bg-[#1E1E1E] text-[#888] hover:text-white transition-colors shrink-0">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
+              <span className="text-[10px] font-bold text-[#555] uppercase tracking-[0.15em] truncate">
+                {meta.label}
+                {puzzleIndex !== undefined && totalPuzzles !== undefined && ` · ${puzzleIndex + 1} / ${totalPuzzles}`}
+              </span>
+            </div>
+            <h1 className="text-sm font-bold text-white truncate">{title}</h1>
           </div>
-          <h1 className="text-sm font-bold text-[#F0F0F0] truncate mt-0.5">{title}</h1>
-        </div>
 
-        {/* Right side */}
-        <div className="flex items-center gap-2 shrink-0">
-          {mistakes > 0 && (
-            <span className="text-xs font-bold text-[#F87171] bg-[#F87171]/10 px-2 py-1 rounded-lg">
-              ×{mistakes}
-            </span>
-          )}
-          {timeAttack && timeLeft !== undefined && (
-            <motion.div
-              animate={isLow ? { scale: [1, 1.08, 1] } : {}}
-              transition={{ repeat: Infinity, duration: 0.8 }}
-              className={`font-mono text-sm font-bold px-3 py-1.5 rounded-xl border ${
-                isLow
-                  ? 'bg-[#F87171]/10 border-[#F87171]/40 text-[#F87171]'
-                  : 'bg-[#161616] border-[#242424] text-[#F0F0F0]'
-              }`}
-            >
-              {formatTime(timeLeft)}
-            </motion.div>
-          )}
-          {!timeAttack && elapsedSeconds !== undefined && (
-            <div className="font-mono text-xs text-[#555] bg-[#161616] border border-[#242424] px-2.5 py-1.5 rounded-xl">
-              {formatTime(elapsedSeconds)}
-            </div>
-          )}
-          {timeAttack && solvedCount !== undefined && (
-            <div className="text-sm font-bold text-[#4ADE80] bg-[#4ADE80]/10 border border-[#4ADE80]/20 px-2.5 py-1.5 rounded-xl">
-              {solvedCount}✓
-            </div>
-          )}
-        </div>
-      </header>
+          {/* Right: timer + mistakes */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Mistakes badge */}
+            {mistakes > 0 && (
+              <div className="px-2.5 py-1 rounded-xl bg-[#1E1E1E] text-xs font-black text-[#F87171]">
+                ×{mistakes}
+              </div>
+            )}
 
-      {/* ── Step progress (daily only) ──────────────────────────────── */}
-      {puzzleStatuses && !timeAttack && (
-        <div className="px-4 py-2.5 flex items-center gap-1.5 border-b border-[#1E1E1E]">
-          {puzzleStatuses.map((status, i) => (
-            <div key={i} className="flex-1 flex flex-col gap-1 items-center">
+            {/* Timer — Matiks style: cyan dot + MM:SS */}
+            {timeAttack && timeLeft !== undefined ? (
               <motion.div
-                className="w-full h-1 rounded-full overflow-hidden bg-[#1E1E1E]"
-                initial={false}
+                animate={isLow ? { scale: [1, 1.06, 1] } : {}}
+                transition={{ repeat: Infinity, duration: 0.7 }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1E1E1E]"
+              >
+                <div className={`w-1.5 h-1.5 rounded-full ${
+                  isLow ? 'bg-[#F87171]' : isWarn ? 'bg-[#FB923C]' : 'bg-[#67E8F9]'
+                }`} />
+                <span className={`font-mono text-sm font-bold ${
+                  isLow ? 'text-[#F87171]' : isWarn ? 'text-[#FB923C]' : 'text-white'
+                }`}>
+                  {fmt(timeLeft)}
+                </span>
+              </motion.div>
+            ) : elapsedSeconds !== undefined ? (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1E1E1E]">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#67E8F9]" />
+                <span className="font-mono text-sm font-bold text-white">{fmt(elapsedSeconds)}</span>
+              </div>
+            ) : null}
+
+            {/* Solved count (time attack) */}
+            {timeAttack && solvedCount !== undefined && (
+              <div className="px-2.5 py-1.5 rounded-xl bg-[#C8FF57]/15 text-xs font-black text-[#C8FF57]">
+                {solvedCount}✓
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Step progress — 4 colored bars (daily only) */}
+        {puzzleStatuses && !timeAttack && (
+          <div className="flex gap-1.5 px-4 mt-3">
+            {puzzleStatuses.map((status, i) => (
+              <motion.div
+                key={i}
+                className="flex-1 h-1 rounded-full overflow-hidden bg-[#252525]"
               >
                 <motion.div
                   className="h-full rounded-full"
                   style={{ backgroundColor: STEP_COLORS[i] }}
                   initial={{ width: 0 }}
                   animate={{
-                    width: status === 'solved' ? '100%' : status === 'active' ? '30%' : '0%',
+                    width: status === 'solved' ? '100%' : status === 'active' ? '35%' : '0%',
                   }}
                   transition={{ duration: 0.5, ease: 'easeOut' }}
                 />
               </motion.div>
-              <span className={`text-[9px] font-semibold uppercase tracking-wider ${
-                status === 'active' ? 'text-[#F0F0F0]' : status === 'solved' ? 'text-[#4ADE80]' : 'text-[#333]'
-              }`}>
-                {STEP_LABELS[i]}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </header>
 
-      {/* ── Content ────────────────────────────────────────────────── */}
+      {/* ── Content ──────────────────────────────────────────────────── */}
       <main className="flex-1 flex flex-col overflow-auto">{children}</main>
     </div>
   );

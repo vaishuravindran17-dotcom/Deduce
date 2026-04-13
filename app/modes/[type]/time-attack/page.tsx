@@ -15,7 +15,6 @@ import { CodeBreak } from '@/components/puzzles/CodeBreak';
 import type { PuzzleType } from '@/types';
 
 const TIME_LIMIT = 60;
-
 type Phase = 'countdown' | 'playing' | 'done';
 
 export default function TimeAttackPage() {
@@ -70,7 +69,7 @@ export default function TimeAttackPage() {
 
   const handleSolve = useCallback(() => {
     incrementSolved();
-    setSolved(p => { const n = p + 1; return n; });
+    setSolved(p => p + 1);
     setPuzzleIdx(p => (p + 1) % (puzzles.current?.length ?? 1));
     setKey(k => k + 1);
   }, [incrementSolved]);
@@ -97,6 +96,8 @@ export default function TimeAttackPage() {
     }
   };
 
+  const isLow = timeLeft <= 10;
+
   return (
     <PuzzleLayout
       title={`${meta.label} — Time Attack`}
@@ -107,66 +108,91 @@ export default function TimeAttackPage() {
       mistakes={mistakes}
       onBack={() => router.push(`/modes/${type}`)}
     >
-      {/* Countdown */}
+
+      {/* ── Countdown overlay ──────────────────────────────────────── */}
       <AnimatePresence>
         {phase === 'countdown' && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-[#0A0A0A] flex flex-col items-center justify-center gap-6">
-            <p className="text-[#555] text-sm font-semibold uppercase tracking-[0.2em]">Get Ready</p>
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="absolute inset-0 z-50 bg-[#141414] flex flex-col items-center justify-center gap-6"
+          >
+            <p className="text-[#444] text-sm font-bold uppercase tracking-[0.3em]">
+              Starting in
+            </p>
             <motion.span
               key={countdown}
-              initial={{ scale: 1.8, opacity: 0 }}
-              animate={{ scale: 1,   opacity: 1 }}
-              transition={{ type: 'spring' as const, stiffness: 300, damping: 18 }}
-              className="text-9xl font-black text-[#F0F0F0]"
+              initial={{ scale: 1.6, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: 'spring' as const, stiffness: 280, damping: 18 }}
+              className="font-black"
+              style={{
+                fontSize: '8rem',
+                color: countdown > 0 ? '#67E8F9' : '#C8FF57',
+                lineHeight: 1,
+              }}
             >
               {countdown > 0 ? countdown : 'GO!'}
             </motion.span>
-            <div className="flex items-center gap-2 text-[#555] text-sm">
-              <span>⏱</span><span>60 seconds</span>
-            </div>
+            <p className="text-[#333] text-sm">60 seconds to solve as many as you can</p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Done screen */}
+      {/* ── Done overlay ───────────────────────────────────────────── */}
       <AnimatePresence>
         {phase === 'done' && (
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            className="absolute inset-0 z-50 bg-[#0A0A0A] flex flex-col items-center justify-center gap-8 px-8"
+            className="absolute inset-0 z-50 bg-[#141414] flex flex-col items-center justify-center gap-8 px-6"
           >
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ type: 'spring' as const, stiffness: 250, damping: 18, delay: 0.15 }}
+              transition={{ type: 'spring' as const, stiffness: 280, damping: 18, delay: 0.15 }}
               className="text-7xl"
-            >⏱</motion.div>
+            >
+              ⏱
+            </motion.div>
 
             <div className="text-center">
-              <p className="text-[#555] text-sm mb-3 uppercase tracking-widest">Time&apos;s Up!</p>
-              <div className="text-7xl font-black text-[#4ADE80]">{solved}</div>
-              <p className="text-[#888] text-base mt-2">
+              <p className="text-[#444] text-xs font-bold uppercase tracking-[0.3em] mb-3">
+                Time&apos;s Up
+              </p>
+              <div
+                className="font-black leading-none mb-2"
+                style={{ fontSize: '5rem', color: '#C8FF57' }}
+              >
+                {solved}
+              </div>
+              <p className="text-[#888] text-lg">
                 puzzle{solved !== 1 ? 's' : ''} solved
               </p>
               {mistakes > 0 && (
-                <p className="text-[#F87171] text-sm mt-1">{mistakes} mistake{mistakes !== 1 ? 's' : ''}</p>
+                <p className="text-[#F87171] text-sm mt-1.5">
+                  {mistakes} mistake{mistakes !== 1 ? 's' : ''}
+                </p>
               )}
             </div>
 
-            <div className="flex flex-col gap-3 w-full">
-              <motion.div whileTap={{ scale: 0.97 }}>
-                <button
-                  onClick={() => router.push('/result')}
-                  className="w-full py-4 rounded-2xl bg-[#4ADE80] text-[#0A0A0A] font-black text-base shadow-[0_0_28px_rgba(74,222,128,0.25)] hover:bg-[#22c55e] transition-all"
-                >
-                  See Full Score →
-                </button>
-              </motion.div>
+            <div className="flex flex-col gap-2.5 w-full">
               <button
-                onClick={() => { setPhase('countdown'); setCountdown(3); setSolved(0); setMistakes(0); setKey(0); setPuzzleIdx(0); }}
-                className="w-full py-3.5 rounded-2xl border border-[#242424] text-[#888] hover:text-[#F0F0F0] hover:border-[#333] transition-all font-semibold"
+                onClick={() => router.push('/result')}
+                className="w-full py-4 rounded-2xl font-black text-sm transition-all active:scale-95"
+                style={{ background: '#C8FF57', color: '#141414' }}
+              >
+                See Full Score →
+              </button>
+              <button
+                onClick={() => {
+                  setPhase('countdown');
+                  setCountdown(3);
+                  setSolved(0);
+                  setMistakes(0);
+                  setKey(0);
+                  setPuzzleIdx(0);
+                }}
+                className="w-full py-4 rounded-2xl font-black text-sm bg-[#1E1E1E] text-white transition-all active:scale-95"
               >
                 Play Again
               </button>
@@ -175,19 +201,29 @@ export default function TimeAttackPage() {
         )}
       </AnimatePresence>
 
-      {/* Puzzle */}
+      {/* ── Puzzle area ────────────────────────────────────────────── */}
       {phase === 'playing' && (
         <AnimatePresence mode="wait">
-          <motion.div key={key}
-            initial={{ opacity: 0, x: 24 }}
+          <motion.div
+            key={key}
+            initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -24 }}
-            transition={{ duration: 0.2 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.18 }}
             className="flex-1 overflow-auto"
           >
-            <div className="px-4 pt-5 pb-2">
-              <h2 className="text-xl font-black text-[#F0F0F0]">Puzzle {puzzleIdx + 1}</h2>
-              <p className="text-xs text-[#555] mt-0.5">Solve it fast!</p>
+            <div className="px-4 pt-5 pb-2 flex items-center justify-between">
+              <div>
+                <p className="text-xs text-[#555] uppercase tracking-wider font-bold">Puzzle {puzzleIdx + 1}</p>
+                <p className="text-[#444] text-xs mt-0.5">Solve fast — clock is ticking!</p>
+              </div>
+              {isLow && (
+                <motion.div
+                  animate={{ scale: [1, 1.08, 1] }}
+                  transition={{ repeat: Infinity, duration: 0.6 }}
+                  className="text-2xl"
+                >⚡</motion.div>
+              )}
             </div>
             {renderPuzzle()}
           </motion.div>

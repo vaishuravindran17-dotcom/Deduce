@@ -5,31 +5,26 @@ import { motion } from 'framer-motion';
 import { useAuthStore } from '@/lib/store/authStore';
 import { useGameStore } from '@/lib/store/gameStore';
 import { getTodaysCase, PUZZLE_META } from '@/lib/data/cases';
-import { Button } from '@/components/ui/Button';
-import { DifficultyBadge } from '@/components/ui/Badge';
 import type { PuzzleType } from '@/types';
 
 const PUZZLE_COLORS: Record<PuzzleType, string> = {
-  linkGrid:  '#818CF8',
+  linkGrid:  '#A78BFA',
   timeTrace: '#FB923C',
   trueLie:   '#F472B6',
-  codeBreak: '#4ADE80',
+  codeBreak: '#67E8F9',
 };
 
 const PUZZLE_ICONS: Record<PuzzleType, string> = {
   linkGrid:  '⊞',
-  timeTrace: '◷',
+  timeTrace: '⊙',
   trueLie:   '⊡',
   codeBreak: '◈',
 };
 
-const container = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.08 } },
-};
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  show:   { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 260, damping: 24 } },
+const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.07 } } };
+const fadeUp  = {
+  hidden: { opacity: 0, y: 18 },
+  show:   { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 280, damping: 26 } },
 };
 
 export default function HomePage() {
@@ -49,179 +44,178 @@ export default function HomePage() {
   const isCaseStarted = daily?.startedAt != null;
   const solvedCount   = daily?.puzzles.filter(p => p.status === 'solved').length ?? 0;
   const puzzleTypes   = Object.keys(PUZZLE_META) as PuzzleType[];
+  const avatar        = (user.displayName?.[0] ?? user.email?.[0] ?? 'G').toUpperCase();
 
   return (
-    <div className="min-h-dvh bg-[#0A0A0A] flex flex-col">
-      {/* ── Top bar ────────────────────────────────────────────────────── */}
-      <header className="flex items-center justify-between px-5 pt-safe pt-5 pb-3">
-        <div className="flex items-center gap-2.5">
-          <svg width="22" height="22" viewBox="0 0 40 40" fill="none">
-            <circle cx="20" cy="18" r="12" stroke="#4ADE80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <circle cx="19" cy="17" r="5" stroke="#4ADE80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <line x1="23" y1="21" x2="27" y2="25" stroke="#4ADE80" strokeWidth="2.5" strokeLinecap="round"/>
+    <div className="min-h-dvh bg-[#141414] flex flex-col">
+
+      {/* ── Top bar (Matiks-style) ─────────────────────────────────── */}
+      <header className="flex items-center justify-between px-4 pt-safe pt-5 pb-4">
+        {/* Logo */}
+        <div className="flex items-center gap-2">
+          <svg width="26" height="26" viewBox="0 0 80 80" fill="none">
+            <circle cx="36" cy="36" r="22" stroke="#C8FF57" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="35" cy="35" r="10" stroke="#C8FF57" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            <line x1="43" y1="43" x2="56" y2="56" stroke="#C8FF57" strokeWidth="3.5" strokeLinecap="round" />
           </svg>
-          <span className="text-[#F0F0F0] font-black text-lg tracking-tight">DEDUCE</span>
+          <span className="text-white font-black text-xl tracking-tight">DEDUCE</span>
         </div>
 
+        {/* Right: streak + avatar */}
         <div className="flex items-center gap-2">
           {streak > 0 && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#FB923C]/10 border border-[#FB923C]/20">
-              <span className="text-base">🔥</span>
-              <span className="text-sm font-bold text-[#FB923C]">{streak}</span>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1E1E1E]">
+              <span className="text-sm">🔥</span>
+              <span className="text-sm font-black text-[#FB923C]">{streak}</span>
             </div>
           )}
           <button
             onClick={() => { useAuthStore.getState().logout(); router.replace('/auth'); }}
-            className="w-8 h-8 rounded-xl bg-[#161616] border border-[#242424] flex items-center justify-center text-[#888] hover:text-[#F0F0F0] transition-colors text-xs font-bold"
+            className="w-9 h-9 rounded-xl bg-[#1E1E1E] flex items-center justify-center text-xs font-black text-white"
           >
-            {(user.displayName?.[0] ?? user.email?.[0] ?? 'G').toUpperCase()}
+            {avatar}
           </button>
         </div>
       </header>
 
-      <motion.div
-        variants={container} initial="hidden" animate="show"
-        className="flex-1 overflow-y-auto px-5 pb-safe pb-8 space-y-4 pt-2"
+      <motion.div variants={stagger} initial="hidden" animate="show"
+        className="flex-1 overflow-y-auto px-4 pb-safe pb-8 space-y-5 pt-1"
       >
-        {/* ── Daily Case Hero ─────────────────────────────────────────── */}
+
+        {/* ── DAILY CHALLENGE section ─────────────────────────────── */}
         <motion.div variants={fadeUp}>
-          <div className="relative rounded-3xl overflow-hidden border border-[#242424]"
-            style={{ background: 'linear-gradient(135deg, #161616 0%, #111111 100%)' }}>
+          <p className="text-[11px] font-bold text-[#555] uppercase tracking-[0.2em] mb-3 flex items-center justify-between">
+            <span>Daily Challenge</span>
+            <span className="text-[#67E8F9] font-mono">Case #{todayCase.id}</span>
+          </p>
 
-            {/* Background accent glow */}
-            <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full pointer-events-none"
-              style={{ background: 'radial-gradient(circle, rgba(74,222,128,0.06) 0%, transparent 70%)' }} />
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            onClick={() => !isCaseDone && router.push('/daily')}
+            className="w-full text-left rounded-2xl bg-[#1E1E1E] overflow-hidden"
+          >
+            {/* Color strip */}
+            <div className="h-1 w-full" style={{
+              background: isCaseDone
+                ? '#C8FF57'
+                : 'linear-gradient(90deg, #A78BFA, #FB923C, #F472B6, #67E8F9)'
+            }} />
 
-            {/* Sketch magnifying glass watermark */}
-            <div className="absolute right-5 top-5 opacity-[0.06] pointer-events-none">
-              <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
-                <circle cx="42" cy="42" r="28" stroke="#4ADE80" strokeWidth="3"/>
-                <line x1="63" y1="63" x2="90" y2="90" stroke="#4ADE80" strokeWidth="4" strokeLinecap="round"/>
-              </svg>
-            </div>
-
-            <div className="relative z-10 p-6">
-              {/* Label row */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold text-[#555] uppercase tracking-[0.2em]">Daily Case</span>
-                  <DifficultyBadge difficulty={todayCase.difficulty} />
+            <div className="p-5">
+              <div className="flex items-start justify-between gap-3 mb-4">
+                <div>
+                  <p className="text-xl font-black text-white leading-tight">{todayCase.title}</p>
+                  <p className="text-xs text-[#555] mt-1 uppercase tracking-wider font-semibold">
+                    {todayCase.difficulty} · 4 Puzzles
+                  </p>
                 </div>
                 {isCaseDone && (
-                  <span className="text-xs font-bold text-[#4ADE80] bg-[#4ADE80]/10 border border-[#4ADE80]/20 px-2.5 py-1 rounded-lg">
-                    ✓ Solved
-                  </span>
+                  <div className="w-9 h-9 rounded-xl bg-[#C8FF57]/15 flex items-center justify-center shrink-0">
+                    <span className="text-[#C8FF57] text-lg font-black">✓</span>
+                  </div>
                 )}
               </div>
 
-              {/* Case title */}
-              <h2 className="text-2xl font-black text-[#F0F0F0] leading-tight mb-1">
-                {todayCase.title}
-              </h2>
-              <p className="text-sm text-[#555] mb-5">
-                Case #{todayCase.id} · 4 logic puzzles
-              </p>
+              {/* Puzzle step pills */}
+              <div className="flex gap-2 mb-4">
+                {(['linkGrid', 'timeTrace', 'trueLie', 'codeBreak'] as PuzzleType[]).map((t, i) => {
+                  const status = daily?.puzzles[i]?.status;
+                  const color  = PUZZLE_COLORS[t];
+                  return (
+                    <div
+                      key={t}
+                      className="flex-1 h-1.5 rounded-full"
+                      style={{
+                        background: status === 'solved'
+                          ? color
+                          : status === 'active'
+                          ? `${color}50`
+                          : '#2A2A2A',
+                      }}
+                    />
+                  );
+                })}
+              </div>
 
-              {/* Progress bar */}
-              {isCaseStarted && (
-                <div className="mb-5">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs text-[#888]">Progress</span>
-                    <span className="text-xs font-bold text-[#4ADE80]">{solvedCount}/4</span>
-                  </div>
-                  <div className="flex gap-1.5">
-                    {daily?.puzzles.map((p, i) => (
-                      <motion.div
-                        key={i}
-                        className="flex-1 h-1.5 rounded-full overflow-hidden bg-[#242424]"
-                        initial={false}
-                      >
-                        <motion.div
-                          className="h-full rounded-full bg-[#4ADE80]"
-                          initial={{ width: 0 }}
-                          animate={{ width: p.status === 'solved' ? '100%' : p.status === 'active' ? '40%' : '0%' }}
-                          transition={{ duration: 0.5, ease: 'easeOut' }}
-                        />
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* CTA */}
               {isCaseDone ? (
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs text-[#555] mb-0.5">Your score</p>
-                    <p className="text-2xl font-black text-[#4ADE80]">
+                    <p className="text-[10px] text-[#555] uppercase tracking-wider">Score</p>
+                    <p className="text-2xl font-black text-[#C8FF57]">
                       {daily?.score?.toLocaleString() ?? '—'}
                     </p>
                   </div>
-                  <Button variant="secondary" size="sm" onClick={() => router.push('/result')}>
-                    View Result
-                  </Button>
+                  <button
+                    onClick={e => { e.stopPropagation(); router.push('/result'); }}
+                    className="px-4 py-2 rounded-xl bg-[#252525] text-white text-xs font-bold"
+                  >
+                    View Result →
+                  </button>
                 </div>
               ) : (
-                <Button
-                  fullWidth size="lg" glow
-                  onClick={() => router.push('/daily')}
+                <button
+                  className="w-full py-3.5 rounded-xl font-black text-sm transition-all active:scale-95"
+                  style={{ background: '#C8FF57', color: '#141414' }}
                 >
-                  {isCaseStarted ? 'Continue Case →' : 'Start Case →'}
-                </Button>
+                  {isCaseStarted ? `Continue · ${solvedCount}/4 done →` : 'Start Investigation →'}
+                </button>
               )}
             </div>
+          </motion.button>
+        </motion.div>
+
+        {/* ── PUZZLE MODES section ────────────────────────────────── */}
+        <motion.div variants={fadeUp}>
+          <p className="text-[11px] font-bold text-[#555] uppercase tracking-[0.2em] mb-3">
+            Puzzle Modes
+          </p>
+
+          <div className="grid grid-cols-2 gap-2.5">
+            {puzzleTypes.map(type => {
+              const meta  = PUZZLE_META[type];
+              const color = PUZZLE_COLORS[type];
+              const icon  = PUZZLE_ICONS[type];
+
+              return (
+                <motion.button
+                  key={type}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => router.push(`/modes/${type}`)}
+                  className="text-left rounded-2xl bg-[#1E1E1E] p-4 transition-all"
+                >
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-3 text-2xl"
+                    style={{ background: `${color}18` }}
+                  >
+                    <span style={{ color }}>{icon}</span>
+                  </div>
+                  <p className="text-sm font-black text-white">{meta.label}</p>
+                  <p className="text-[11px] text-[#555] mt-0.5 leading-tight">{meta.description}</p>
+                  <div className="mt-3">
+                    <span
+                      className="text-[10px] font-bold px-2 py-0.5 rounded-md"
+                      style={{ background: `${color}20`, color }}
+                    >
+                      TIME ATTACK
+                    </span>
+                  </div>
+                </motion.button>
+              );
+            })}
           </div>
         </motion.div>
 
-        {/* ── Divider ─────────────────────────────────────────────────── */}
-        <motion.div variants={fadeUp} className="flex items-center gap-3">
-          <div className="flex-1 h-px bg-[#1E1E1E]" />
-          <span className="text-[10px] text-[#444] uppercase tracking-[0.2em] font-semibold">Puzzle Modes</span>
-          <div className="flex-1 h-px bg-[#1E1E1E]" />
-        </motion.div>
-
-        {/* ── Mode Grid ───────────────────────────────────────────────── */}
-        <motion.div variants={fadeUp} className="grid grid-cols-2 gap-3">
-          {puzzleTypes.map((type, i) => {
-            const meta  = PUZZLE_META[type];
-            const color = PUZZLE_COLORS[type];
-            const icon  = PUZZLE_ICONS[type];
-
-            return (
-              <motion.button
-                key={type}
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => router.push(`/modes/${type}`)}
-                className="group text-left rounded-2xl border border-[#242424] bg-[#161616] p-4 transition-colors hover:border-[#333] hover:bg-[#1A1A1A]"
-              >
-                <div
-                  className="w-11 h-11 rounded-xl flex items-center justify-center mb-3 text-xl"
-                  style={{ backgroundColor: `${color}15`, border: `1px solid ${color}25` }}
-                >
-                  <span style={{ color }}>{icon}</span>
-                </div>
-                <p className="text-sm font-bold text-[#F0F0F0] mb-0.5">{meta.label}</p>
-                <p className="text-xs text-[#555]">{meta.description}</p>
-                <div className="mt-3 flex items-center gap-1 text-[10px] font-semibold" style={{ color }}>
-                  <span>⏱ Time Attack</span>
-                </div>
-              </motion.button>
-            );
-          })}
-        </motion.div>
-
-        {/* ── Stats bar ───────────────────────────────────────────────── */}
+        {/* ── Stats row ───────────────────────────────────────────── */}
         <motion.div variants={fadeUp} className="grid grid-cols-3 gap-2">
           {[
-            { label: 'Streak',     value: streak > 0 ? `${streak}🔥` : '0', color: '#FB923C' },
-            { label: 'Best Score', value: bestScore > 0 ? bestScore.toLocaleString() : '—', color: '#4ADE80' },
-            { label: 'Solved',     value: String(totalSolved), color: '#818CF8' },
-          ].map(stat => (
-            <div key={stat.label}
-              className="rounded-2xl border border-[#1E1E1E] bg-[#111] p-3.5 text-center">
-              <p className="text-base font-black" style={{ color: stat.color }}>{stat.value}</p>
-              <p className="text-[10px] text-[#555] mt-0.5 uppercase tracking-wider">{stat.label}</p>
+            { label: 'Streak',     value: streak > 0 ? `${streak} 🔥` : '0', color: '#FB923C' },
+            { label: 'Best',       value: bestScore > 0 ? bestScore.toLocaleString() : '—', color: '#C8FF57' },
+            { label: 'Solved',     value: String(totalSolved), color: '#A78BFA' },
+          ].map(s => (
+            <div key={s.label} className="rounded-2xl bg-[#1E1E1E] p-3.5 text-center">
+              <p className="text-base font-black" style={{ color: s.color }}>{s.value}</p>
+              <p className="text-[10px] text-[#555] mt-0.5 uppercase tracking-wider">{s.label}</p>
             </div>
           ))}
         </motion.div>

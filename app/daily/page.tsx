@@ -100,7 +100,7 @@ export default function DailyPage() {
       elapsedSeconds={seconds}
       mistakes={daily.totalMistakes}
       onBack={() => router.push('/home')}
-      subtitle={`Case #${todayCase.id} · ${todayCase.difficulty}`}
+
     >
       {/* Solved overlay */}
       <AnimatePresence>
@@ -109,18 +109,22 @@ export default function DailyPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-40 flex items-center justify-center bg-[#0A0A0A]/80 backdrop-blur-sm"
+            className="absolute inset-0 z-40 flex items-center justify-center"
+            style={{ background: 'rgba(20,20,20,0.88)', backdropFilter: 'blur(8px)' }}
           >
             <motion.div
-              initial={{ scale: 0.7, opacity: 0 }}
-              animate={{ scale: 1,   opacity: 1 }}
-              transition={{ type: 'spring' as const, stiffness: 300, damping: 20 }}
-              className="flex flex-col items-center gap-3"
+              initial={{ scale: 0.6, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: 'spring' as const, stiffness: 320, damping: 22 }}
+              className="flex flex-col items-center gap-4"
             >
-              <div className="w-20 h-20 rounded-full bg-[#4ADE80]/15 border-2 border-[#4ADE80] flex items-center justify-center shadow-[0_0_40px_rgba(74,222,128,0.3)]">
-                <span className="text-4xl">✓</span>
+              <div
+                className="w-24 h-24 rounded-3xl flex items-center justify-center"
+                style={{ background: '#C8FF57', boxShadow: '0 0 60px rgba(200,255,87,0.35)' }}
+              >
+                <span className="text-5xl font-black text-[#141414]">✓</span>
               </div>
-              <p className="text-[#4ADE80] font-black text-lg">Solved!</p>
+              <p className="font-black text-xl text-white">Solved!</p>
               {activeIdx < PUZZLE_TYPES.length - 1 && (
                 <p className="text-[#888] text-sm">Next: {PUZZLE_LABELS[activeIdx + 1]}</p>
               )}
@@ -138,7 +142,7 @@ export default function DailyPage() {
           transition={{ duration: 0.25, ease: 'easeInOut' }}
         >
           <div className="px-4 pt-5 pb-2">
-            <h2 className="text-xl font-black text-[#F0F0F0]">{PUZZLE_LABELS[activeIdx]}</h2>
+            <h2 className="text-xl font-black text-white">{PUZZLE_LABELS[activeIdx]}</h2>
             <p className="text-sm text-[#555] mt-0.5">{PUZZLE_DESCS[activeIdx]}</p>
           </div>
           {renderPuzzle()}
