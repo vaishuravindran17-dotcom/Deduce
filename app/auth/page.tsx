@@ -100,7 +100,7 @@ export default function AuthPage() {
           {stats.map(s => (
             <div key={s.label} className="flex flex-col items-center gap-1 bg-[#181818] rounded-2xl py-3 px-2">
               <span className="font-game text-2xl text-[#C8FF57]">{s.value}</span>
-              <span className="text-[10px] text-[#555] uppercase tracking-wider text-center leading-tight">{s.label}</span>
+              <span className="text-[10px] text-[#888] uppercase tracking-wider text-center leading-tight">{s.label}</span>
             </div>
           ))}
         </motion.div>
@@ -110,7 +110,7 @@ export default function AuthPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.35, duration: 0.5 }}
-          className="text-[#555] text-center text-sm leading-relaxed max-w-xs"
+          className="text-[#888] text-center text-sm leading-relaxed max-w-xs"
         >
           A new mystery every day. Solve{' '}
           <span className="text-white font-semibold">who did it</span>,{' '}
@@ -157,9 +157,9 @@ export default function AuthPage() {
 
           {/* Divider */}
           <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-[#1E1E1E]" />
-            <span className="text-xs text-[#3A3A3A] font-medium">or</span>
-            <div className="flex-1 h-px bg-[#1E1E1E]" />
+            <div className="flex-1 h-px bg-[#2A2A2A]" />
+            <span className="text-xs text-[#666] font-medium">or</span>
+            <div className="flex-1 h-px bg-[#2A2A2A]" />
           </div>
 
           {/* Guest → lime CTA */}
@@ -177,7 +177,7 @@ export default function AuthPage() {
             }
           </motion.button>
 
-          <p className="text-[11px] text-[#333] text-center">
+          <p className="text-[11px] text-[#666] text-center">
             Guest progress saved locally · Sign in to sync across devices
           </p>
         </motion.div>

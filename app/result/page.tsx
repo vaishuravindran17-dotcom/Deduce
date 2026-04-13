@@ -72,7 +72,7 @@ export default function ResultPage() {
             <span className="font-game text-white text-xl tracking-wider">DEDUCE</span>
           </div>
           <button onClick={() => router.push('/home')}
-            className="text-xs font-bold text-[#444] hover:text-white transition-colors uppercase tracking-wider">
+            className="text-xs font-bold text-[#777] hover:text-white transition-colors uppercase tracking-wider">
             Home →
           </button>
         </div>
@@ -111,11 +111,11 @@ export default function ResultPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.45, duration: 0.5, ease: [0.16,1,0.3,1] }}
             >
-              <p className="text-[#444] text-xs font-bold uppercase tracking-[0.3em] mb-2">Score</p>
+              <p className="text-[#777] text-xs font-bold uppercase tracking-[0.3em] mb-2">Score</p>
               <div className="font-game text-white leading-none mb-1" style={{ fontSize: 'clamp(60px, 10vw, 90px)' }}>
                 <AnimatedNumber value={breakdown.total} duration={1600} />
               </div>
-              <p className="text-[#444] text-sm">points</p>
+              <p className="text-[#777] text-sm">points</p>
             </motion.div>
 
             {!isDaily && (
@@ -129,7 +129,7 @@ export default function ResultPage() {
                 <span className="font-game leading-none" style={{ fontSize: '52px', color: '#C8FF57' }}>
                   {lastResult.timeAttackSolved ?? 0}
                 </span>
-                <span className="text-[#666] text-sm">puzzles in 60s</span>
+                <span className="text-[#888] text-sm">puzzles in {lastResult.timeSeconds}s</span>
               </motion.div>
             )}
           </div>
@@ -147,7 +147,7 @@ export default function ResultPage() {
               {/* Verdict (daily only) */}
               {isDaily && caseData && (
                 <div className="rounded-2xl bg-[#181818] p-5">
-                  <p className="font-game text-sm text-[#444] mb-4" style={{ letterSpacing: '0.1em' }}>
+                  <p className="font-game text-sm text-[#777] mb-4" style={{ letterSpacing: '0.1em' }}>
                     THE VERDICT — {caseData.title.toUpperCase()}
                   </p>
                   <div className="grid grid-cols-2 gap-2">
@@ -178,14 +178,14 @@ export default function ResultPage() {
                 <div className="space-y-3">
                   {[
                     { label: 'Base score',                              value: `+${breakdown.base}`,          red: false, green: false },
-                    { label: `Time  (${formatTime(lastResult.timeSeconds)})`, value: `+${breakdown.timeBonus}`, red: false, green: false },
+                    { label: `Time (${formatTime(lastResult.timeSeconds)})`, value: `+${breakdown.timeBonus}`, red: false, green: false },
                     { label: `Mistakes ×${lastResult.mistakes}`,        value: `-${breakdown.mistakePenalty}`, red: breakdown.mistakePenalty > 0, green: false },
                     ...(breakdown.perfectBonus > 0
                       ? [{ label: 'Perfect bonus', value: `+${breakdown.perfectBonus}`, red: false, green: true }]
                       : []),
                   ].map(row => (
                     <div key={row.label} className="flex items-center justify-between text-sm">
-                      <span className="text-[#555]">{row.label}</span>
+                      <span className="text-[#888]">{row.label}</span>
                       <span className={
                         row.green ? 'text-[#C8FF57] font-bold'
                         : row.red ? 'text-[#EF4444]'
@@ -219,7 +219,7 @@ export default function ResultPage() {
               ].map(s => (
                 <div key={s.label} className="rounded-2xl bg-[#181818] p-4 text-center">
                   <p className="font-game text-3xl leading-none mb-1" style={{ color: s.color }}>{s.value}</p>
-                  <p className="text-[10px] text-[#444] uppercase tracking-[0.2em]">{s.label}</p>
+                  <p className="text-[10px] text-[#777] uppercase tracking-[0.2em]">{s.label}</p>
                 </div>
               ))}
             </motion.div>

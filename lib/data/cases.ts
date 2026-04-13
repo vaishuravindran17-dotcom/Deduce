@@ -1,9 +1,9 @@
 import type { Case } from '@/types';
 import { LINK_GRID_POOL, TIME_TRACE_POOL, TRUE_LIE_POOL, CODE_BREAK_POOL } from './puzzlePools';
 
-/** Seeded Fisher-Yates shuffle — seed changes every 30 min so players get fresh order each session */
+/** Seeded Fisher-Yates shuffle — seed changes every minute so puzzles rotate each new game */
 function seededShuffle<T>(arr: T[]): T[] {
-  const seed = Math.floor(Date.now() / (1000 * 60 * 30));
+  const seed = Math.floor(Date.now() / (1000 * 60)); // changes every 1 minute
   const a = [...arr];
   let s = (seed * 1664525 + 1013904223) & 0x7fffffff;
   for (let i = a.length - 1; i > 0; i--) {

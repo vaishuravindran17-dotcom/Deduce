@@ -143,7 +143,7 @@ export default function DailyPage() {
             >
               <p className="font-game text-white" style={{ fontSize: '48px', letterSpacing: '0.05em' }}>SOLVED!</p>
               {activeIdx < PUZZLE_TYPES.length - 1 && (
-                <p className="text-[#555] text-sm mt-2">Next up: {PUZZLE_LABELS[activeIdx + 1]}</p>
+                <p className="text-[#888] text-sm mt-2">Next up: {PUZZLE_LABELS[activeIdx + 1]}</p>
               )}
             </motion.div>
           </motion.div>
@@ -162,7 +162,7 @@ export default function DailyPage() {
             <h2 className="font-game text-white" style={{ fontSize: '36px', letterSpacing: '0.05em', lineHeight: 1 }}>
               {PUZZLE_LABELS[activeIdx].toUpperCase()}
             </h2>
-            <p className="text-sm text-[#444] mt-1">{PUZZLE_DESCS[activeIdx]}</p>
+            <p className="text-sm text-[#888] mt-1">{PUZZLE_DESCS[activeIdx]}</p>
           </div>
           {renderPuzzle()}
         </motion.div>

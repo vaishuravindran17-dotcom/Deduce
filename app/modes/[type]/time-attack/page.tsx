@@ -142,7 +142,7 @@ function TimeAttackGame({ type, timeLimit, onRestart }: { type: PuzzleType; time
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.3 } }}
             className="absolute inset-0 z-50 bg-[#0D0D0D] grid-bg flex flex-col items-center justify-center gap-4"
           >
-            <p className="font-game text-[#444] text-xl tracking-[0.4em]">STARTING IN</p>
+            <p className="font-game text-[#888] text-xl tracking-[0.4em]">STARTING IN</p>
             <motion.div
               key={countdown}
               initial={{ scale: 2, opacity: 0, y: -30 }}
@@ -156,7 +156,7 @@ function TimeAttackGame({ type, timeLimit, onRestart }: { type: PuzzleType; time
             >
               {countdown > 0 ? countdown : 'GO!'}
             </motion.div>
-            <p className="text-[#333] text-sm font-semibold">
+            <p className="text-[#666] text-sm font-semibold">
               Solve as many as you can in {TIME_LIMIT >= 60 ? `${TIME_LIMIT / 60} minute${TIME_LIMIT > 60 ? 's' : ''}` : `${TIME_LIMIT} seconds`}
             </p>
           </motion.div>
@@ -233,7 +233,7 @@ function TimeAttackGame({ type, timeLimit, onRestart }: { type: PuzzleType; time
           >
             <div className="px-5 pt-6 pb-2 flex items-center justify-between">
               <div>
-                <p className="text-xs text-[#333] uppercase tracking-widest font-bold mb-1">Puzzle {puzzleIdx + 1}</p>
+                <p className="text-xs text-[#666] uppercase tracking-widest font-bold mb-1">Puzzle {puzzleIdx + 1}</p>
                 {isLow && (
                   <motion.p
                     animate={{ opacity: [1, 0.4, 1] }}

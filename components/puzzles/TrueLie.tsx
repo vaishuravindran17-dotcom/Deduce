@@ -154,7 +154,7 @@ export function TrueLie({ puzzle, onSolve, onMistake }: TrueLieProps) {
       </AnimatePresence>
 
       {question && (
-        <p className="text-sm text-[#666] text-center">{question}</p>
+        <p className="text-sm text-[#888] text-center">{question}</p>
       )}
 
       <motion.button

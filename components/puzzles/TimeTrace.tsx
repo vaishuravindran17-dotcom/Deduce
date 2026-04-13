@@ -175,7 +175,7 @@ export function TimeTrace({ puzzle, onSolve, onMistake }: TimeTraceProps) {
                       ? { background: '#F9731618', border: '1.5px solid #F97316', color: '#F97316' }
                       : isTarget
                       ? { background: '#252525', border: '1.5px dashed #F9731650', color: '#888' }
-                      : { background: '#252525', border: '1.5px solid #333', color: '#555' }
+                      : { background: '#252525', border: '1.5px solid #383838', color: '#888' }
                   }
                 >
                   {assigned ? (
@@ -189,7 +189,7 @@ export function TimeTrace({ puzzle, onSolve, onMistake }: TimeTraceProps) {
           })}
         </div>
 
-        {question && <p className="text-xs text-[#666] mt-6 text-center">{question}</p>}
+        {question && <p className="text-xs text-[#888] mt-6 text-center">{question}</p>}
 
         <AnimatePresence>
           {error && (

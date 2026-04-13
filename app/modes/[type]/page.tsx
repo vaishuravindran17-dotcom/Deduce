@@ -89,7 +89,7 @@ export default function PuzzleTypePage() {
 
         {/* Mode section */}
         <div className="w-full space-y-5 max-w-md">
-          <p className="font-game text-[#444] text-center mb-2" style={{ fontSize: '13px', letterSpacing: '0.25em' }}>
+          <p className="font-game text-[#777] text-center mb-2" style={{ fontSize: '13px', letterSpacing: '0.25em' }}>
             CHOOSE MODE
           </p>
 
@@ -115,7 +115,7 @@ export default function PuzzleTypePage() {
             </div>
 
             {/* Duration picker */}
-            <p className="text-xs font-bold text-[#555] uppercase tracking-[0.2em] mb-3">Select duration</p>
+            <p className="text-xs font-bold text-[#888] uppercase tracking-[0.2em] mb-3">Select duration</p>
             <div className="grid grid-cols-3 gap-3 mb-5">
               {DURATIONS.map(d => (
                 <motion.button

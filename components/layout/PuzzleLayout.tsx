@@ -69,7 +69,7 @@ export function PuzzleLayout({
               {meta.label.toUpperCase()}
             </span>
             {puzzleIndex !== undefined && totalPuzzles !== undefined && (
-              <span className="text-xs text-[#444] font-mono shrink-0">
+              <span className="text-xs text-[#777] font-mono shrink-0">
                 {puzzleIndex + 1}/{totalPuzzles}
               </span>
             )}
