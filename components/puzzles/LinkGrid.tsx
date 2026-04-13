@@ -123,8 +123,9 @@ export function LinkGrid({ puzzle, onSolve, onMistake }: LinkGridProps) {
           disabled={!selected}
           className="w-full py-4 rounded-2xl font-black text-base tracking-wide transition-all"
           style={{
-            background: selected ? '#A855F7' : '#252525',
-            color: selected ? '#fff' : '#444',
+            background: selected ? '#A855F7' : '#1E1E1E',
+            color: selected ? '#fff' : '#777',
+            border: selected ? 'none' : '1px dashed #333',
             boxShadow: selected ? '0 0 28px rgba(168,85,247,0.25)' : 'none',
           }}
         >
@@ -162,7 +163,7 @@ function GridTable({ label, color, rows, cols, cells, onTap, disabled }: {
         <tbody>
           {rows.map((row, ri) => (
             <tr key={row}>
-              <td className="text-sm text-[#CCC] py-2 pr-4 font-semibold whitespace-nowrap">{row}</td>
+              <td className="text-sm text-[#CCC] py-2 pr-4 pl-1 font-semibold whitespace-nowrap">{row}</td>
               {cols.map((_, ci) => (
                 <td key={ci} className="p-1.5 text-center">
                   <motion.button

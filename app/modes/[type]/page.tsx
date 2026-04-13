@@ -83,7 +83,7 @@ export default function PuzzleTypePage() {
             <h1 className="font-game text-white mb-3" style={{ fontSize: '48px', letterSpacing: '0.05em' }}>
               {meta.label.toUpperCase()}
             </h1>
-            <p className="text-[#666] text-sm leading-relaxed max-w-xs">{meta.description}</p>
+            <p className="text-[#999] text-sm leading-relaxed max-w-xs">{meta.description}</p>
           </div>
         </motion.div>
 
@@ -98,7 +98,7 @@ export default function PuzzleTypePage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, type: 'spring' as const, stiffness: 280, damping: 24 }}
-            className="rounded-2xl bg-[#161616] border border-[#2A2A2A] p-6"
+            className="rounded-2xl bg-[#141414] border border-[#2A2A2A] p-7"
           >
             {/* Header row */}
             <div className="flex items-center gap-4 mb-5">
@@ -144,7 +144,7 @@ export default function PuzzleTypePage() {
               style={
                 selectedDuration
                   ? { background: '#FFD60A', color: '#0D0D0D', boxShadow: '0 0 24px rgba(255,214,10,0.2)' }
-                  : { background: '#1C1C1C', color: '#444' }
+                  : { background: '#1A1A1A', color: '#777', border: '1px dashed #333' }
               }
             >
               {selectedDuration ? `START ${DURATIONS.find(d => d.seconds === selectedDuration)?.label}` : 'SELECT A DURATION'}

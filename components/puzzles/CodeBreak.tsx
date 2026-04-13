@@ -169,8 +169,9 @@ export function CodeBreak({ puzzle, onSolve, onMistake }: CodeBreakProps) {
         disabled={!ready}
         className="mx-1 py-4 rounded-2xl font-black text-base tracking-wide transition-all"
         style={{
-          background: ready ? '#06B6D4' : '#1E1E1E',
-          color: ready ? '#0D0D0D' : '#444',
+          background: ready ? '#06B6D4' : '#1A1A1A',
+          color: ready ? '#0D0D0D' : '#777',
+          border: ready ? 'none' : '1px dashed #333',
           boxShadow: ready ? '0 0 32px rgba(6,182,212,0.25)' : 'none',
         }}
       >

@@ -209,8 +209,9 @@ export function TimeTrace({ puzzle, onSolve, onMistake }: TimeTraceProps) {
           disabled={!allFilled}
           className="w-full mt-6 py-4 rounded-2xl font-black text-base tracking-wide transition-all"
           style={{
-            background: allFilled ? '#F97316' : '#252525',
-            color: allFilled ? '#fff' : '#444',
+            background: allFilled ? '#F97316' : '#1A1A1A',
+            color: allFilled ? '#fff' : '#777',
+            border: allFilled ? 'none' : '1px dashed #333',
             boxShadow: allFilled ? '0 0 28px rgba(249,115,22,0.25)' : 'none',
           }}
         >

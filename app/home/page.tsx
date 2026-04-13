@@ -54,7 +54,7 @@ export default function HomePage() {
     <div className="min-h-dvh bg-[#0D0D0D]">
 
       {/* ── NAVIGATION ───────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-30 bg-[#0D0D0D]/95 backdrop-blur-sm border-b border-[#1E1E1E]">
+      <header className="sticky top-0 z-30 bg-[#0D0D0D]/95 backdrop-blur-sm border-b border-[#222]">
         <div className="page-container h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
@@ -84,28 +84,28 @@ export default function HomePage() {
       {/* ── MAIN CONTENT ─────────────────────────────────────────────── */}
       <motion.div
         variants={stagger} initial="hidden" animate="show"
-        className="page-container py-12 space-y-12"
+        className="page-container py-14 space-y-14"
       >
 
         {/* ── DAILY CHALLENGE ────────────────────────────────────────── */}
         <motion.section variants={up}>
-          <p className="font-game text-[#555] text-xs mb-5" style={{ letterSpacing: '0.25em' }}>
+          <p className="font-game text-[#888] text-xs mb-4" style={{ letterSpacing: '0.3em' }}>
             DAILY CHALLENGE
           </p>
 
           <div
             onClick={() => !isCaseDone && router.push('/daily')}
-            className={`rounded-2xl bg-[#111111] border border-[#222] overflow-hidden ${!isCaseDone ? 'cursor-pointer hover:border-[#333] transition-colors' : ''}`}
+            className={`rounded-2xl bg-[#141414] border border-[#2A2A2A] overflow-hidden ${!isCaseDone ? 'cursor-pointer hover:border-[#3A3A3A] transition-colors' : ''}`}
           >
             {/* Top accent bar — 4 color segments */}
-            <div className="flex h-1.5">
+            <div className="flex h-2">
               {(['linkGrid','timeTrace','trueLie','codeBreak'] as PuzzleType[]).map((t, i) => {
                 const s = daily?.puzzles[i]?.status;
                 return (
                   <motion.div
                     key={t}
                     className="flex-1"
-                    style={{ background: s === 'solved' ? PUZZLE_COLOR[t] : s === 'active' ? `${PUZZLE_COLOR[t]}55` : '#222' }}
+                    style={{ background: s === 'solved' ? PUZZLE_COLOR[t] : s === 'active' ? `${PUZZLE_COLOR[t]}55` : '#2A2A2A' }}
                     initial={{ scaleX: 0, originX: 0 }}
                     animate={{ scaleX: 1 }}
                     transition={{ delay: i * 0.12, duration: 0.5, ease: 'easeOut' }}
@@ -118,16 +118,16 @@ export default function HomePage() {
               {/* Left: text */}
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="text-xs font-bold text-[#666] uppercase tracking-[0.2em]">
+                  <span className="text-xs font-bold text-[#888] uppercase tracking-[0.2em]">
                     {todayCase.difficulty}
                   </span>
-                  <span className="w-1 h-1 rounded-full bg-[#333]" />
-                  <span className="text-xs font-bold text-[#666] uppercase tracking-[0.2em]">
+                  <span className="w-1 h-1 rounded-full bg-[#555]" />
+                  <span className="text-xs font-bold text-[#888] uppercase tracking-[0.2em]">
                     4 Puzzles
                   </span>
                   {isCaseDone && (
                     <>
-                      <span className="w-1 h-1 rounded-full bg-[#333]" />
+                      <span className="w-1 h-1 rounded-full bg-[#555]" />
                       <span className="text-xs font-bold text-[#C8FF57] uppercase tracking-[0.2em]">
                         ✓ Completed
                       </span>
@@ -152,7 +152,7 @@ export default function HomePage() {
                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold"
                           style={{
                             background: s === 'solved' ? `${PUZZLE_COLOR[t]}18` : '#1A1A1A',
-                            color: s === 'solved' ? PUZZLE_COLOR[t] : '#555',
+                            color: s === 'solved' ? PUZZLE_COLOR[t] : '#888',
                             border: `1px solid ${s === 'solved' ? `${PUZZLE_COLOR[t]}35` : '#2A2A2A'}`,
                           }}
                         >
@@ -167,7 +167,7 @@ export default function HomePage() {
                 {isCaseDone ? (
                   <div className="flex items-center gap-6">
                     <div>
-                      <p className="text-xs text-[#555] uppercase tracking-widest mb-1">Final Score</p>
+                      <p className="text-xs text-[#888] uppercase tracking-widest mb-1">Final Score</p>
                       <p className="font-game text-[#C8FF57]" style={{ fontSize: '48px', lineHeight: 1 }}>
                         {daily?.score?.toLocaleString() ?? '—'}
                       </p>
@@ -185,7 +185,7 @@ export default function HomePage() {
                     whileTap={{ scale: 0.97 }}
                     onClick={() => router.push('/daily')}
                     className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-black text-base tracking-wide transition-all"
-                    style={{ background: '#C8FF57', color: '#0D0D0D', boxShadow: '0 0 32px rgba(200,255,87,0.2)' }}
+                    style={{ background: '#C8FF57', color: '#0D0D0D', boxShadow: '0 0 40px rgba(200,255,87,0.25)' }}
                   >
                     {isCaseStarted ? `Continue · ${solvedCount}/4 done →` : 'Begin Investigation →'}
                   </motion.button>
@@ -202,11 +202,11 @@ export default function HomePage() {
                     <span className="font-game text-[#C8FF57] text-5xl">✓</span>
                   </div>
                 ) : (
-                  <div className="w-24 h-24 rounded-2xl bg-[#1A1A1A] border border-[#252525] flex items-center justify-center">
+                  <div className="w-24 h-24 rounded-2xl bg-[#1A1A1A] border border-[#2A2A2A] flex items-center justify-center">
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
-                      <circle cx="10" cy="10" r="7" stroke="#444" strokeWidth="2"/>
-                      <circle cx="10" cy="10" r="3.5" stroke="#444" strokeWidth="1.5"/>
-                      <line x1="15.5" y1="15.5" x2="21" y2="21" stroke="#444" strokeWidth="2" strokeLinecap="round"/>
+                      <circle cx="10" cy="10" r="7" stroke="#666" strokeWidth="2"/>
+                      <circle cx="10" cy="10" r="3.5" stroke="#666" strokeWidth="1.5"/>
+                      <line x1="15.5" y1="15.5" x2="21" y2="21" stroke="#666" strokeWidth="2" strokeLinecap="round"/>
                     </svg>
                   </div>
                 )}
@@ -217,10 +217,10 @@ export default function HomePage() {
 
         {/* ── PUZZLE MODES ───────────────────────────────────────────── */}
         <motion.section variants={up}>
-          <p className="font-game text-[#555] text-xs mb-5" style={{ letterSpacing: '0.25em' }}>
+          <p className="font-game text-[#888] text-xs mb-4" style={{ letterSpacing: '0.3em' }}>
             PUZZLE MODES
           </p>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {puzzleTypes.map((type, i) => {
               const meta  = PUZZLE_META[type];
               const color = PUZZLE_COLOR[type];
@@ -234,18 +234,18 @@ export default function HomePage() {
                   whileHover={{ y: -4 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => router.push(`/modes/${type}`)}
-                  className="group text-left rounded-2xl bg-[#111111] border border-[#222] p-6 transition-all hover:border-[#333] hover:bg-[#141414]"
+                  className="group text-left rounded-2xl bg-[#141414] border border-[#2A2A2A] p-6 transition-all hover:border-[#3A3A3A] hover:bg-[#181818]"
                 >
-                  <div className="mb-6 p-3 rounded-xl inline-block" style={{ background: `${color}15` }}>
+                  <div className="mb-5 p-3 rounded-xl inline-block" style={{ background: `${color}18`, border: `1px solid ${color}25` }}>
                     <PuzzleIcon type={type} size={28} />
                   </div>
                   <p className="font-game text-white text-2xl mb-2" style={{ letterSpacing: '0.04em' }}>
                     {meta.label.toUpperCase()}
                   </p>
-                  <p className="text-xs text-[#777] leading-relaxed mb-5">{meta.description}</p>
+                  <p className="text-xs text-[#888] leading-relaxed mb-5">{meta.description}</p>
                   <span
                     className="inline-block text-[10px] font-black px-2.5 py-1.5 rounded-lg uppercase tracking-wider"
-                    style={{ background: `${color}18`, color, border: `1px solid ${color}25` }}
+                    style={{ background: `${color}18`, color, border: `1px solid ${color}30` }}
                   >
                     Time Attack
                   </span>
@@ -257,24 +257,24 @@ export default function HomePage() {
 
         {/* ── STATS ──────────────────────────────────────────────────── */}
         <motion.section variants={up}>
-          <p className="font-game text-[#555] text-xs mb-5" style={{ letterSpacing: '0.25em' }}>
+          <p className="font-game text-[#888] text-xs mb-4" style={{ letterSpacing: '0.3em' }}>
             YOUR STATS
           </p>
-          <div className="grid grid-cols-3 gap-5">
+          <div className="grid grid-cols-3 gap-4">
             {[
-              { label: 'Streak',     value: streak,      unit: 'days',   color: '#F97316', icon: <FlameIcon  size={20} color="#F97316" /> },
-              { label: 'Best Score', value: bestScore,   unit: 'points', color: '#C8FF57', icon: <StarIcon   size={20} color="#C8FF57" /> },
-              { label: 'Solved',     value: totalSolved, unit: 'cases',  color: '#8B5CF6', icon: <TrophyIcon size={20} color="#8B5CF6" /> },
+              { label: 'Streak',     value: streak,      color: '#F97316', icon: <FlameIcon  size={20} color="#F97316" /> },
+              { label: 'Best Score', value: bestScore,   color: '#C8FF57', icon: <StarIcon   size={20} color="#C8FF57" /> },
+              { label: 'Solved',     value: totalSolved, color: '#8B5CF6', icon: <TrophyIcon size={20} color="#8B5CF6" /> },
             ].map(s => (
-              <div key={s.label} className="rounded-2xl bg-[#111111] border border-[#222] p-6 flex items-start gap-4">
-                <div className="mt-1 p-2 rounded-xl shrink-0" style={{ background: `${s.color}15` }}>
+              <div key={s.label} className="rounded-2xl bg-[#141414] border border-[#2A2A2A] p-6 flex items-start gap-4">
+                <div className="mt-1 p-2.5 rounded-xl shrink-0" style={{ background: `${s.color}18`, border: `1px solid ${s.color}25` }}>
                   {s.icon}
                 </div>
                 <div>
-                  <p className="font-game leading-none mb-1.5" style={{ fontSize: '38px', color: s.color }}>
+                  <p className="font-game leading-none mb-2" style={{ fontSize: '38px', color: s.color }}>
                     {s.value.toLocaleString()}
                   </p>
-                  <p className="text-xs text-[#666] uppercase tracking-wider">{s.label}</p>
+                  <p className="text-xs text-[#888] uppercase tracking-wider font-semibold">{s.label}</p>
                 </div>
               </div>
             ))}

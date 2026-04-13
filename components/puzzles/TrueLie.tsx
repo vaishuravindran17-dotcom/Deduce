@@ -164,8 +164,9 @@ export function TrueLie({ puzzle, onSolve, onMistake }: TrueLieProps) {
         disabled={!canSubmit}
         className="mx-1 py-4 rounded-2xl font-black text-base tracking-wide transition-all"
         style={{
-          background: canSubmit ? '#EC4899' : '#1E1E1E',
-          color: canSubmit ? '#fff' : '#444',
+          background: canSubmit ? '#EC4899' : '#1A1A1A',
+          color: canSubmit ? '#fff' : '#777',
+          border: canSubmit ? 'none' : '1px dashed #333',
           boxShadow: canSubmit ? '0 0 28px rgba(236,72,153,0.25)' : 'none',
         }}
       >
