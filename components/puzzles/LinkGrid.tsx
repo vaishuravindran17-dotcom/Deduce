@@ -47,7 +47,7 @@ export function LinkGrid({ puzzle, onSolve, onMistake }: LinkGridProps) {
   };
 
   return (
-    <div className="flex flex-col gap-5 py-5 pb-10">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 22, paddingTop: 16, paddingBottom: 80 }}>
 
       {/* ── CLUES ───────────────────────────────────────────────────── */}
       <section>

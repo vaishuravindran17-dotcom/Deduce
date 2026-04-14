@@ -78,33 +78,36 @@ export default function PuzzleTypePage() {
       </header>
 
       {/* ── Body ────────────────────────────────────────────────────── */}
-      <div className="flex-1 game-container py-8 flex flex-col items-center gap-7">
-
+      <div
+        className="flex-1 flex flex-col items-center"
+        style={{ padding: '36px 24px 32px', maxWidth: 480, margin: '0 auto', width: '100%' }}
+      >
         {/* Icon + title */}
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: 'spring' as const, stiffness: 280, damping: 22 }}
-          className="flex flex-col items-center gap-5"
+          className="flex flex-col items-center"
+          style={{ marginBottom: 32, gap: 18 }}
         >
           <div
-            className="w-20 h-20 rounded-2xl flex items-center justify-center"
-            style={{ background: `${color}18`, border: `1px solid ${color}30` }}
+            className="flex items-center justify-center rounded-[22px]"
+            style={{ width: 80, height: 80, background: '#1C1C22', border: `1px solid ${color}30` }}
           >
-            <PuzzleIcon type={type} size={40} />
+            <PuzzleIcon type={type} size={36} />
           </div>
           <div className="text-center">
-            <h1 className="font-game text-white mb-1.5" style={{ fontSize: '36px', letterSpacing: '0.06em' }}>
+            <h1 className="font-game text-white" style={{ fontSize: 26, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>
               {meta.label.toUpperCase()}
             </h1>
-            <p className="text-sm leading-relaxed max-w-xs" style={{ color: '#A0A0B0' }}>
+            <p style={{ fontSize: 13, color: '#5A5A6E' }}>
               {meta.description}
             </p>
           </div>
         </motion.div>
 
         {/* Mode section */}
-        <div className="w-full flex flex-col gap-3">
+        <div className="w-full flex flex-col" style={{ gap: 10 }}>
           <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-center" style={{ color: '#5A5A6E' }}>
             Choose Mode
           </p>
