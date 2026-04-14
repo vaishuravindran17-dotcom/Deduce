@@ -13,9 +13,9 @@ const COLORS: Record<string, string> = {
 };
 
 const DURATIONS = [
-  { seconds: 60,  label: '1 Min',  sub: '60 sec' },
-  { seconds: 180, label: '3 Min',  sub: '3 min' },
-  { seconds: 300, label: '5 Min',  sub: '5 min' },
+  { seconds: 60,  label: '1 Min', sub: '60 sec' },
+  { seconds: 180, label: '3 Min', sub: '3 min' },
+  { seconds: 300, label: '5 Min', sub: '5 min' },
 ];
 
 function hexAlpha(hex: string, alpha: number) {
@@ -52,8 +52,7 @@ export default function PuzzleTypePage() {
 
   const meta  = PUZZLE_META[type];
   const color = COLORS[type] ?? '#2DD4BF';
-
-  const colorAlpha = (a: number) => hexAlpha(color, a);
+  const ca    = (a: number) => hexAlpha(color, a);
 
   return (
     <div className="min-h-dvh flex flex-col" style={{ background: '#0C0C0F' }}>
@@ -106,7 +105,7 @@ export default function PuzzleTypePage() {
             className="flex items-center justify-center"
             style={{
               width: 80, height: 80, borderRadius: 22,
-              background: '#1C1C22', border: `1px solid ${colorAlpha(0.25)}`,
+              background: '#1C1C22', border: `1px solid ${ca(0.25)}`,
             }}
           >
             <PuzzleIcon type={type} size={36} />
@@ -118,102 +117,126 @@ export default function PuzzleTypePage() {
             >
               {meta.label.toUpperCase()}
             </h1>
-            <p style={{ fontSize: 13, color: '#5A5A6E' }}>
-              {meta.description}
-            </p>
+            <p style={{ fontSize: 13, color: '#5A5A6E' }}>{meta.description}</p>
           </div>
         </motion.div>
 
         {/* Mode section */}
         <div className="w-full flex flex-col" style={{ gap: 10 }}>
-          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-center" style={{ color: '#5A5A6E' }}>
+
+          {/* Choose label */}
+          <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#5A5A6E', marginBottom: 2 }}>
             Choose Mode
           </p>
 
-          {/* Time Attack card */}
+          {/* ── Time Attack — flat mode-option card ── */}
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08 }}
-            className="rounded-xl overflow-hidden"
-            style={{ background: '#141418', border: `1px solid ${colorAlpha(0.2)}` }}
+            style={{
+              width: '100%',
+              background: ca(0.07),
+              border: `1px solid ${ca(0.45)}`,
+              borderRadius: 16,
+              padding: '16px 18px',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 14,
+            }}
           >
-            {/* Mode header row */}
+            {/* mo-icon */}
             <div
-              className="flex items-center gap-3 px-4 py-4"
-              style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}
+              style={{
+                width: 40, height: 40, borderRadius: 11,
+                flexShrink: 0, marginTop: 1,
+                background: 'rgba(251,191,36,0.1)',
+                border: '1px solid rgba(251,191,36,0.2)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 20,
+              }}
             >
-              <div
-                className="flex items-center justify-center shrink-0 text-xl"
-                style={{
-                  width: 40, height: 40, borderRadius: 11,
-                  background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.2)',
-                }}
-              >
-                ⏱
-              </div>
-              <div>
-                <p className="font-game text-sm tracking-widest" style={{ color: '#F0F0F4' }}>TIME ATTACK</p>
-                <p className="text-xs mt-0.5" style={{ color: '#5A5A6E' }}>Solve as many puzzles as possible</p>
-              </div>
+              ⏱
             </div>
 
-            {/* Duration picker */}
-            <div className="px-4 py-4">
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color: '#5A5A6E' }}>
-                Select Duration
-              </p>
-              <div className="grid grid-cols-3 gap-2">
+            {/* info block */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ fontSize: 15, fontWeight: 600, color: '#F0F0F4', marginBottom: 2 }}>Time Attack</p>
+              <p style={{ fontSize: 12, color: '#5A5A6E' }}>Solve as many puzzles as possible</p>
+
+              {/* duration-row */}
+              <div style={{ display: 'flex', gap: 8, paddingTop: 14 }}>
                 {DURATIONS.map(d => (
                   <motion.button
                     key={d.seconds}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setSelectedDuration(d.seconds)}
-                    className="py-3 rounded-lg text-center transition-all"
                     style={
                       selectedDuration === d.seconds
-                        ? { background: colorAlpha(0.18), border: `1.5px solid ${colorAlpha(0.45)}`, color }
-                        : { background: '#1C1C22', border: '1px solid rgba(255,255,255,0.07)', color: '#5A5A6E' }
+                        ? { flex: 1, padding: '9px 6px', borderRadius: 8, textAlign: 'center', background: ca(0.18), border: `1px solid ${ca(0.45)}` }
+                        : { flex: 1, padding: '9px 6px', borderRadius: 8, textAlign: 'center', background: '#23232B', border: '1px solid rgba(255,255,255,0.07)' }
                     }
                   >
-                    <p className="font-bold text-sm leading-none">{d.label}</p>
-                    <p className="text-[10px] mt-1 opacity-70">{d.sub}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, lineHeight: 1, color: selectedDuration === d.seconds ? color : '#F0F0F4' }}>
+                      {d.label}
+                    </p>
+                    <p style={{ fontSize: 10, color: '#5A5A6E', marginTop: 2 }}>{d.sub}</p>
                   </motion.button>
                 ))}
               </div>
             </div>
           </motion.div>
 
-          {/* Online Duel — coming soon */}
+          {/* ── Online Duel — coming soon ── */}
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.14 }}
-            className="rounded-xl px-4 py-4 flex items-center gap-3 opacity-30 pointer-events-none"
-            style={{ background: '#141418', border: '1px solid rgba(255,255,255,0.07)' }}
+            style={{
+              width: '100%',
+              background: '#141418',
+              border: '1px solid rgba(255,255,255,0.07)',
+              borderRadius: 16,
+              padding: '16px 18px',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 14,
+              opacity: 0.35,
+              pointerEvents: 'none',
+            }}
           >
             <div
-              className="flex items-center justify-center shrink-0 text-xl"
               style={{
                 width: 40, height: 40, borderRadius: 11,
+                flexShrink: 0, marginTop: 1,
                 background: '#1C1C22', border: '1px solid rgba(255,255,255,0.07)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 20,
               }}
             >
               🌐
             </div>
-            <div className="flex-1">
-              <p className="font-game text-sm tracking-widest" style={{ color: '#F0F0F4' }}>ONLINE DUEL</p>
-              <p className="text-xs mt-0.5" style={{ color: '#5A5A6E' }}>Live vs global leaderboard</p>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+                <p style={{ fontSize: 15, fontWeight: 600, color: '#F0F0F4' }}>Online Duel</p>
+                <span
+                  style={{
+                    fontSize: 9, fontWeight: 700,
+                    letterSpacing: '0.12em', textTransform: 'uppercase',
+                    padding: '2px 7px', borderRadius: 4,
+                    background: 'rgba(251,146,60,0.15)',
+                    color: '#FB923C',
+                    border: '1px solid rgba(251,146,60,0.25)',
+                  }}
+                >
+                  SOON
+                </span>
+              </div>
+              <p style={{ fontSize: 12, color: '#5A5A6E' }}>Live vs global leaderboard</p>
             </div>
-            <span
-              className="text-[10px] font-bold uppercase tracking-[0.1em] px-2.5 py-1.5 rounded-lg"
-              style={{ background: '#1C1C22', color: '#5A5A6E' }}
-            >
-              Soon
-            </span>
           </motion.div>
 
-          {/* Start button */}
+          {/* ── Start button ── */}
           <motion.button
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -222,16 +245,16 @@ export default function PuzzleTypePage() {
             whileTap={selectedDuration ? { scale: 0.97 } : {}}
             onClick={() => selectedDuration && router.push(`/modes/${type}/time-attack?t=${selectedDuration}`)}
             disabled={!selectedDuration}
-            className="w-full font-game text-sm tracking-widest uppercase transition-all"
+            className="w-full font-game tracking-widest uppercase transition-all"
             style={
               selectedDuration
                 ? {
-                    padding: 15, borderRadius: 12,
+                    marginTop: 22, padding: 15, borderRadius: 12, fontSize: 14,
                     background: color, color: '#0C0C0F',
-                    boxShadow: `0 0 28px ${colorAlpha(0.35)}`,
+                    boxShadow: `0 0 28px ${ca(0.35)}`,
                   }
                 : {
-                    padding: 15, borderRadius: 12,
+                    marginTop: 22, padding: 15, borderRadius: 12, fontSize: 14,
                     background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', color: '#5A5A6E',
                   }
             }

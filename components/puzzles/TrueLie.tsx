@@ -50,7 +50,7 @@ export function TrueLie({ puzzle, onSolve, onMistake }: TrueLieProps) {
         style={{
           padding: '14px 18px',
           background: 'rgba(244,63,94,0.07)',
-          border: '1px solid rgba(244,63,94,0.25)',
+          border: '1px solid rgba(244,114,182,0.22)',
         }}
       >
         <p className="text-[10px] font-bold uppercase tracking-[0.14em] mb-1" style={{ color: COLOR }}>

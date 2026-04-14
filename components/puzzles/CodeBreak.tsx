@@ -69,10 +69,10 @@ export function CodeBreak({ puzzle, onSolve, onMistake }: CodeBreakProps) {
               initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.07 }}
-              className="rounded-xl flex items-center gap-4"
-              style={{ padding: '12px 16px', background: '#141418', border: '1px solid rgba(255,255,255,0.07)' }}
+              className="rounded-xl flex items-center"
+              style={{ padding: '13px 16px', gap: 14, background: '#141418', border: '1px solid rgba(255,255,255,0.07)' }}
             >
-              <div className="flex gap-2 shrink-0">
+              <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
                 {clue.guess.split('').map((d, di) => (
                   <div
                     key={di}
@@ -181,7 +181,7 @@ export function CodeBreak({ puzzle, onSolve, onMistake }: CodeBreakProps) {
       </AnimatePresence>
 
       {/* ── Keypad ─────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-3 gap-2.5 max-w-[280px] mx-auto w-full">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, maxWidth: 260, margin: '0 auto 20px', width: '100%' }}>
         {['1','2','3','4','5','6','7','8','9'].map(d => (
           <KeyBtn key={d} label={d} onPress={() => press(d)} disabled={submitted} />
         ))}
@@ -219,7 +219,7 @@ function KeyBtn({ label, onPress, disabled, dim }: {
       style={{
         height: 54,
         fontSize: 20,
-        background: dim ? '#141418' : '#1C1C22',
+        background: '#141418',
         color: dim ? '#5A5A6E' : '#A0A0B0',
         border: `1px solid rgba(255,255,255,${dim ? '0.07' : '0.13'})`,
         opacity: disabled ? 0.3 : 1,

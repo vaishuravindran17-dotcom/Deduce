@@ -54,7 +54,7 @@ export function LinkGrid({ puzzle, onSolve, onMistake }: LinkGridProps) {
         <p className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: COLOR, marginBottom: 10 }}>
           Clues
         </p>
-        <div className="rounded-xl overflow-hidden" style={{ background: '#141418', border: `1px solid ${COLOR_BDR}` }}>
+        <div className="rounded-xl overflow-hidden" style={{ background: '#141418', padding: '4px 0' }}>
           {clues.map((clue, i) => (
             <motion.div
               key={i}
