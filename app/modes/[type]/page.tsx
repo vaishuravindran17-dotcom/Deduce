@@ -43,6 +43,13 @@ export default function PuzzleTypePage() {
   const type = params?.type as string;
 
   const [selectedDuration, setSelectedDuration] = useState<number | null>(180);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<'beginner' | 'intermediate' | 'hard'>('beginner');
+
+  const DIFFICULTIES: { key: 'beginner' | 'intermediate' | 'hard'; label: string; sub: string }[] = [
+    { key: 'beginner',     label: 'Beginner',     sub: 'Easy clues' },
+    { key: 'intermediate', label: 'Medium',       sub: 'Indirect logic' },
+    { key: 'hard',         label: 'Hard',         sub: 'Multi-step' },
+  ];
 
   useEffect(() => {
     if (!user) router.replace('/auth');
@@ -126,6 +133,32 @@ export default function PuzzleTypePage() {
 
           {/* Choose label */}
           <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#5A5A6E', marginBottom: 2 }}>
+            Difficulty
+          </p>
+
+          {/* ── Difficulty selector ── */}
+          <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
+            {DIFFICULTIES.map(d => (
+              <motion.button
+                key={d.key}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setSelectedDifficulty(d.key)}
+                style={
+                  selectedDifficulty === d.key
+                    ? { flex: 1, padding: '9px 6px', borderRadius: 8, textAlign: 'center', background: ca(0.18), border: `1px solid ${ca(0.45)}` }
+                    : { flex: 1, padding: '9px 6px', borderRadius: 8, textAlign: 'center', background: '#23232B', border: '1px solid rgba(255,255,255,0.07)' }
+                }
+              >
+                <p style={{ fontSize: 12, fontWeight: 700, lineHeight: 1, color: selectedDifficulty === d.key ? color : '#F0F0F4' }}>
+                  {d.label}
+                </p>
+                <p style={{ fontSize: 10, color: '#5A5A6E', marginTop: 2 }}>{d.sub}</p>
+              </motion.button>
+            ))}
+          </div>
+
+          {/* Choose label */}
+          <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#5A5A6E', marginBottom: 2, marginTop: 6 }}>
             Choose Mode
           </p>
 
@@ -243,7 +276,7 @@ export default function PuzzleTypePage() {
             transition={{ delay: 0.2 }}
             whileHover={selectedDuration ? { scale: 1.02 } : {}}
             whileTap={selectedDuration ? { scale: 0.97 } : {}}
-            onClick={() => selectedDuration && router.push(`/modes/${type}/time-attack?t=${selectedDuration}`)}
+            onClick={() => selectedDuration && router.push(`/modes/${type}/time-attack?t=${selectedDuration}&d=${selectedDifficulty}`)}
             disabled={!selectedDuration}
             className="w-full font-game tracking-widest uppercase transition-all"
             style={

@@ -1,14 +1,15 @@
 import type { Case } from '@/types';
 import { LINK_GRID_POOL, TIME_TRACE_POOL, TRUE_LIE_POOL, CODE_BREAK_POOL } from './puzzlePools';
+import {
+  LINK_GRID_INTERMEDIATE, TIME_TRACE_INTERMEDIATE, TRUE_LIE_INTERMEDIATE, CODE_BREAK_INTERMEDIATE,
+  LINK_GRID_HARD, TIME_TRACE_HARD, TRUE_LIE_HARD, CODE_BREAK_HARD,
+} from './puzzlePoolsAdvanced';
 
-/** Seeded Fisher-Yates shuffle — seed changes every minute so puzzles rotate each new game */
-function seededShuffle<T>(arr: T[]): T[] {
-  const seed = Math.floor(Date.now() / (1000 * 60)); // changes every 1 minute
+/** True random shuffle using Math.random() — different every call */
+function randomShuffle<T>(arr: T[]): T[] {
   const a = [...arr];
-  let s = (seed * 1664525 + 1013904223) & 0x7fffffff;
   for (let i = a.length - 1; i > 0; i--) {
-    s = (s * 1664525 + 1013904223) & 0x7fffffff;
-    const j = s % (i + 1);
+    const j = Math.floor(Math.random() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
@@ -543,17 +544,47 @@ export function getCaseById(id: number): Case | undefined {
   return CASES.find((c) => c.id === id);
 }
 
-/** Returns a shuffled pool of puzzles of the given type (for Time Attack) */
+/** Returns a randomly shuffled pool of puzzles for a given type and difficulty */
+export function getPuzzlesByDifficulty<T extends keyof Case['puzzles']>(
+  type: T,
+  difficulty: string,
+): Case['puzzles'][T][] {
+  switch (difficulty) {
+    case 'intermediate': {
+      switch (type) {
+        case 'linkGrid':  return randomShuffle(LINK_GRID_INTERMEDIATE)  as Case['puzzles'][T][];
+        case 'timeTrace': return randomShuffle(TIME_TRACE_INTERMEDIATE) as Case['puzzles'][T][];
+        case 'trueLie':   return randomShuffle(TRUE_LIE_INTERMEDIATE)   as Case['puzzles'][T][];
+        case 'codeBreak': return randomShuffle(CODE_BREAK_INTERMEDIATE) as Case['puzzles'][T][];
+        default:          return CASES.map(c => c.puzzles[type]);
+      }
+    }
+    case 'hard': {
+      switch (type) {
+        case 'linkGrid':  return randomShuffle(LINK_GRID_HARD)  as Case['puzzles'][T][];
+        case 'timeTrace': return randomShuffle(TIME_TRACE_HARD) as Case['puzzles'][T][];
+        case 'trueLie':   return randomShuffle(TRUE_LIE_HARD)   as Case['puzzles'][T][];
+        case 'codeBreak': return randomShuffle(CODE_BREAK_HARD) as Case['puzzles'][T][];
+        default:          return CASES.map(c => c.puzzles[type]);
+      }
+    }
+    default: { // beginner
+      switch (type) {
+        case 'linkGrid':  return randomShuffle(LINK_GRID_POOL)  as Case['puzzles'][T][];
+        case 'timeTrace': return randomShuffle(TIME_TRACE_POOL) as Case['puzzles'][T][];
+        case 'trueLie':   return randomShuffle(TRUE_LIE_POOL)   as Case['puzzles'][T][];
+        case 'codeBreak': return randomShuffle(CODE_BREAK_POOL) as Case['puzzles'][T][];
+        default:          return CASES.map(c => c.puzzles[type]);
+      }
+    }
+  }
+}
+
+/** Returns a randomly shuffled pool of puzzles of the given type (for Time Attack, default beginner) */
 export function getAllPuzzlesOfType<T extends keyof Case['puzzles']>(
   type: T,
 ): Case['puzzles'][T][] {
-  switch (type) {
-    case 'linkGrid':  return seededShuffle(LINK_GRID_POOL)  as Case['puzzles'][T][];
-    case 'timeTrace': return seededShuffle(TIME_TRACE_POOL) as Case['puzzles'][T][];
-    case 'trueLie':   return seededShuffle(TRUE_LIE_POOL)   as Case['puzzles'][T][];
-    case 'codeBreak': return seededShuffle(CODE_BREAK_POOL) as Case['puzzles'][T][];
-    default:          return CASES.map(c => c.puzzles[type]);
-  }
+  return getPuzzlesByDifficulty(type, 'beginner');
 }
 
 export const PUZZLE_META: Record<

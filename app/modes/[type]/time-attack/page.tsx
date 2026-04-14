@@ -4,7 +4,7 @@ import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '@/lib/store/authStore';
 import { useGameStore } from '@/lib/store/gameStore';
-import { PUZZLE_META, getAllPuzzlesOfType } from '@/lib/data/cases';
+import { PUZZLE_META, getPuzzlesByDifficulty } from '@/lib/data/cases';
 import { useTimer } from '@/lib/hooks/useTimer';
 import { calculateTimeAttackScore } from '@/lib/utils/scoring';
 import { PuzzleLayout } from '@/components/layout/PuzzleLayout';
@@ -24,6 +24,7 @@ export default function TimeAttackPage() {
   const router       = useRouter();
   const type         = params?.type as PuzzleType;
   const timeLimit    = parseInt(searchParams?.get('t') ?? '60', 10);
+  const difficulty   = (searchParams?.get('d') ?? 'beginner') as string;
 
   const [gameKey, setGameKey] = useState(0);
 
@@ -34,12 +35,13 @@ export default function TimeAttackPage() {
       key={gameKey}
       type={type}
       timeLimit={timeLimit}
+      difficulty={difficulty}
       onRestart={() => setGameKey(k => k + 1)}
     />
   );
 }
 
-function TimeAttackGame({ type, timeLimit, onRestart }: { type: PuzzleType; timeLimit: number; onRestart: () => void }) {
+function TimeAttackGame({ type, timeLimit, difficulty, onRestart }: { type: PuzzleType; timeLimit: number; difficulty: string; onRestart: () => void }) {
   const router  = useRouter();
   const { user } = useAuthStore();
   const { startTimeAttack, incrementSolved, addTimeAttackMistake, endTimeAttack, setLastResult } = useGameStore();
@@ -53,7 +55,7 @@ function TimeAttackGame({ type, timeLimit, onRestart }: { type: PuzzleType; time
   const [mistakes, setMistakes]   = useState(0);
   const [key, setKey]             = useState(0);
 
-  const puzzles = useRef(getAllPuzzlesOfType(type as 'linkGrid' | 'timeTrace' | 'trueLie' | 'codeBreak'));
+  const puzzles = useRef(getPuzzlesByDifficulty(type as 'linkGrid' | 'timeTrace' | 'trueLie' | 'codeBreak', difficulty));
 
   // solvedRef / mistakesRef so the onComplete closure always sees current values
   const solvedRef   = useRef(0);

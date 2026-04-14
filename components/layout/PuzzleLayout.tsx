@@ -13,7 +13,7 @@ const STEP_COLORS: Record<PuzzleType, string> = {
 };
 const PUZZLE_TYPES: PuzzleType[] = ['linkGrid', 'timeTrace', 'trueLie', 'codeBreak'];
 
-const HOW_TO_PLAY: Record<PuzzleType, { steps: string[] }> = {
+const HOW_TO_PLAY: Record<PuzzleType, { steps: string[]; example: { label: string; lines: string[] } }> = {
   linkGrid: {
     steps: [
       'Read the clues to understand who belongs where.',
@@ -22,6 +22,14 @@ const HOW_TO_PLAY: Record<PuzzleType, { steps: string[] }> = {
       'Use elimination — placing one person rules out others.',
       'Select your final answer from the chips below and confirm.',
     ],
+    example: {
+      label: 'Example',
+      lines: [
+        'Clue: "Ravi is at Corner" → mark Ravi × Corner as ✓.',
+        'Clue: "Cabin has Laptop" → Ravi (Corner) ≠ Cabin.',
+        'Clue: "Asha not at Window" → Asha must be at Cabin → she has Laptop.',
+      ],
+    },
   },
   timeTrace: {
     steps: [
@@ -31,6 +39,14 @@ const HOW_TO_PLAY: Record<PuzzleType, { steps: string[] }> = {
       'The crime always occurs at the highlighted middle slot.',
       'Fill every slot, then tap Lock In Timeline.',
     ],
+    example: {
+      label: 'Example',
+      lines: [
+        'Clue: "Ravi came before Neha" → Ravi is placed earlier.',
+        'Clue: "Asha was not first" → order is Ravi → Asha → Neha.',
+        'Crime at 2 PM (middle slot) → Asha was present.',
+      ],
+    },
   },
   trueLie: {
     steps: [
@@ -40,6 +56,14 @@ const HOW_TO_PLAY: Record<PuzzleType, { steps: string[] }> = {
       'If two statements contradict, one of those people is the liar.',
       'Mark exactly one liar and tap Expose the Liar.',
     ],
+    example: {
+      label: 'Example',
+      lines: [
+        'Asha: "Ravi did it". Ravi: "Neha is lying".',
+        'If Ravi is innocent, Asha lies. But Ravi also wrongly blames Neha.',
+        'Only one liar is valid — test each to find the contradiction.',
+      ],
+    },
   },
   codeBreak: {
     steps: [
@@ -49,6 +73,15 @@ const HOW_TO_PLAY: Record<PuzzleType, { steps: string[] }> = {
       'Cross-reference all clues to narrow down each digit.',
       'Enter your code using the keypad and tap Crack the Code.',
     ],
+    example: {
+      label: 'Example',
+      lines: [
+        'Guess 123 → "1 correct in right place": one digit is perfect.',
+        'Guess 567 → "none correct": 5, 6, 7 are all eliminated.',
+        'Guess 356 → "1 correct but wrong place": 3 is right, wrong spot.',
+        'Conclusion: 3 goes to position 3, giving answer 132.',
+      ],
+    },
   },
 };
 
@@ -86,7 +119,7 @@ export function PuzzleLayout({
   const timerColor  = isLow ? '#EF4444' : '#B5F23D';
 
   const [showHelp, setShowHelp] = useState(false);
-  const { steps } = HOW_TO_PLAY[puzzleType];
+  const { steps, example } = HOW_TO_PLAY[puzzleType];
 
   return (
     <div className="flex flex-col" style={{ background: '#0C0C0F', minHeight: '100dvh', maxWidth: 480, margin: '0 auto' }}>
@@ -294,6 +327,43 @@ export function PuzzleLayout({
                   </motion.div>
                 ))}
               </div>
+
+              {/* Example */}
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                style={{ margin: '16px 20px 0' }}
+              >
+                <div
+                  style={{
+                    borderRadius: 12,
+                    background: `rgba(${parseInt(color.slice(1,3),16)},${parseInt(color.slice(3,5),16)},${parseInt(color.slice(5,7),16)},0.07)`,
+                    border: `1px solid rgba(${parseInt(color.slice(1,3),16)},${parseInt(color.slice(3,5),16)},${parseInt(color.slice(5,7),16)},0.18)`,
+                    padding: '14px 16px',
+                  }}
+                >
+                  <p
+                    className="font-game"
+                    style={{ fontSize: 11, letterSpacing: '0.1em', color, marginBottom: 10 }}
+                  >
+                    {example.label.toUpperCase()}
+                  </p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {example.lines.map((line, i) => (
+                      <div key={i} className="flex items-start" style={{ gap: 8 }}>
+                        <div
+                          style={{
+                            width: 5, height: 5, borderRadius: '50%',
+                            background: color, flexShrink: 0, marginTop: 6,
+                          }}
+                        />
+                        <p style={{ fontSize: 12, color: '#A0A0B0', lineHeight: 1.6 }}>{line}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
             </motion.div>
           </>
         )}
