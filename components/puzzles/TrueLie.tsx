@@ -3,6 +3,10 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TrueLiePuzzle } from '@/types';
 
+const COLOR     = '#F472B6';
+const COLOR_DIM = 'rgba(244,114,182,0.15)';
+const COLOR_BDR = 'rgba(244,114,182,0.3)';
+
 interface TrueLieProps {
   puzzle: TrueLiePuzzle;
   onSolve: () => void;
@@ -38,140 +42,137 @@ export function TrueLie({ puzzle, onSolve, onMistake }: TrueLieProps) {
   };
 
   return (
-    <div className="flex flex-col gap-6 py-6">
+    <div className="flex flex-col gap-5 py-5 pb-10">
 
-      {/* ── Rule banner ────────────────────────────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl p-5 mx-1"
-        style={{ background: 'rgba(236,72,153,0.1)', border: '1px solid rgba(236,72,153,0.25)' }}
+      {/* ── Rule banner ─────────────────────────────────────────────── */}
+      <div
+        className="rounded-xl px-4 py-3"
+        style={{ background: COLOR_DIM, border: `1px solid ${COLOR_BDR}` }}
       >
-        <p className="font-game text-[#EC4899] text-lg mb-2" style={{ letterSpacing: '0.1em' }}>THE RULE</p>
-        <p className="text-sm text-[#CCC] leading-relaxed">
-          Exactly <span className="text-[#EC4899] font-bold">one person</span> is lying.
-          Mark each statement as TRUE or LIE to find the liar.
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em] mb-1" style={{ color: COLOR }}>
+          The Rule
         </p>
-      </motion.div>
-
-      {/* ── Statements ─────────────────────────────────────────────── */}
-      <div className="space-y-3 mx-1">
-        {statements.map((stmt, i) => {
-          const state   = marked[i];
-          const isLie   = state === true;
-          const isTruth = state === false;
-
-          return (
-            <motion.div
-              key={stmt.person}
-              initial={{ opacity: 0, x: -16 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.07 }}
-              layout
-              className="rounded-2xl p-5 transition-all"
-              style={{
-                background: isLie
-                  ? 'rgba(236,72,153,0.12)'
-                  : isTruth
-                  ? 'rgba(200,255,87,0.07)'
-                  : '#1C1C1C',
-                border: `1.5px solid ${
-                  isLie ? 'rgba(236,72,153,0.5)'
-                  : isTruth ? 'rgba(200,255,87,0.3)'
-                  : '#2C2C2C'
-                }`,
-              }}
-            >
-              {/* Person name row */}
-              <div className="flex items-center justify-between mb-3">
-                <p className="font-game text-base tracking-widest"
-                  style={{ color: isLie ? '#EC4899' : isTruth ? '#C8FF57' : '#AAAAAA' }}
-                >
-                  {stmt.person.toUpperCase()}
-                </p>
-
-                {/* TRUE / LIE buttons */}
-                <div className="flex gap-2 shrink-0">
-                  <motion.button
-                    whileTap={{ scale: 0.88 }}
-                    onClick={() => mark(i, false)}
-                    className="px-4 py-2 rounded-xl text-xs font-black transition-all"
-                    style={
-                      isTruth
-                        ? { background: '#C8FF57', color: '#0D0D0D', boxShadow: '0 0 12px rgba(200,255,87,0.3)' }
-                        : { background: '#2A2A2A', color: '#AAAAAA', border: '1px solid #383838' }
-                    }
-                  >
-                    TRUE
-                  </motion.button>
-                  <motion.button
-                    whileTap={{ scale: 0.88 }}
-                    onClick={() => mark(i, true)}
-                    className="px-4 py-2 rounded-xl text-xs font-black transition-all"
-                    style={
-                      isLie
-                        ? { background: '#EC4899', color: '#fff', boxShadow: '0 0 12px rgba(236,72,153,0.3)' }
-                        : { background: '#2A2A2A', color: '#AAAAAA', border: '1px solid #383838' }
-                    }
-                  >
-                    LIE
-                  </motion.button>
-                </div>
-              </div>
-
-              {/* Statement text */}
-              <p className="text-sm leading-relaxed pl-0.5"
-                style={{ color: isLie ? '#FFCCE0' : isTruth ? '#E8FFB0' : '#DDDDDD' }}>
-                &ldquo;{stmt.text}&rdquo;
-              </p>
-            </motion.div>
-          );
-        })}
+        <p className="text-sm" style={{ color: '#A0A0B0' }}>
+          Exactly <span style={{ color: COLOR, fontWeight: 700 }}>one person</span> is lying.
+          Mark each statement TRUE or LIE.
+        </p>
       </div>
 
-      {/* Warnings */}
+      {/* ── Statements ──────────────────────────────────────────────── */}
+      <section>
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color: COLOR }}>
+          Statements
+        </p>
+        <div className="flex flex-col gap-2">
+          {statements.map((stmt, i) => {
+            const state   = marked[i];
+            const isLie   = state === true;
+            const isTruth = state === false;
+
+            return (
+              <motion.div
+                key={stmt.person}
+                initial={{ opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.06 }}
+                className="rounded-xl flex items-center justify-between gap-4 px-4 py-3"
+                style={{
+                  background: '#141418',
+                  border: `1px solid ${
+                    isLie    ? 'rgba(239,68,68,0.3)'
+                    : isTruth ? 'rgba(34,197,94,0.25)'
+                    : 'rgba(255,255,255,0.07)'
+                  }`,
+                  minHeight: '64px',
+                }}
+              >
+                {/* Left: person + statement */}
+                <div className="flex-1 min-w-0">
+                  <p
+                    className="text-[10px] font-bold uppercase tracking-[0.12em] mb-1"
+                    style={{ color: '#5A5A6E' }}
+                  >
+                    {stmt.person}
+                  </p>
+                  <p className="text-sm leading-relaxed" style={{ color: '#F0F0F4' }}>
+                    &ldquo;{stmt.text}&rdquo;
+                  </p>
+                </div>
+
+                {/* Right: toggle group */}
+                <div
+                  className="flex shrink-0 rounded-lg overflow-hidden"
+                  style={{ border: '1px solid rgba(255,255,255,0.13)' }}
+                >
+                  <button
+                    onClick={() => mark(i, false)}
+                    className="px-3 py-2 text-[11px] font-bold transition-all"
+                    style={
+                      isTruth
+                        ? { background: 'rgba(34,197,94,0.18)', color: '#4ade80' }
+                        : { background: 'transparent', color: '#5A5A6E' }
+                    }
+                  >
+                    True
+                  </button>
+                  <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)' }} />
+                  <button
+                    onClick={() => mark(i, true)}
+                    className="px-3 py-2 text-[11px] font-bold transition-all"
+                    style={
+                      isLie
+                        ? { background: 'rgba(239,68,68,0.15)', color: '#f87171' }
+                        : { background: 'transparent', color: '#5A5A6E' }
+                    }
+                  >
+                    Lie
+                  </button>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ── Question / warnings ──────────────────────────────────────── */}
+      {question && (
+        <p className="text-sm text-center" style={{ color: '#5A5A6E' }}>{question}</p>
+      )}
+
       <AnimatePresence>
         {lieCount > 1 && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            className="mx-1 rounded-xl bg-[#FFD60A]/10 border border-[#FFD60A]/25 px-4 py-3 text-center"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            className="rounded-xl px-4 py-3 text-center"
+            style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)' }}
           >
-            <p className="text-sm font-bold text-[#FFD60A]">Only one person can be the liar</p>
+            <p className="text-sm font-semibold" style={{ color: '#FBBF24' }}>Only one person can be the liar</p>
           </motion.div>
         )}
         {error && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            className="mx-1 rounded-xl bg-[#EF4444]/10 border border-[#EF4444]/25 px-4 py-3 text-center"
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+            className="rounded-xl px-4 py-3 text-center"
+            style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)' }}
           >
-            <p className="text-sm font-bold text-[#EF4444]">Wrong — reconsider the statements</p>
+            <p className="text-sm font-semibold" style={{ color: '#EF4444' }}>Wrong — reconsider the statements</p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {question && (
-        <p className="text-sm text-[#888] text-center">{question}</p>
-      )}
-
-      <motion.button
-        whileHover={canSubmit ? { scale: 1.02 } : {}}
-        whileTap={canSubmit ? { scale: 0.97 } : {}}
+      {/* ── Submit ──────────────────────────────────────────────────── */}
+      <button
         onClick={handleSubmit}
         disabled={!canSubmit}
-        className="mx-1 py-4 rounded-2xl font-black text-base tracking-wide transition-all"
-        style={{
-          background: canSubmit ? '#EC4899' : '#1A1A1A',
-          color: canSubmit ? '#fff' : '#777',
-          border: canSubmit ? 'none' : '1px dashed #333',
-          boxShadow: canSubmit ? '0 0 28px rgba(236,72,153,0.25)' : 'none',
-        }}
+        className="w-full py-3.5 rounded-xl font-bold text-xs tracking-[0.08em] uppercase transition-all"
+        style={
+          canSubmit
+            ? { background: COLOR_DIM, border: `1px solid ${COLOR_BDR}`, color: COLOR }
+            : { background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', color: '#5A5A6E' }
+        }
       >
-        EXPOSE THE LIAR
-      </motion.button>
+        Expose the Liar
+      </button>
     </div>
   );
 }

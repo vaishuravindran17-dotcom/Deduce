@@ -16,12 +16,6 @@ import type { PuzzleType, PuzzleStatus } from '@/types';
 
 const PUZZLE_TYPES: PuzzleType[] = ['linkGrid', 'timeTrace', 'trueLie', 'codeBreak'];
 const PUZZLE_LABELS = ['LinkGrid', 'TimeTrace', 'TrueLie', 'CodeBreak'];
-const PUZZLE_DESCS  = [
-  'Eliminate with the grid',
-  'Order the timeline',
-  'Find the liar',
-  'Crack the code',
-];
 
 export default function DailyPage() {
   const router = useRouter();
@@ -110,7 +104,7 @@ export default function DailyPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, transition: { duration: 0.3 } }}
             className="absolute inset-0 z-40 flex flex-col items-center justify-center gap-6"
-            style={{ background: 'rgba(13,13,13,0.92)', backdropFilter: 'blur(12px)' }}
+            style={{ background: 'rgba(12,12,15,0.93)', backdropFilter: 'blur(12px)' }}
           >
             {/* Animated rings */}
             <div className="relative flex items-center justify-center">
@@ -143,7 +137,7 @@ export default function DailyPage() {
             >
               <p className="font-game text-white" style={{ fontSize: '48px', letterSpacing: '0.05em' }}>SOLVED!</p>
               {activeIdx < PUZZLE_TYPES.length - 1 && (
-                <p className="text-[#888] text-sm mt-2">Next up: {PUZZLE_LABELS[activeIdx + 1]}</p>
+                <p className="text-sm mt-2" style={{ color: '#A0A0B0' }}>Next: {PUZZLE_LABELS[activeIdx + 1]}</p>
               )}
             </motion.div>
           </motion.div>
@@ -158,12 +152,6 @@ export default function DailyPage() {
           exit={{ opacity: 0, x: -32 }}
           transition={{ duration: 0.25, ease: 'easeInOut' }}
         >
-          <div className="px-5 pt-6 pb-2">
-            <h2 className="font-game text-white" style={{ fontSize: '36px', letterSpacing: '0.05em', lineHeight: 1 }}>
-              {PUZZLE_LABELS[activeIdx].toUpperCase()}
-            </h2>
-            <p className="text-sm text-[#888] mt-1">{PUZZLE_DESCS[activeIdx]}</p>
-          </div>
           {renderPuzzle()}
         </motion.div>
       </AnimatePresence>

@@ -8,18 +8,18 @@ import { LinkGridIcon, TimeTraceIcon, TrueLieIcon, CodeBreakIcon } from '@/compo
 import type { PuzzleType } from '@/types';
 
 const COLORS: Record<string, string> = {
-  linkGrid: '#8B5CF6', timeTrace: '#F97316',
-  trueLie:  '#EC4899', codeBreak: '#06B6D4',
+  linkGrid: '#A78BFA', timeTrace: '#FB923C',
+  trueLie:  '#F472B6', codeBreak: '#2DD4BF',
 };
 
 const DURATIONS = [
-  { seconds: 60,  label: '1 MIN',  sub: '60 seconds' },
-  { seconds: 180, label: '3 MIN',  sub: '3 minutes' },
-  { seconds: 300, label: '5 MIN',  sub: '5 minutes' },
+  { seconds: 60,  label: '1 Min',  sub: '60 sec' },
+  { seconds: 180, label: '3 Min',  sub: '3 min' },
+  { seconds: 300, label: '5 Min',  sub: '5 min' },
 ];
 
 function PuzzleIcon({ type, size }: { type: string; size: number }) {
-  const c = COLORS[type] ?? '#06B6D4';
+  const c = COLORS[type] ?? '#2DD4BF';
   switch (type) {
     case 'linkGrid':  return <LinkGridIcon  size={size} color={c} />;
     case 'timeTrace': return <TimeTraceIcon size={size} color={c} />;
@@ -33,9 +33,9 @@ export default function PuzzleTypePage() {
   const router = useRouter();
   const params = useParams();
   const { user } = useAuthStore();
-  const type  = params?.type as string;
+  const type = params?.type as string;
 
-  const [selectedDuration, setSelectedDuration] = useState<number | null>(null);
+  const [selectedDuration, setSelectedDuration] = useState<number | null>(180);
 
   useEffect(() => {
     if (!user) router.replace('/auth');
@@ -44,129 +44,166 @@ export default function PuzzleTypePage() {
   if (!user || !PUZZLE_META[type]) { router.replace('/modes'); return null; }
 
   const meta  = PUZZLE_META[type];
-  const color = COLORS[type] ?? '#06B6D4';
+  const color = COLORS[type] ?? '#2DD4BF';
 
   return (
-    <div className="min-h-dvh bg-[#0D0D0D] grid-bg flex flex-col">
+    <div className="min-h-dvh flex flex-col" style={{ background: '#0C0C0F' }}>
 
-      {/* Header */}
-      <header className="border-b border-[#1E1E1E] bg-[#0D0D0D]/95 backdrop-blur sticky top-0 z-10">
-        <div className="game-container h-16 flex items-center gap-4">
+      {/* ── Header ─────────────────────────────────────────────────── */}
+      <header
+        className="sticky top-0 z-10"
+        style={{ background: '#0C0C0F', borderBottom: '1px solid rgba(255,255,255,0.07)' }}
+      >
+        <div className="game-container h-14 flex items-center gap-3">
           <button
             onClick={() => router.push('/home')}
-            className="w-9 h-9 flex items-center justify-center rounded-xl bg-[#1E1E1E] border border-[#2A2A2A] text-[#888] hover:text-white transition-all"
+            className="w-9 h-9 flex items-center justify-center rounded-xl shrink-0 transition-colors"
+            style={{ background: '#1C1C22', border: '1px solid rgba(255,255,255,0.07)', color: '#A0A0B0' }}
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
               <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
-          <span className="font-game text-white text-xl tracking-wider">{meta.label.toUpperCase()}</span>
+          <div className="flex-1 flex items-center justify-center gap-2">
+            <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
+            <span className="font-game text-sm tracking-widest" style={{ color }}>
+              {meta.label.toUpperCase()}
+            </span>
+          </div>
+          <div className="w-9" />
+        </div>
+        <div className="game-container pb-2.5">
+          <div className="rounded-full" style={{ height: '3px', background: color }} />
         </div>
       </header>
 
-      <div className="flex-1 game-container py-12 flex flex-col items-center gap-10">
+      {/* ── Body ────────────────────────────────────────────────────── */}
+      <div className="flex-1 game-container py-8 flex flex-col items-center gap-7">
 
-        {/* Puzzle icon + title */}
+        {/* Icon + title */}
         <motion.div
-          initial={{ scale: 0.7, opacity: 0 }}
+          initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: 'spring' as const, stiffness: 280, damping: 22 }}
-          className="flex flex-col items-center gap-6"
+          className="flex flex-col items-center gap-5"
         >
           <div
-            className="w-28 h-28 rounded-3xl flex items-center justify-center"
-            style={{ background: `${color}15`, border: `1px solid ${color}30`, boxShadow: `0 0 60px ${color}15` }}
+            className="w-20 h-20 rounded-2xl flex items-center justify-center"
+            style={{ background: `${color}18`, border: `1px solid ${color}30` }}
           >
-            <PuzzleIcon type={type} size={52} />
+            <PuzzleIcon type={type} size={40} />
           </div>
           <div className="text-center">
-            <h1 className="font-game text-white mb-3" style={{ fontSize: '48px', letterSpacing: '0.05em' }}>
+            <h1 className="font-game text-white mb-1.5" style={{ fontSize: '36px', letterSpacing: '0.06em' }}>
               {meta.label.toUpperCase()}
             </h1>
-            <p className="text-[#999] text-sm leading-relaxed max-w-xs">{meta.description}</p>
+            <p className="text-sm leading-relaxed max-w-xs" style={{ color: '#A0A0B0' }}>
+              {meta.description}
+            </p>
           </div>
         </motion.div>
 
         {/* Mode section */}
-        <div className="w-full space-y-5 max-w-md">
-          <p className="font-game text-[#777] text-center mb-2" style={{ fontSize: '13px', letterSpacing: '0.25em' }}>
-            CHOOSE MODE
+        <div className="w-full flex flex-col gap-3">
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-center" style={{ color: '#5A5A6E' }}>
+            Choose Mode
           </p>
 
-          {/* Time Attack */}
+          {/* Time Attack card */}
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, type: 'spring' as const, stiffness: 280, damping: 24 }}
-            className="rounded-2xl bg-[#141414] border border-[#2A2A2A] p-7"
+            transition={{ delay: 0.08 }}
+            className="rounded-xl overflow-hidden"
+            style={{ background: '#141418', border: `1px solid ${color}30` }}
           >
-            {/* Header row */}
-            <div className="flex items-center gap-4 mb-5">
+            {/* Mode header row */}
+            <div
+              className="flex items-center gap-3 px-4 py-4"
+              style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}
+            >
               <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0"
-                style={{ background: '#FFD60A15', border: '1px solid #FFD60A20' }}
+                className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 text-xl"
+                style={{ background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.2)' }}
               >
                 ⏱
               </div>
-              <div className="flex-1">
-                <p className="font-game text-white text-xl" style={{ letterSpacing: '0.05em' }}>TIME ATTACK</p>
-                <p className="text-xs text-[#666] mt-0.5">Solve as many puzzles as possible</p>
+              <div>
+                <p className="font-game text-sm tracking-widest" style={{ color: '#F0F0F4' }}>TIME ATTACK</p>
+                <p className="text-xs mt-0.5" style={{ color: '#5A5A6E' }}>Solve as many puzzles as possible</p>
               </div>
             </div>
 
             {/* Duration picker */}
-            <p className="text-xs font-bold text-[#888] uppercase tracking-[0.2em] mb-3">Select duration</p>
-            <div className="grid grid-cols-3 gap-3 mb-5">
-              {DURATIONS.map(d => (
-                <motion.button
-                  key={d.seconds}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setSelectedDuration(d.seconds)}
-                  className="py-3 rounded-xl text-center transition-all"
-                  style={
-                    selectedDuration === d.seconds
-                      ? { background: `${color}20`, border: `1.5px solid ${color}`, color }
-                      : { background: '#222', border: '1.5px solid #333', color: '#888' }
-                  }
-                >
-                  <p className="font-game text-lg leading-none">{d.label}</p>
-                  <p className="text-[10px] mt-1 opacity-70">{d.sub}</p>
-                </motion.button>
-              ))}
+            <div className="px-4 py-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color: '#5A5A6E' }}>
+                Select Duration
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                {DURATIONS.map(d => (
+                  <motion.button
+                    key={d.seconds}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setSelectedDuration(d.seconds)}
+                    className="py-3 rounded-lg text-center transition-all"
+                    style={
+                      selectedDuration === d.seconds
+                        ? { background: `${color}18`, border: `1.5px solid ${color}`, color }
+                        : { background: '#1C1C22', border: '1px solid rgba(255,255,255,0.07)', color: '#5A5A6E' }
+                    }
+                  >
+                    <p className="font-bold text-sm leading-none">{d.label}</p>
+                    <p className="text-[10px] mt-1 opacity-70">{d.sub}</p>
+                  </motion.button>
+                ))}
+              </div>
             </div>
-
-            <motion.button
-              whileHover={selectedDuration ? { scale: 1.02 } : {}}
-              whileTap={selectedDuration ? { scale: 0.97 } : {}}
-              onClick={() => selectedDuration && router.push(`/modes/${type}/time-attack?t=${selectedDuration}`)}
-              disabled={!selectedDuration}
-              className="w-full py-4 rounded-xl font-black text-base tracking-wide transition-all"
-              style={
-                selectedDuration
-                  ? { background: '#FFD60A', color: '#0D0D0D', boxShadow: '0 0 24px rgba(255,214,10,0.2)' }
-                  : { background: '#1A1A1A', color: '#777', border: '1px dashed #333' }
-              }
-            >
-              {selectedDuration ? `START ${DURATIONS.find(d => d.seconds === selectedDuration)?.label}` : 'SELECT A DURATION'}
-            </motion.button>
           </motion.div>
 
-          {/* Online — coming soon */}
+          {/* Online Duel — coming soon */}
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.14 }}
+            className="rounded-xl px-4 py-4 flex items-center gap-3 opacity-30 pointer-events-none"
+            style={{ background: '#141418', border: '1px solid rgba(255,255,255,0.07)' }}
+          >
+            <div
+              className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 text-xl"
+              style={{ background: '#1C1C22', border: '1px solid rgba(255,255,255,0.07)' }}
+            >
+              🌐
+            </div>
+            <div className="flex-1">
+              <p className="font-game text-sm tracking-widest" style={{ color: '#F0F0F4' }}>ONLINE DUEL</p>
+              <p className="text-xs mt-0.5" style={{ color: '#5A5A6E' }}>Live vs global leaderboard</p>
+            </div>
+            <span
+              className="text-[10px] font-bold uppercase tracking-[0.1em] px-2.5 py-1.5 rounded-lg"
+              style={{ background: '#1C1C22', color: '#5A5A6E' }}
+            >
+              Soon
+            </span>
+          </motion.div>
+
+          {/* Start button — solid fill */}
+          <motion.button
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="w-full rounded-2xl bg-[#111] border border-[#1E1E1E] p-6 opacity-25 pointer-events-none"
+            whileHover={selectedDuration ? { scale: 1.02 } : {}}
+            whileTap={selectedDuration ? { scale: 0.97 } : {}}
+            onClick={() => selectedDuration && router.push(`/modes/${type}/time-attack?t=${selectedDuration}`)}
+            disabled={!selectedDuration}
+            className="w-full py-4 rounded-xl font-game text-sm tracking-widest uppercase transition-all"
+            style={
+              selectedDuration
+                ? { background: color, color: '#0C0C0F', boxShadow: `0 0 28px ${color}35` }
+                : { background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', color: '#5A5A6E' }
+            }
           >
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-[#1E1E1E] flex items-center justify-center text-xl">🌐</div>
-              <div>
-                <p className="font-game text-white text-xl" style={{ letterSpacing: '0.05em' }}>ONLINE DUEL</p>
-                <p className="text-xs text-[#444] mt-0.5">Live vs global leaderboard</p>
-              </div>
-              <span className="ml-auto font-game text-xs px-3 py-1.5 rounded-xl bg-[#252525] text-[#444]">SOON</span>
-            </div>
-          </motion.div>
+            Start Game →
+          </motion.button>
         </div>
       </div>
     </div>

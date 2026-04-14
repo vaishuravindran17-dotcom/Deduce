@@ -3,6 +3,10 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { LinkGridPuzzle } from '@/types';
 
+const COLOR     = '#A78BFA';
+const COLOR_DIM = 'rgba(167,139,250,0.15)';
+const COLOR_BDR = 'rgba(167,139,250,0.3)';
+
 type CellState = 'empty' | 'cross' | 'check';
 const CYCLE: Record<CellState, CellState> = { empty: 'cross', cross: 'check', check: 'empty' };
 
@@ -19,7 +23,7 @@ export function LinkGrid({ puzzle, onSolve, onMistake }: LinkGridProps) {
   const [gridB, setGridB]         = useState<CellState[][]>(() => people.map(() => categoryB.map(() => 'empty')));
   const [submitted, setSubmitted] = useState(false);
   const [selected, setSelected]   = useState<string | null>(null);
-  const [shake, setShake]         = useState(false);
+  const [error, setError]         = useState(false);
 
   const tap = (
     grid: CellState[][],
@@ -36,156 +40,160 @@ export function LinkGrid({ puzzle, onSolve, onMistake }: LinkGridProps) {
     if (selected === answer) {
       onSolve();
     } else {
-      setShake(true);
+      setError(true);
       onMistake();
-      setTimeout(() => { setShake(false); setSubmitted(false); setSelected(null); }, 800);
+      setTimeout(() => { setError(false); setSubmitted(false); setSelected(null); }, 800);
     }
   };
 
   return (
-    <div className="flex flex-col gap-6 py-6">
+    <div className="flex flex-col gap-5 py-5 pb-10">
 
-      {/* ── Clues ──────────────────────────────────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl bg-[#1A1A1A] border border-[#2A2A2A] p-6 mx-1"
-      >
-        <p className="font-game text-[#A855F7] text-lg mb-4" style={{ letterSpacing: '0.1em' }}>CLUES</p>
-        <ul className="space-y-3">
+      {/* ── CLUES ───────────────────────────────────────────────────── */}
+      <section>
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color: COLOR }}>
+          Clues
+        </p>
+        <div className="rounded-xl overflow-hidden" style={{ background: '#141418', border: `1px solid ${COLOR_BDR}` }}>
           {clues.map((clue, i) => (
-            <motion.li
+            <motion.div
               key={i}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.07 }}
-              className="flex items-start gap-3 text-sm text-[#DDD] leading-relaxed"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: i * 0.06 }}
+              className="flex items-start gap-3 px-4 py-3"
+              style={{ borderBottom: i < clues.length - 1 ? '1px solid rgba(255,255,255,0.07)' : 'none' }}
             >
-              <span className="text-[#A855F7] font-black shrink-0 mt-0.5 text-base">›</span>
-              {clue}
-            </motion.li>
-          ))}
-        </ul>
-      </motion.div>
-
-      {/* ── Grid A ─────────────────────────────────────────────────── */}
-      <GridTable label={`People × ${categoryA[0].includes('Desk') || categoryA[0].includes('Room') || categoryA[0].includes('Gate') || categoryA[0].includes('Studio') || categoryA[0].includes('Coach') || categoryA[0].includes('Hall') || categoryA[0].includes('Table') ? 'Locations' : 'Locations'}`}
-        color="#A855F7"
-        rows={people} cols={categoryA} cells={gridA}
-        onTap={(r,c) => tap(gridA, setGridA, r, c)} disabled={submitted} />
-
-      {/* ── Grid B ─────────────────────────────────────────────────── */}
-      <GridTable label="People × Items" color="#A855F7"
-        rows={people} cols={categoryB} cells={gridB}
-        onTap={(r,c) => tap(gridB, setGridB, r, c)} disabled={submitted} />
-
-      {/* ── Answer selection ───────────────────────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="rounded-2xl bg-[#1A1A1A] border border-[#2A2A2A] p-6 mx-1"
-      >
-        <p className="font-game text-[#A855F7] text-lg mb-2" style={{ letterSpacing: '0.1em' }}>ANSWER</p>
-        <p className="text-sm text-[#999] mb-5">{question}</p>
-
-        <div className="flex flex-wrap gap-3 mb-6">
-          {people.map(person => (
-            <motion.button
-              key={person}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => !submitted && setSelected(person)}
-              className="px-6 py-3 rounded-xl text-sm font-bold transition-all"
-              style={
-                selected === person
-                  ? { background: '#A855F7', color: '#fff', boxShadow: '0 0 20px rgba(168,85,247,0.3)' }
-                  : { background: '#2A2A2A', color: '#CCCCCC', border: '1px solid #363636' }
-              }
-            >
-              {person}
-            </motion.button>
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="mt-0.5 shrink-0">
+                <path d="M6 3l5 5-5 5" stroke={COLOR} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span className="text-sm leading-relaxed" style={{ color: '#F0F0F4' }}>{clue}</span>
+            </motion.div>
           ))}
         </div>
+      </section>
 
-        <AnimatePresence>
-          {shake && (
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="text-sm text-[#EF4444] mb-3 font-semibold">
-              Not quite — review the clues again
-            </motion.p>
-          )}
-        </AnimatePresence>
+      {/* ── GRID A ──────────────────────────────────────────────────── */}
+      <section>
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color: COLOR }}>
+          People × Locations
+        </p>
+        <div className="rounded-xl overflow-x-auto" style={{ background: '#141418', border: '1px solid rgba(255,255,255,0.07)' }}>
+          <GridTable rows={people} cols={categoryA} cells={gridA}
+            onTap={(r, c) => tap(gridA, setGridA, r, c)} disabled={submitted} />
+        </div>
+      </section>
 
-        <motion.button
-          whileHover={selected ? { scale: 1.02 } : {}}
-          whileTap={selected ? { scale: 0.97 } : {}}
-          onClick={handleSubmit}
-          disabled={!selected}
-          className="w-full py-4 rounded-2xl font-black text-base tracking-wide transition-all"
-          style={{
-            background: selected ? '#A855F7' : '#1E1E1E',
-            color: selected ? '#fff' : '#777',
-            border: selected ? 'none' : '1px dashed #333',
-            boxShadow: selected ? '0 0 28px rgba(168,85,247,0.25)' : 'none',
-          }}
-        >
-          CONFIRM ANSWER
-        </motion.button>
-      </motion.div>
+      {/* ── GRID B ──────────────────────────────────────────────────── */}
+      <section>
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color: COLOR }}>
+          People × Items
+        </p>
+        <div className="rounded-xl overflow-x-auto" style={{ background: '#141418', border: '1px solid rgba(255,255,255,0.07)' }}>
+          <GridTable rows={people} cols={categoryB} cells={gridB}
+            onTap={(r, c) => tap(gridB, setGridB, r, c)} disabled={submitted} />
+        </div>
+      </section>
+
+      {/* ── ANSWER ──────────────────────────────────────────────────── */}
+      <section>
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color: COLOR }}>
+          Answer
+        </p>
+        <div className="rounded-xl p-4" style={{ background: '#141418', border: '1px solid rgba(255,255,255,0.07)' }}>
+          <p className="text-sm mb-4" style={{ color: '#5A5A6E' }}>{question}</p>
+
+          <div className="flex flex-wrap gap-2 mb-4">
+            {people.map(person => (
+              <motion.button
+                key={person}
+                whileTap={{ scale: 0.93 }}
+                onClick={() => !submitted && setSelected(person)}
+                className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                style={
+                  selected === person
+                    ? { background: COLOR_DIM, border: `1px solid ${COLOR}`, color: COLOR }
+                    : { background: '#1C1C22', border: '1px solid rgba(255,255,255,0.13)', color: '#A0A0B0' }
+                }
+              >
+                {person}
+              </motion.button>
+            ))}
+          </div>
+
+          <AnimatePresence>
+            {error && (
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="text-xs mb-3 font-semibold" style={{ color: '#EF4444' }}>
+                Not quite — check the clues again
+              </motion.p>
+            )}
+          </AnimatePresence>
+
+          <button
+            onClick={handleSubmit}
+            disabled={!selected}
+            className="w-full py-3.5 rounded-xl font-bold text-xs tracking-[0.08em] uppercase transition-all"
+            style={
+              selected
+                ? { background: COLOR_DIM, border: `1px solid ${COLOR_BDR}`, color: COLOR }
+                : { background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', color: '#5A5A6E' }
+            }
+          >
+            Confirm Answer
+          </button>
+        </div>
+      </section>
     </div>
   );
 }
 
-function GridTable({ label, color, rows, cols, cells, onTap, disabled }: {
-  label: string; color: string;
+function GridTable({ rows, cols, cells, onTap, disabled }: {
   rows: string[]; cols: string[]; cells: CellState[][];
   onTap: (r: number, c: number) => void; disabled: boolean;
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.15 }}
-      className="rounded-2xl bg-[#1A1A1A] border border-[#2A2A2A] p-6 mx-1 overflow-x-auto"
-    >
-      <p className="text-xs font-bold uppercase tracking-[0.2em] mb-5" style={{ color }}>{label}</p>
-      <table className="w-full border-collapse min-w-[240px]">
-        <thead>
-          <tr>
-            <th className="w-20" />
-            {cols.map(col => (
-              <th key={col} className="text-[11px] text-[#888] font-bold pb-3 text-center px-1 min-w-[52px] uppercase tracking-wider">
-                {col}
-              </th>
+    <table className="w-full border-collapse">
+      <thead>
+        <tr>
+          <th className="w-24" />
+          {cols.map(col => (
+            <th key={col}
+              className="text-[10px] font-semibold py-4 text-center uppercase tracking-[0.1em] min-w-[56px]"
+              style={{ color: '#5A5A6E' }}>
+              {col}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row, ri) => (
+          <tr key={row} style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+            <td className="text-sm py-3 pl-4 pr-3 font-medium whitespace-nowrap" style={{ color: '#A0A0B0' }}>
+              {row}
+            </td>
+            {cols.map((_, ci) => (
+              <td key={ci} className="p-2 text-center">
+                <motion.button
+                  whileTap={{ scale: 0.78 }}
+                  onClick={() => !disabled && onTap(ri, ci)}
+                  className="w-11 h-11 rounded-xl flex items-center justify-center text-sm font-black transition-all mx-auto"
+                  style={
+                    cells[ri][ci] === 'check'
+                      ? { background: 'rgba(167,139,250,0.18)', border: '1px solid rgba(167,139,250,0.5)', color: COLOR }
+                      : cells[ri][ci] === 'cross'
+                      ? { background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.3)', color: 'rgba(239,68,68,0.55)' }
+                      : { background: '#1C1C22', border: '1px solid rgba(255,255,255,0.07)', color: 'transparent' }
+                  }
+                >
+                  {cells[ri][ci] === 'check' ? '✓' : cells[ri][ci] === 'cross' ? '✕' : ''}
+                </motion.button>
+              </td>
             ))}
           </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, ri) => (
-            <tr key={row}>
-              <td className="text-sm text-[#CCC] py-2 pr-4 pl-1 font-semibold whitespace-nowrap">{row}</td>
-              {cols.map((_, ci) => (
-                <td key={ci} className="p-1.5 text-center">
-                  <motion.button
-                    whileTap={{ scale: 0.78 }}
-                    onClick={() => !disabled && onTap(ri, ci)}
-                    className="w-11 h-11 rounded-xl flex items-center justify-center text-sm font-black transition-all"
-                    style={
-                      cells[ri][ci] === 'check'
-                        ? { background: `${color}25`, border: `2px solid ${color}`, color }
-                        : cells[ri][ci] === 'cross'
-                        ? { background: '#EF444418', border: '2px solid #EF444445', color: '#EF4444' }
-                        : { background: '#282828', border: '2px solid #383838', color: '#555' }
-                    }
-                  >
-                    {cells[ri][ci] === 'check' ? '✓' : cells[ri][ci] === 'cross' ? '✕' : ''}
-                  </motion.button>
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </motion.div>
+        ))}
+        <tr><td colSpan={cols.length + 1} style={{ height: '12px' }} /></tr>
+      </tbody>
+    </table>
   );
 }

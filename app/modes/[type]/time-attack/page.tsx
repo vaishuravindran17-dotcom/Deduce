@@ -128,6 +128,7 @@ function TimeAttackGame({ type, timeLimit, onRestart }: { type: PuzzleType; time
     <PuzzleLayout
       title={`${meta.label} — Time Attack`}
       puzzleType={type}
+      puzzleIndex={puzzleIdx}
       timeAttack
       timeLeft={timeLeft}
       solvedCount={solved}
@@ -140,9 +141,10 @@ function TimeAttackGame({ type, timeLimit, onRestart }: { type: PuzzleType; time
         {phase === 'countdown' && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.3 } }}
-            className="absolute inset-0 z-50 bg-[#0D0D0D] grid-bg flex flex-col items-center justify-center gap-4"
+            className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-4"
+            style={{ background: '#0C0C0F' }}
           >
-            <p className="font-game text-[#888] text-xl tracking-[0.4em]">STARTING IN</p>
+            <p className="font-game text-xl tracking-[0.4em]" style={{ color: '#5A5A6E' }}>STARTING IN</p>
             <motion.div
               key={countdown}
               initial={{ scale: 2, opacity: 0, y: -30 }}
@@ -151,12 +153,12 @@ function TimeAttackGame({ type, timeLimit, onRestart }: { type: PuzzleType; time
               className="font-game leading-none"
               style={{
                 fontSize: 'clamp(100px, 20vw, 160px)',
-                color: countdown > 1 ? '#06B6D4' : countdown === 1 ? '#F97316' : '#C8FF57',
+                color: countdown > 1 ? '#2DD4BF' : countdown === 1 ? '#FB923C' : '#B5F23D',
               }}
             >
               {countdown > 0 ? countdown : 'GO!'}
             </motion.div>
-            <p className="text-[#666] text-sm font-semibold">
+            <p className="text-sm font-semibold" style={{ color: '#5A5A6E' }}>
               Solve as many as you can in {TIME_LIMIT >= 60 ? `${TIME_LIMIT / 60} minute${TIME_LIMIT > 60 ? 's' : ''}` : `${TIME_LIMIT} seconds`}
             </p>
           </motion.div>
@@ -169,7 +171,8 @@ function TimeAttackGame({ type, timeLimit, onRestart }: { type: PuzzleType; time
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="absolute inset-0 z-50 bg-[#0D0D0D] grid-bg flex flex-col items-center justify-center gap-8 px-8"
+            className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-8 px-8"
+            style={{ background: '#0C0C0F' }}
           >
             {/* Time's up label */}
             <motion.div
@@ -178,13 +181,13 @@ function TimeAttackGame({ type, timeLimit, onRestart }: { type: PuzzleType; time
               transition={{ type: 'spring' as const, stiffness: 260, damping: 18, delay: 0.1 }}
               className="text-center"
             >
-              <p className="font-game text-[#444] mb-2" style={{ fontSize: '18px', letterSpacing: '0.35em' }}>
+              <p className="font-game mb-2" style={{ fontSize: '18px', letterSpacing: '0.35em', color: '#5A5A6E' }}>
                 TIME&apos;S UP
               </p>
-              <p className="font-game leading-none" style={{ fontSize: 'clamp(80px, 15vw, 120px)', color: '#C8FF57' }}>
+              <p className="font-game leading-none" style={{ fontSize: 'clamp(80px, 15vw, 120px)', color: '#B5F23D' }}>
                 {solved}
               </p>
-              <p className="font-game text-[#555] mt-1" style={{ fontSize: '24px', letterSpacing: '0.1em' }}>
+              <p className="font-game mt-1" style={{ fontSize: '24px', letterSpacing: '0.1em', color: '#3A3A4A' }}>
                 {solved === 1 ? 'PUZZLE SOLVED' : 'PUZZLES SOLVED'}
               </p>
               {mistakes > 0 && (
@@ -205,13 +208,14 @@ function TimeAttackGame({ type, timeLimit, onRestart }: { type: PuzzleType; time
                 whileTap={{ scale: 0.97 }}
                 onClick={() => router.push('/result')}
                 className="w-full py-4 rounded-2xl font-black text-base tracking-wide"
-                style={{ background: '#C8FF57', color: '#0D0D0D' }}
+                style={{ background: '#B5F23D', color: '#0C0C0F' }}
               >
                 SEE FULL SCORE →
               </motion.button>
               <button
                 onClick={onRestart}
-                className="w-full py-4 rounded-2xl font-black text-sm bg-[#181818] text-[#888] hover:text-white hover:bg-[#1E1E1E] transition-all"
+                className="w-full py-4 rounded-2xl font-black text-sm transition-all"
+                style={{ background: '#141418', color: '#A0A0B0', border: '1px solid rgba(255,255,255,0.07)' }}
               >
                 PLAY AGAIN
               </button>
@@ -233,7 +237,7 @@ function TimeAttackGame({ type, timeLimit, onRestart }: { type: PuzzleType; time
           >
             <div className="px-5 pt-6 pb-2 flex items-center justify-between">
               <div>
-                <p className="text-xs text-[#666] uppercase tracking-widest font-bold mb-1">Puzzle {puzzleIdx + 1}</p>
+                <p className="text-xs uppercase tracking-widest font-bold mb-1" style={{ color: '#5A5A6E' }}>Puzzle {puzzleIdx + 1}</p>
                 {isLow && (
                   <motion.p
                     animate={{ opacity: [1, 0.4, 1] }}
