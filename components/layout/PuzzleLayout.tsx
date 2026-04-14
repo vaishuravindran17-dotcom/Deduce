@@ -46,91 +46,96 @@ export function PuzzleLayout({
   const timerColor  = isLow ? '#EF4444' : '#B5F23D';
 
   return (
-    <div className="min-h-dvh flex flex-col" style={{ background: '#0C0C0F' }}>
+    <div className="flex flex-col" style={{ background: '#0C0C0F', minHeight: '100dvh', maxWidth: 480, margin: '0 auto' }}>
 
-      {/* ── Header ─────────────────────────────────────────────────── */}
-      <header
-        className="sticky top-0 z-10"
-        style={{ background: '#0C0C0F', borderBottom: '1px solid rgba(255,255,255,0.07)' }}
-      >
+      {/* ── Top Bar ────────────────────────────────────────────────── */}
+      <header className="shrink-0 sticky top-0 z-10" style={{ background: '#0C0C0F' }}>
+        {/* top-bar row: padding 16px 20px */}
         <div
-          className="game-container h-14 flex items-center gap-3"
+          className="flex items-center justify-between"
+          style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}
         >
-          {/* Back */}
-          <button
-            onClick={back}
-            className="w-9 h-9 flex items-center justify-center rounded-xl shrink-0 transition-colors"
-            style={{
-              background: '#1C1C22',
-              border: '1px solid rgba(255,255,255,0.07)',
-              color: '#A0A0B0',
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-              <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
+          {/* Left: back + badge + index */}
+          <div className="flex items-center" style={{ gap: 12 }}>
+            <button
+              onClick={back}
+              className="flex items-center justify-center shrink-0 transition-colors"
+              style={{
+                width: 34, height: 34, borderRadius: 8,
+                background: '#1C1C22', border: '1px solid rgba(255,255,255,0.07)',
+                color: '#A0A0B0',
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M11 4l-6 5 6 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
 
-          {/* Center */}
-          <div className="flex-1 flex items-center justify-center gap-2">
-            <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
-            <span className="font-game text-sm tracking-widest" style={{ color }}>
-              {meta.label.toUpperCase()}
-            </span>
+            <div className="flex items-center" style={{ gap: 7 }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }} />
+              <span
+                className="font-game"
+                style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color }}
+              >
+                {meta.label.toUpperCase()}
+              </span>
+            </div>
+
             {puzzleIndex !== undefined && (
-              <span className="text-xs ml-0.5" style={{ color: '#5A5A6E' }}>
-                {totalPuzzles
-                  ? `${puzzleIndex + 1}/${totalPuzzles}`
-                  : `Puzzle ${puzzleIndex + 1}`}
+              <span style={{ fontSize: 12, color: '#5A5A6E' }}>
+                {totalPuzzles ? `${puzzleIndex + 1} / ${totalPuzzles}` : `Puzzle ${puzzleIndex + 1}`}
               </span>
             )}
           </div>
 
-          {/* Right */}
-          <div className="flex items-center gap-3 shrink-0">
+          {/* Right: mistakes + timer + solved */}
+          <div className="flex items-center" style={{ gap: 10 }}>
             {mistakes > 0 && (
-              <span className="text-xs font-bold" style={{ color: '#EF4444' }}>×{mistakes}</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#EF4444' }}>×{mistakes}</span>
             )}
-            <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full" style={{ background: timerColor }} />
-              <span className="font-game text-sm tabular-nums" style={{ color: timerColor }}>
+            <div className="flex items-center" style={{ gap: 8 }}>
+              <div style={{ width: 7, height: 7, borderRadius: '50%', background: timerColor }} />
+              <span
+                className="font-game tabular-nums"
+                style={{ fontSize: 17, fontWeight: 700, color: timerColor }}
+              >
                 {displayTime}
               </span>
             </div>
             {timeAttack && solvedCount !== undefined && (
-              <div className="flex items-center gap-1" style={{ color: '#B5F23D' }}>
-                <span className="text-sm font-bold">{solvedCount}</span>
-                <span className="text-xs">✓</span>
+              <div className="flex items-center" style={{ gap: 4, color: '#B5F23D', fontSize: 13, fontWeight: 600 }}>
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                  <path d="M2 7l3.5 3.5 5.5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                {solvedCount}
               </div>
             )}
           </div>
         </div>
 
-        {/* Progress bar */}
-        <div className="game-container">
+        {/* Progress segments: padding 10px 20px */}
+        <div className="flex" style={{ gap: 4, padding: '10px 20px' }}>
           {puzzleStatuses && !timeAttack ? (
-            <div className="flex gap-1">
-              {PUZZLE_TYPES.map((t, i) => (
-                <div
-                  key={t}
-                  className="flex-1 rounded-full transition-all duration-500"
-                  style={{
-                    height: '3px',
-                    background: puzzleStatuses[i] === 'solved' || puzzleStatuses[i] === 'active'
-                      ? STEP_COLORS[t]
-                      : 'rgba(255,255,255,0.07)',
-                  }}
-                />
-              ))}
-            </div>
+            PUZZLE_TYPES.map((t, i) => (
+              <div
+                key={t}
+                className="flex-1 transition-all duration-500"
+                style={{
+                  height: 3, borderRadius: 2,
+                  background: puzzleStatuses[i] === 'solved' || puzzleStatuses[i] === 'active'
+                    ? STEP_COLORS[t]
+                    : 'rgba(255,255,255,0.07)',
+                }}
+              />
+            ))
           ) : (
-            <div className="rounded-full" style={{ height: '3px', background: color }} />
+            <div className="flex-1" style={{ height: 3, borderRadius: 2, background: color }} />
           )}
         </div>
       </header>
 
-      {/* ── Content ────────────────────────────────────────────────── */}
-      <main className="flex-1 flex flex-col overflow-auto game-container relative">
+      {/* ── scroll-body ────────────────────────────────────────────── */}
+      <main className="flex-1 flex flex-col overflow-auto relative" style={{ padding: '0 20px' }}>
         {children}
       </main>
     </div>

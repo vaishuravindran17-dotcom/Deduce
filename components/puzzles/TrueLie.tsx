@@ -46,8 +46,12 @@ export function TrueLie({ puzzle, onSolve, onMistake }: TrueLieProps) {
 
       {/* ── Rule banner ─────────────────────────────────────────────── */}
       <div
-        className="rounded-xl px-4 py-3"
-        style={{ background: COLOR_DIM, border: `1px solid ${COLOR_BDR}` }}
+        className="rounded-xl"
+        style={{
+          padding: '14px 18px',
+          background: 'rgba(244,63,94,0.07)',
+          border: '1px solid rgba(244,63,94,0.25)',
+        }}
       >
         <p className="text-[10px] font-bold uppercase tracking-[0.14em] mb-1" style={{ color: COLOR }}>
           The Rule
@@ -75,15 +79,16 @@ export function TrueLie({ puzzle, onSolve, onMistake }: TrueLieProps) {
                 initial={{ opacity: 0, x: -12 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.06 }}
-                className="rounded-xl flex items-center justify-between gap-4 px-4 py-3"
+                className="rounded-xl flex items-center justify-between gap-4"
                 style={{
+                  padding: '15px 18px',
                   background: '#141418',
                   border: `1px solid ${
                     isLie    ? 'rgba(239,68,68,0.3)'
                     : isTruth ? 'rgba(34,197,94,0.25)'
                     : 'rgba(255,255,255,0.07)'
                   }`,
-                  minHeight: '64px',
+                  minHeight: 64,
                 }}
               >
                 {/* Left: person + statement */}
@@ -106,23 +111,23 @@ export function TrueLie({ puzzle, onSolve, onMistake }: TrueLieProps) {
                 >
                   <button
                     onClick={() => mark(i, false)}
-                    className="px-3 py-2 text-[11px] font-bold transition-all"
+                    className="text-[11px] font-bold transition-all"
                     style={
                       isTruth
-                        ? { background: 'rgba(34,197,94,0.18)', color: '#4ade80' }
-                        : { background: 'transparent', color: '#5A5A6E' }
+                        ? { padding: '7px 13px', background: 'rgba(34,197,94,0.18)', color: '#4ade80' }
+                        : { padding: '7px 13px', background: 'transparent', color: '#5A5A6E' }
                     }
                   >
                     True
                   </button>
-                  <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)' }} />
+                  <div style={{ width: 1, background: 'rgba(255,255,255,0.13)' }} />
                   <button
                     onClick={() => mark(i, true)}
-                    className="px-3 py-2 text-[11px] font-bold transition-all"
+                    className="text-[11px] font-bold transition-all"
                     style={
                       isLie
-                        ? { background: 'rgba(239,68,68,0.15)', color: '#f87171' }
-                        : { background: 'transparent', color: '#5A5A6E' }
+                        ? { padding: '7px 13px', background: 'rgba(239,68,68,0.15)', color: '#f87171' }
+                        : { padding: '7px 13px', background: 'transparent', color: '#5A5A6E' }
                     }
                   >
                     Lie
@@ -164,11 +169,11 @@ export function TrueLie({ puzzle, onSolve, onMistake }: TrueLieProps) {
       <button
         onClick={handleSubmit}
         disabled={!canSubmit}
-        className="w-full py-3.5 rounded-xl font-bold text-xs tracking-[0.08em] uppercase transition-all"
+        className="w-full rounded-xl font-bold text-xs tracking-[0.08em] uppercase transition-all"
         style={
           canSubmit
-            ? { background: COLOR_DIM, border: `1px solid ${COLOR_BDR}`, color: COLOR }
-            : { background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', color: '#5A5A6E' }
+            ? { padding: '14px 20px', background: COLOR_DIM, border: `1px solid ${COLOR_BDR}`, color: COLOR }
+            : { padding: '14px 20px', background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', color: '#5A5A6E' }
         }
       >
         Expose the Liar

@@ -51,7 +51,7 @@ export function LinkGrid({ puzzle, onSolve, onMistake }: LinkGridProps) {
 
       {/* ── CLUES ───────────────────────────────────────────────────── */}
       <section>
-        <p className="text-[10px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color: COLOR }}>
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: COLOR, marginBottom: 10 }}>
           Clues
         </p>
         <div className="rounded-xl overflow-hidden" style={{ background: '#141418', border: `1px solid ${COLOR_BDR}` }}>
@@ -61,8 +61,11 @@ export function LinkGrid({ puzzle, onSolve, onMistake }: LinkGridProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: i * 0.06 }}
-              className="flex items-start gap-3 px-4 py-3"
-              style={{ borderBottom: i < clues.length - 1 ? '1px solid rgba(255,255,255,0.07)' : 'none' }}
+              className="flex items-start gap-[10px]"
+              style={{
+                padding: '10px 16px',
+                borderBottom: i < clues.length - 1 ? '1px solid rgba(255,255,255,0.07)' : 'none',
+              }}
             >
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="mt-0.5 shrink-0">
                 <path d="M6 3l5 5-5 5" stroke={COLOR} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -75,7 +78,7 @@ export function LinkGrid({ puzzle, onSolve, onMistake }: LinkGridProps) {
 
       {/* ── GRID A ──────────────────────────────────────────────────── */}
       <section>
-        <p className="text-[10px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color: COLOR }}>
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: COLOR, marginBottom: 10 }}>
           People × Locations
         </p>
         <div className="rounded-xl overflow-x-auto" style={{ background: '#141418', border: '1px solid rgba(255,255,255,0.07)' }}>
@@ -86,7 +89,7 @@ export function LinkGrid({ puzzle, onSolve, onMistake }: LinkGridProps) {
 
       {/* ── GRID B ──────────────────────────────────────────────────── */}
       <section>
-        <p className="text-[10px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color: COLOR }}>
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: COLOR, marginBottom: 10 }}>
           People × Items
         </p>
         <div className="rounded-xl overflow-x-auto" style={{ background: '#141418', border: '1px solid rgba(255,255,255,0.07)' }}>
@@ -97,23 +100,22 @@ export function LinkGrid({ puzzle, onSolve, onMistake }: LinkGridProps) {
 
       {/* ── ANSWER ──────────────────────────────────────────────────── */}
       <section>
-        <p className="text-[10px] font-bold uppercase tracking-[0.14em] mb-3" style={{ color: COLOR }}>
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: COLOR, marginBottom: 10 }}>
           Answer
         </p>
-        <div className="rounded-xl p-4" style={{ background: '#141418', border: '1px solid rgba(255,255,255,0.07)' }}>
-          <p className="text-sm mb-4" style={{ color: '#5A5A6E' }}>{question}</p>
+        <div className="rounded-xl" style={{ background: '#141418', border: '1px solid rgba(255,255,255,0.07)', padding: '18px 20px' }}>
+          <p style={{ fontSize: 13, color: '#5A5A6E', marginBottom: 12 }}>{question}</p>
 
-          <div className="flex flex-wrap gap-2 mb-4">
+          <div className="flex flex-wrap" style={{ gap: 8 }}>
             {people.map(person => (
               <motion.button
                 key={person}
                 whileTap={{ scale: 0.93 }}
                 onClick={() => !submitted && setSelected(person)}
-                className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
                 style={
                   selected === person
-                    ? { background: COLOR_DIM, border: `1px solid ${COLOR}`, color: COLOR }
-                    : { background: '#1C1C22', border: '1px solid rgba(255,255,255,0.13)', color: '#A0A0B0' }
+                    ? { padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 500, background: COLOR_DIM, border: `1px solid ${COLOR}`, color: COLOR }
+                    : { padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 500, background: '#1C1C22', border: '1px solid rgba(255,255,255,0.13)', color: '#A0A0B0' }
                 }
               >
                 {person}
@@ -124,7 +126,7 @@ export function LinkGrid({ puzzle, onSolve, onMistake }: LinkGridProps) {
           <AnimatePresence>
             {error && (
               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className="text-xs mb-3 font-semibold" style={{ color: '#EF4444' }}>
+                className="text-xs font-semibold" style={{ color: '#EF4444', marginTop: 10 }}>
                 Not quite — check the clues again
               </motion.p>
             )}
@@ -133,11 +135,11 @@ export function LinkGrid({ puzzle, onSolve, onMistake }: LinkGridProps) {
           <button
             onClick={handleSubmit}
             disabled={!selected}
-            className="w-full py-3.5 rounded-xl font-bold text-xs tracking-[0.08em] uppercase transition-all"
+            className="w-full font-bold uppercase tracking-[0.08em] transition-all"
             style={
               selected
-                ? { background: COLOR_DIM, border: `1px solid ${COLOR_BDR}`, color: COLOR }
-                : { background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', color: '#5A5A6E' }
+                ? { padding: '14px 20px', borderRadius: 12, fontSize: 13, fontWeight: 600, marginTop: 14, background: COLOR_DIM, border: `1px solid ${COLOR_BDR}`, color: COLOR }
+                : { padding: '14px 20px', borderRadius: 12, fontSize: 13, fontWeight: 600, marginTop: 14, background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', color: '#5A5A6E' }
             }
           >
             Confirm Answer
@@ -156,11 +158,18 @@ function GridTable({ rows, cols, cells, onTap, disabled }: {
     <table className="w-full border-collapse">
       <thead>
         <tr>
-          <th className="w-24" />
+          <th style={{ width: 90 }} />
           {cols.map(col => (
             <th key={col}
-              className="text-[10px] font-semibold py-4 text-center uppercase tracking-[0.1em] min-w-[56px]"
-              style={{ color: '#5A5A6E' }}>
+              className="text-center uppercase"
+              style={{
+                padding: '0 4px 8px',
+                fontSize: 10,
+                fontWeight: 600,
+                letterSpacing: '0.1em',
+                color: '#5A5A6E',
+                minWidth: 54,
+              }}>
               {col}
             </th>
           ))}
@@ -168,23 +177,28 @@ function GridTable({ rows, cols, cells, onTap, disabled }: {
       </thead>
       <tbody>
         {rows.map((row, ri) => (
-          <tr key={row} style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}>
-            <td className="text-sm py-3 pl-4 pr-3 font-medium whitespace-nowrap" style={{ color: '#A0A0B0' }}>
+          <tr key={row}>
+            <td
+              className="whitespace-nowrap"
+              style={{ fontSize: 13, fontWeight: 500, color: '#A0A0B0', padding: '4px', paddingLeft: 0 }}
+            >
               {row}
             </td>
             {cols.map((_, ci) => (
-              <td key={ci} className="p-2 text-center">
+              <td key={ci} className="text-center" style={{ padding: 4 }}>
                 <motion.button
                   whileTap={{ scale: 0.78 }}
                   onClick={() => !disabled && onTap(ri, ci)}
-                  className="w-11 h-11 rounded-xl flex items-center justify-center text-sm font-black transition-all mx-auto"
-                  style={
-                    cells[ri][ci] === 'check'
-                      ? { background: 'rgba(167,139,250,0.18)', border: '1px solid rgba(167,139,250,0.5)', color: COLOR }
+                  className="flex items-center justify-center font-black transition-all mx-auto"
+                  style={{
+                    width: 46, height: 46, borderRadius: 11,
+                    fontSize: 14,
+                    ...(cells[ri][ci] === 'check'
+                      ? { background: 'rgba(167,139,250,0.18)', border: '1px solid rgba(167,139,250,0.5)', color: '#A78BFA' }
                       : cells[ri][ci] === 'cross'
-                      ? { background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.3)', color: 'rgba(239,68,68,0.55)' }
-                      : { background: '#1C1C22', border: '1px solid rgba(255,255,255,0.07)', color: 'transparent' }
-                  }
+                      ? { background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.3)', color: 'rgba(239,68,68,0.6)' }
+                      : { background: '#1C1C22', border: '1px solid rgba(255,255,255,0.07)', color: 'transparent' })
+                  }}
                 >
                   {cells[ri][ci] === 'check' ? '✓' : cells[ri][ci] === 'cross' ? '✕' : ''}
                 </motion.button>
@@ -192,7 +206,7 @@ function GridTable({ rows, cols, cells, onTap, disabled }: {
             ))}
           </tr>
         ))}
-        <tr><td colSpan={cols.length + 1} style={{ height: '12px' }} /></tr>
+        <tr><td colSpan={cols.length + 1} style={{ height: 12 }} /></tr>
       </tbody>
     </table>
   );

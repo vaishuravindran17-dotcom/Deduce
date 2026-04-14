@@ -18,6 +18,13 @@ const DURATIONS = [
   { seconds: 300, label: '5 Min',  sub: '5 min' },
 ];
 
+function hexAlpha(hex: string, alpha: number) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
 function PuzzleIcon({ type, size }: { type: string; size: number }) {
   const c = COLORS[type] ?? '#2DD4BF';
   switch (type) {
@@ -46,6 +53,8 @@ export default function PuzzleTypePage() {
   const meta  = PUZZLE_META[type];
   const color = COLORS[type] ?? '#2DD4BF';
 
+  const colorAlpha = (a: number) => hexAlpha(color, a);
+
   return (
     <div className="min-h-dvh flex flex-col" style={{ background: '#0C0C0F' }}>
 
@@ -57,8 +66,11 @@ export default function PuzzleTypePage() {
         <div className="game-container h-14 flex items-center gap-3">
           <button
             onClick={() => router.push('/home')}
-            className="w-9 h-9 flex items-center justify-center rounded-xl shrink-0 transition-colors"
-            style={{ background: '#1C1C22', border: '1px solid rgba(255,255,255,0.07)', color: '#A0A0B0' }}
+            className="flex items-center justify-center shrink-0 transition-colors"
+            style={{
+              width: 34, height: 34, borderRadius: 8,
+              background: '#1C1C22', border: '1px solid rgba(255,255,255,0.07)', color: '#A0A0B0',
+            }}
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
               <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -70,10 +82,10 @@ export default function PuzzleTypePage() {
               {meta.label.toUpperCase()}
             </span>
           </div>
-          <div className="w-9" />
+          <div style={{ width: 34 }} />
         </div>
         <div className="game-container pb-2.5">
-          <div className="rounded-full" style={{ height: '3px', background: color }} />
+          <div className="rounded-full" style={{ height: 3, background: color }} />
         </div>
       </header>
 
@@ -91,13 +103,19 @@ export default function PuzzleTypePage() {
           style={{ marginBottom: 32, gap: 18 }}
         >
           <div
-            className="flex items-center justify-center rounded-[22px]"
-            style={{ width: 80, height: 80, background: '#1C1C22', border: `1px solid ${color}30` }}
+            className="flex items-center justify-center"
+            style={{
+              width: 80, height: 80, borderRadius: 22,
+              background: '#1C1C22', border: `1px solid ${colorAlpha(0.25)}`,
+            }}
           >
             <PuzzleIcon type={type} size={36} />
           </div>
           <div className="text-center">
-            <h1 className="font-game text-white" style={{ fontSize: 26, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>
+            <h1
+              className="font-game text-white"
+              style={{ fontSize: 26, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}
+            >
               {meta.label.toUpperCase()}
             </h1>
             <p style={{ fontSize: 13, color: '#5A5A6E' }}>
@@ -118,7 +136,7 @@ export default function PuzzleTypePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08 }}
             className="rounded-xl overflow-hidden"
-            style={{ background: '#141418', border: `1px solid ${color}30` }}
+            style={{ background: '#141418', border: `1px solid ${colorAlpha(0.2)}` }}
           >
             {/* Mode header row */}
             <div
@@ -126,8 +144,11 @@ export default function PuzzleTypePage() {
               style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}
             >
               <div
-                className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 text-xl"
-                style={{ background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.2)' }}
+                className="flex items-center justify-center shrink-0 text-xl"
+                style={{
+                  width: 40, height: 40, borderRadius: 11,
+                  background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.2)',
+                }}
               >
                 ⏱
               </div>
@@ -151,7 +172,7 @@ export default function PuzzleTypePage() {
                     className="py-3 rounded-lg text-center transition-all"
                     style={
                       selectedDuration === d.seconds
-                        ? { background: `${color}18`, border: `1.5px solid ${color}`, color }
+                        ? { background: colorAlpha(0.18), border: `1.5px solid ${colorAlpha(0.45)}`, color }
                         : { background: '#1C1C22', border: '1px solid rgba(255,255,255,0.07)', color: '#5A5A6E' }
                     }
                   >
@@ -172,8 +193,11 @@ export default function PuzzleTypePage() {
             style={{ background: '#141418', border: '1px solid rgba(255,255,255,0.07)' }}
           >
             <div
-              className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 text-xl"
-              style={{ background: '#1C1C22', border: '1px solid rgba(255,255,255,0.07)' }}
+              className="flex items-center justify-center shrink-0 text-xl"
+              style={{
+                width: 40, height: 40, borderRadius: 11,
+                background: '#1C1C22', border: '1px solid rgba(255,255,255,0.07)',
+              }}
             >
               🌐
             </div>
@@ -189,7 +213,7 @@ export default function PuzzleTypePage() {
             </span>
           </motion.div>
 
-          {/* Start button — solid fill */}
+          {/* Start button */}
           <motion.button
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -198,11 +222,18 @@ export default function PuzzleTypePage() {
             whileTap={selectedDuration ? { scale: 0.97 } : {}}
             onClick={() => selectedDuration && router.push(`/modes/${type}/time-attack?t=${selectedDuration}`)}
             disabled={!selectedDuration}
-            className="w-full py-4 rounded-xl font-game text-sm tracking-widest uppercase transition-all"
+            className="w-full font-game text-sm tracking-widest uppercase transition-all"
             style={
               selectedDuration
-                ? { background: color, color: '#0C0C0F', boxShadow: `0 0 28px ${color}35` }
-                : { background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', color: '#5A5A6E' }
+                ? {
+                    padding: 15, borderRadius: 12,
+                    background: color, color: '#0C0C0F',
+                    boxShadow: `0 0 28px ${colorAlpha(0.35)}`,
+                  }
+                : {
+                    padding: 15, borderRadius: 12,
+                    background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', color: '#5A5A6E',
+                  }
             }
           >
             Start Game →

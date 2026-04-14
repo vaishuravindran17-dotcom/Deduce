@@ -69,15 +69,16 @@ export function CodeBreak({ puzzle, onSolve, onMistake }: CodeBreakProps) {
               initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.07 }}
-              className="rounded-xl px-4 py-3 flex items-center gap-4"
-              style={{ background: '#141418', border: '1px solid rgba(255,255,255,0.07)' }}
+              className="rounded-xl flex items-center gap-4"
+              style={{ padding: '12px 16px', background: '#141418', border: '1px solid rgba(255,255,255,0.07)' }}
             >
               <div className="flex gap-2 shrink-0">
                 {clue.guess.split('').map((d, di) => (
                   <div
                     key={di}
-                    className="w-10 h-10 flex items-center justify-center rounded-lg font-mono font-black text-sm"
+                    className="flex items-center justify-center font-mono font-black text-sm"
                     style={{
+                      width: 38, height: 42, borderRadius: 8,
                       background: '#1C1C22',
                       border: '1px solid rgba(255,255,255,0.13)',
                       color: '#A0A0B0',
@@ -144,9 +145,10 @@ export function CodeBreak({ puzzle, onSolve, onMistake }: CodeBreakProps) {
                 key={i}
                 animate={isFlashed ? { scale: [0.9, 1.1, 1] } : {}}
                 transition={{ duration: 0.2 }}
-                className="relative flex items-center justify-center rounded-xl font-mono font-black text-3xl transition-all"
+                className="relative flex items-center justify-center font-mono font-black transition-all"
                 style={{
-                  width: 72, height: 72,
+                  width: 66, height: 74, borderRadius: 12,
+                  fontSize: 30,
                   background: filled ? COLOR_DIM : '#1C1C22',
                   border: `2px solid ${filled ? COLOR : isCursor ? COLOR_BDR : 'rgba(255,255,255,0.07)'}`,
                   color: filled ? COLOR : '#5A5A6E',
@@ -192,11 +194,11 @@ export function CodeBreak({ puzzle, onSolve, onMistake }: CodeBreakProps) {
       <button
         onClick={handleSubmit}
         disabled={!ready}
-        className="w-full py-3.5 rounded-xl font-bold text-xs tracking-[0.08em] uppercase transition-all"
+        className="w-full rounded-xl font-bold text-xs tracking-[0.08em] uppercase transition-all"
         style={
           ready
-            ? { background: COLOR_DIM, border: `1px solid ${COLOR_BDR}`, color: COLOR }
-            : { background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', color: '#5A5A6E' }
+            ? { padding: '14px 20px', background: COLOR_DIM, border: `1px solid ${COLOR_BDR}`, color: COLOR }
+            : { padding: '14px 20px', background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', color: '#5A5A6E' }
         }
       >
         Crack the Code
@@ -213,8 +215,10 @@ function KeyBtn({ label, onPress, disabled, dim }: {
       whileTap={{ scale: 0.88 }}
       onClick={onPress}
       disabled={disabled}
-      className="h-14 rounded-xl font-black text-lg transition-all select-none"
+      className="rounded-xl font-black transition-all select-none"
       style={{
+        height: 54,
+        fontSize: 20,
         background: dim ? '#141418' : '#1C1C22',
         color: dim ? '#5A5A6E' : '#A0A0B0',
         border: `1px solid rgba(255,255,255,${dim ? '0.07' : '0.13'})`,

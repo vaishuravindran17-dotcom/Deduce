@@ -104,13 +104,13 @@ export function TimeTrace({ puzzle, onSolve, onMistake }: TimeTraceProps) {
                 whileTap={{ scale: 0.9 }}
                 onClick={() => { if (submitted || isAssigned) return; setSelected(isSel ? null : entity); }}
                 disabled={isAssigned}
-                className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                className="font-medium transition-all"
                 style={
                   isAssigned
-                    ? { background: '#141418', border: '1px solid rgba(255,255,255,0.05)', color: '#3A3A4A', cursor: 'not-allowed' }
+                    ? { padding: '6px 14px', borderRadius: 8, fontSize: 13, fontWeight: 600, background: '#141418', border: '1px solid rgba(255,255,255,0.05)', color: '#3A3A4A', cursor: 'not-allowed' }
                     : isSel
-                    ? { background: COLOR_DIM, border: `1px solid ${COLOR}`, color: COLOR }
-                    : { background: '#1C1C22', border: '1px solid rgba(255,255,255,0.13)', color: '#A0A0B0' }
+                    ? { padding: '6px 14px', borderRadius: 8, fontSize: 13, fontWeight: 600, background: COLOR_DIM, border: `1px solid ${COLOR}`, color: COLOR }
+                    : { padding: '6px 14px', borderRadius: 8, fontSize: 13, fontWeight: 600, background: '#1C1C22', border: '1px solid rgba(255,255,255,0.13)', color: '#A0A0B0' }
                 }
               >
                 {entity}
@@ -141,12 +141,12 @@ export function TimeTrace({ puzzle, onSolve, onMistake }: TimeTraceProps) {
                 key={slot}
                 className="flex items-stretch"
                 style={{
-                  minHeight: '62px',
+                  minHeight: 62,
                   borderBottom: i < slots.length - 1 ? '1px solid rgba(255,255,255,0.07)' : 'none',
                 }}
               >
                 {/* Time label */}
-                <div className="flex flex-col justify-center pl-4 pr-3 shrink-0" style={{ width: '76px' }}>
+                <div className="flex flex-col justify-center pl-4 pr-3 shrink-0" style={{ width: 78 }}>
                   <span
                     className="text-sm font-semibold"
                     style={{ color: isCrimeSlot ? COLOR : '#A0A0B0' }}
@@ -179,13 +179,16 @@ export function TimeTrace({ puzzle, onSolve, onMistake }: TimeTraceProps) {
                 >
                   {assigned ? (
                     <span
-                      className="px-3 py-1.5 rounded-lg text-sm font-semibold"
-                      style={{ background: COLOR_DIM, border: `1px solid ${COLOR_BDR}`, color: COLOR }}
+                      className="font-semibold"
+                      style={{
+                        padding: '6px 14px', borderRadius: 8, fontSize: 13,
+                        background: COLOR_DIM, border: `1px solid ${COLOR_BDR}`, color: COLOR,
+                      }}
                     >
                       {assigned}
                     </span>
                   ) : (
-                    <span className="text-xl" style={{ color: isTarget ? 'rgba(251,146,60,0.3)' : 'rgba(255,255,255,0.15)' }}>
+                    <span className="text-xl" style={{ color: isTarget ? 'rgba(251,146,60,0.3)' : 'rgba(255,255,255,0.13)' }}>
                       —
                     </span>
                   )}
@@ -216,11 +219,11 @@ export function TimeTrace({ puzzle, onSolve, onMistake }: TimeTraceProps) {
       <button
         onClick={handleSubmit}
         disabled={!allFilled}
-        className="w-full py-3.5 rounded-xl font-bold text-xs tracking-[0.08em] uppercase transition-all"
+        className="w-full rounded-xl font-bold text-xs tracking-[0.08em] uppercase transition-all"
         style={
           allFilled
-            ? { background: COLOR_DIM, border: `1px solid ${COLOR_BDR}`, color: COLOR }
-            : { background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', color: '#5A5A6E' }
+            ? { padding: '14px 20px', background: COLOR_DIM, border: `1px solid ${COLOR_BDR}`, color: COLOR }
+            : { padding: '14px 20px', background: 'transparent', border: '1px solid rgba(255,255,255,0.07)', color: '#5A5A6E' }
         }
       >
         Lock In Timeline
