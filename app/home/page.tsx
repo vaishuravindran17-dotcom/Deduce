@@ -6,6 +6,7 @@ import { useAuthStore } from '@/lib/store/authStore';
 import { useGameStore } from '@/lib/store/gameStore';
 import { getTodaysCase, PUZZLE_META } from '@/lib/data/cases';
 import { LinkGridIcon, TimeTraceIcon, TrueLieIcon, CodeBreakIcon, FlameIcon, TrophyIcon, StarIcon } from '@/components/ui/GameIcons';
+import { ABSTRACT_PUZZLE_TYPES, ABSTRACT_TYPE_META } from '@/types/abstract';
 import type { PuzzleType } from '@/types';
 
 const PUZZLE_COLOR: Record<PuzzleType, string> = {
@@ -52,7 +53,6 @@ export default function HomePage() {
         className="flex items-center justify-between shrink-0"
         style={{ padding: '18px 20px 14px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}
       >
-        {/* Logo */}
         <div className="flex items-center gap-2.5">
           <div
             className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
@@ -66,7 +66,6 @@ export default function HomePage() {
           <span className="font-game text-white tracking-widest" style={{ fontSize: '17px' }}>DEDUCE</span>
         </div>
 
-        {/* Right: streak + avatar */}
         <div className="flex items-center gap-2.5">
           {streak > 0 && (
             <div
@@ -101,7 +100,7 @@ export default function HomePage() {
             className={`rounded-[20px] overflow-hidden ${!isCaseDone ? 'cursor-pointer' : ''}`}
             style={{ background: '#141418', border: '1px solid rgba(255,255,255,0.13)' }}
           >
-            {/* Accent bar */}
+            {/* Accent bar — 8 segments: 4 detective + 4 abstract */}
             <div className="flex" style={{ height: 4 }}>
               {(['linkGrid','timeTrace','trueLie','codeBreak'] as PuzzleType[]).map((t, i) => {
                 const s = daily?.puzzles[i]?.status;
@@ -119,6 +118,13 @@ export default function HomePage() {
                   />
                 );
               })}
+              {ABSTRACT_PUZZLE_TYPES.map(t => (
+                <div
+                  key={t}
+                  className="flex-1"
+                  style={{ background: 'rgba(255,255,255,0.07)' }}
+                />
+              ))}
             </div>
 
             <div className="flex items-center justify-between gap-5" style={{ padding: '22px 24px' }}>
@@ -130,7 +136,7 @@ export default function HomePage() {
                   </span>
                   <div className="w-1 h-1 rounded-full" style={{ background: '#5A5A6E' }} />
                   <span className="text-xs uppercase tracking-[0.05em]" style={{ color: '#5A5A6E' }}>
-                    4 Puzzles
+                    8 Puzzles
                   </span>
                   {isCaseDone && (
                     <>
@@ -196,7 +202,7 @@ export default function HomePage() {
                       padding: '9px 18px',
                     }}
                   >
-                    {isCaseStarted ? `Continue · ${solvedCount}/4` : 'Begin Investigation'}
+                    {isCaseStarted ? `Continue · ${solvedCount}/8` : 'Begin Investigation'}
                     <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                       <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
@@ -271,38 +277,44 @@ export default function HomePage() {
           <p className="text-[10px] font-bold uppercase tracking-[0.16em] mb-3" style={{ color: '#5A5A6E' }}>
             Abstract Logic
           </p>
-          <motion.button
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => router.push('/abstract')}
-            className="w-full text-left rounded-2xl transition-colors"
-            style={{ background: '#141418', border: '1px solid rgba(96,165,250,0.2)', padding: 16 }}
-          >
-            <div className="flex items-center" style={{ gap: 10 }}>
-              <div style={{ width: 4, alignSelf: 'stretch', borderRadius: 2, background: '#60A5FA', flexShrink: 0 }} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div className="flex items-center flex-wrap" style={{ gap: 6, marginBottom: 8 }}>
-                  {(['#60A5FA','#34D399','#FBBF24','#F87171'] as const).map((c, i) => (
-                    <span
-                      key={i}
-                      className="text-[10px] font-bold uppercase tracking-wide rounded-md px-2 py-0.5"
-                      style={{ background: `${c}14`, color: c, border: `1px solid ${c}30` }}
-                    >
-                      {['RuleShift','SwapLogic','BinaryDecision','SetLogic'][i]}
-                    </span>
-                  ))}
-                </div>
-                <p className="text-xs font-semibold" style={{ color: '#5A5A6E' }}>
-                  4 types · Daily + Time Attack
-                </p>
-              </div>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
-                <path d="M6 4l4 4-4 4" stroke="#5A5A6E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-          </motion.button>
+          <div className="grid grid-cols-2" style={{ gap: 10 }}>
+            {ABSTRACT_PUZZLE_TYPES.map((type, i) => {
+              const meta  = ABSTRACT_TYPE_META[type];
+              const color = meta.color;
+              return (
+                <motion.button
+                  key={type}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.06 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => router.push(`/abstract/${type}`)}
+                  className="text-left rounded-2xl transition-colors"
+                  style={{ background: '#141418', border: '1px solid rgba(255,255,255,0.07)', padding: 16 }}
+                >
+                  <div
+                    className="flex items-center justify-center rounded-[10px] mb-2.5"
+                    style={{ width: 36, height: 36, background: `${color}18`, fontSize: 18 }}
+                  >
+                    {meta.emoji}
+                  </div>
+                  <p
+                    className="font-game text-white"
+                    style={{ fontSize: 13, letterSpacing: '0.06em', textTransform: 'uppercase' }}
+                  >
+                    {meta.label}
+                  </p>
+                  <p className="text-xs mt-0.5" style={{ color: '#5A5A6E' }}>{meta.description}</p>
+                  <span
+                    className="inline-block text-[10px] font-bold uppercase tracking-[0.1em] rounded-[5px]"
+                    style={{ background: `${color}12`, color, padding: '3px 8px', marginTop: 8 }}
+                  >
+                    Time Attack
+                  </span>
+                </motion.button>
+              );
+            })}
+          </div>
         </section>
 
         {/* ── Stats ─────────────────────────────────────────────────── */}
