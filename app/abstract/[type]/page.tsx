@@ -54,7 +54,7 @@ export default function AbstractTypePage() {
       >
         <div className="game-container h-14 flex items-center gap-3">
           <button
-            onClick={() => router.push('/abstract')}
+            onClick={() => router.push('/home')}
             className="flex items-center justify-center shrink-0 transition-colors"
             style={{
               width: 34, height: 34, borderRadius: 8,
