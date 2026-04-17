@@ -266,6 +266,45 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* ── Abstract Logic ────────────────────────────────────────── */}
+        <section style={{ padding: '28px 20px 0' }}>
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] mb-3" style={{ color: '#5A5A6E' }}>
+            Abstract Logic
+          </p>
+          <motion.button
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => router.push('/abstract')}
+            className="w-full text-left rounded-2xl transition-colors"
+            style={{ background: '#141418', border: '1px solid rgba(96,165,250,0.2)', padding: 16 }}
+          >
+            <div className="flex items-center" style={{ gap: 10 }}>
+              <div style={{ width: 4, alignSelf: 'stretch', borderRadius: 2, background: '#60A5FA', flexShrink: 0 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="flex items-center flex-wrap" style={{ gap: 6, marginBottom: 8 }}>
+                  {(['#60A5FA','#34D399','#FBBF24','#F87171'] as const).map((c, i) => (
+                    <span
+                      key={i}
+                      className="text-[10px] font-bold uppercase tracking-wide rounded-md px-2 py-0.5"
+                      style={{ background: `${c}14`, color: c, border: `1px solid ${c}30` }}
+                    >
+                      {['RuleShift','SwapLogic','BinaryDecision','SetLogic'][i]}
+                    </span>
+                  ))}
+                </div>
+                <p className="text-xs font-semibold" style={{ color: '#5A5A6E' }}>
+                  4 types · Daily + Time Attack
+                </p>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
+                <path d="M6 4l4 4-4 4" stroke="#5A5A6E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          </motion.button>
+        </section>
+
         {/* ── Stats ─────────────────────────────────────────────────── */}
         <section style={{ padding: '24px 20px 32px' }}>
           <p className="text-[10px] font-bold uppercase tracking-[0.16em] mb-3" style={{ color: '#5A5A6E' }}>
