@@ -179,22 +179,24 @@ export default function AbstractTypePage() {
             </div>
           </motion.div>
 
-          {/* Online Duel — coming soon */}
-          <motion.div
+          {/* Online Duel */}
+          <motion.button
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.14 }}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => router.push(`/duel/lobby?type=${type}&d=${selectedDifficulty}`)}
             style={{
-              background: '#141418', border: '1px solid rgba(255,255,255,0.06)',
+              background: ca(0.05), border: `1px solid ${ca(0.2)}`,
               borderRadius: 16, padding: '18px 18px',
-              display: 'flex', alignItems: 'flex-start', gap: 16,
-              opacity: 0.35, pointerEvents: 'none',
+              display: 'flex', alignItems: 'flex-start', gap: 16, textAlign: 'left', width: '100%',
             }}
           >
             <div
               style={{
                 width: 44, height: 44, borderRadius: 12, flexShrink: 0,
-                background: '#1C1C22', border: '1px solid rgba(255,255,255,0.07)',
+                background: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.2)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
               }}
             >
@@ -203,13 +205,13 @@ export default function AbstractTypePage() {
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
                 <p style={{ fontSize: 15, fontWeight: 600, color: '#F0F0F4' }}>Online Duel</p>
-                <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '2px 7px', borderRadius: 4, background: 'rgba(251,146,60,0.15)', color: '#FB923C', border: '1px solid rgba(251,146,60,0.25)' }}>
-                  SOON
+                <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '2px 7px', borderRadius: 4, background: 'rgba(96,165,250,0.12)', color: '#60A5FA', border: '1px solid rgba(96,165,250,0.25)' }}>
+                  LIVE
                 </span>
               </div>
-              <p style={{ fontSize: 12, color: '#5A5A6E' }}>Live vs global leaderboard</p>
+              <p style={{ fontSize: 12, color: '#5A5A6E' }}>Race a real opponent · same puzzles · 90 seconds</p>
             </div>
-          </motion.div>
+          </motion.button>
 
           {/* Start button */}
           <motion.button

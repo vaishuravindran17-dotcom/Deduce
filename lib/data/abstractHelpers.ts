@@ -36,3 +36,27 @@ export function getAbstractPool(type: AbstractPuzzleType, difficulty: AbstractDi
   }
   return pool;
 }
+
+/** Deterministic shuffle seeded by a string — ensures both duel players see the same puzzle order */
+export function getDuelAbstractPool(
+  type: AbstractPuzzleType,
+  difficulty: AbstractDifficulty,
+  seed: string
+): AbstractPuzzle[] {
+  const pool = [...filterByDifficulty(POOLS[type], difficulty)];
+  // djb2 hash of seed string
+  let h = 5381;
+  for (let i = 0; i < seed.length; i++) {
+    h = (Math.imul(h, 33) ^ seed.charCodeAt(i)) >>> 0;
+  }
+  // LCG PRNG
+  const rand = () => {
+    h = (Math.imul(1664525, h) + 1013904223) >>> 0;
+    return h / 4294967296;
+  };
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool;
+}
