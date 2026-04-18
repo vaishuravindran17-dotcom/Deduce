@@ -120,6 +120,55 @@ export const RULE_SHIFT_PUZZLES: AbstractPuzzle[] = [
     data: { examples: [{ input: 'Dog', output: '5' }, { input: 'Boat', output: '8' }, { input: 'Storm', output: '7' }], target: 'Brain' },
     options: ['7', '8', '9', '10'], answer: '9',
   },
+  // ── Easy: last-letter position (A=1…Z=26) ──
+  {
+    id: 'rs_e7', type: 'ruleShift', difficulty: 'easy',
+    question: 'What is the output for: Bus?',
+    data: { examples: [{ input: 'Ant', output: '20' }, { input: 'Cab', output: '2' }, { input: 'Ham', output: '13' }], target: 'Bus' },
+    options: ['17', '18', '19', '20'], answer: '19',
+  },
+  // ── Easy: vowel count (variant) ──
+  {
+    id: 'rs_e8', type: 'ruleShift', difficulty: 'easy',
+    question: 'What is the output for: Train?',
+    data: { examples: [{ input: 'Pen', output: '1' }, { input: 'Seek', output: '2' }, { input: 'Outer', output: '3' }], target: 'Train' },
+    options: ['1', '2', '3', '4'], answer: '2',
+  },
+  // ── Medium: first + last letter positions (A=1…Z=26) ──
+  {
+    id: 'rs_m7', type: 'ruleShift', difficulty: 'medium',
+    question: 'What is the output for: Fun?',
+    data: { examples: [{ input: 'Ace', output: '6' }, { input: 'Cat', output: '23' }, { input: 'Dog', output: '11' }], target: 'Fun' },
+    options: ['15', '18', '20', '22'], answer: '20',
+  },
+  // ── Medium: length + consonant count ──
+  {
+    id: 'rs_m8', type: 'ruleShift', difficulty: 'medium',
+    question: 'What is the output for: Storm?',
+    data: { examples: [{ input: 'Cat', output: '5' }, { input: 'Bird', output: '7' }, { input: 'Apple', output: '8' }], target: 'Storm' },
+    options: ['7', '8', '9', '10'], answer: '9',
+  },
+  // ── Hard: length³ ──
+  {
+    id: 'rs_h7', type: 'ruleShift', difficulty: 'hard',
+    question: 'What is the output for: Planet?',
+    data: { examples: [{ input: 'Cat', output: '27' }, { input: 'Kite', output: '64' }, { input: 'Apple', output: '125' }], target: 'Planet' },
+    options: ['125', '216', '343', '512'], answer: '216',
+  },
+  // ── Hard: first-letter position × length ──
+  {
+    id: 'rs_h8', type: 'ruleShift', difficulty: 'hard',
+    question: 'What is the output for: Frog?',
+    data: { examples: [{ input: 'Cat', output: '9' }, { input: 'Dog', output: '12' }, { input: 'Eagle', output: '25' }], target: 'Frog' },
+    options: ['18', '20', '24', '30'], answer: '24',
+  },
+  // ── Hard: vowel-position sum (A=1,E=5,I=9,O=15,U=21) ──
+  {
+    id: 'rs_h9', type: 'ruleShift', difficulty: 'hard',
+    question: 'What is the output for: Coin?',
+    data: { examples: [{ input: 'Moon', output: '30' }, { input: 'Bait', output: '10' }, { input: 'Clue', output: '26' }], target: 'Coin' },
+    options: ['20', '24', '26', '30'], answer: '24',
+  },
 ];
 
 // ─── SwapLogic ────────────────────────────────────────────────────────────────
@@ -225,6 +274,86 @@ export const SWAP_LOGIC_PUZZLES: AbstractPuzzle[] = [
     data: { initial: ['Cat', 'Dog', 'Bird', 'Fish', 'Hamster'], steps: ['Swap Cat & Hamster', 'Swap Dog & Fish', 'Swap Bird & Dog', 'Swap Hamster & Cat'] },
     options: ['Cat, Dog, Bird, Fish, Hamster', 'Hamster, Fish, Dog, Bird, Cat', 'Fish, Cat, Hamster, Bird, Dog', 'Cat, Fish, Dog, Bird, Hamster'],
     answer: 'Cat, Fish, Dog, Bird, Hamster',
+  },
+  // ── Easy: 3 items, 2 swaps ──
+  {
+    id: 'sl_e6', type: 'swapLogic', difficulty: 'easy',
+    question: 'What is the final order after all swaps?',
+    data: { initial: ['Alpha', 'Beta', 'Gamma'], steps: ['Swap Alpha & Gamma', 'Swap Beta & Alpha'] },
+    options: ['Alpha, Beta, Gamma', 'Gamma, Beta, Alpha', 'Gamma, Alpha, Beta', 'Beta, Alpha, Gamma'],
+    answer: 'Gamma, Alpha, Beta',
+  },
+  {
+    id: 'sl_e7', type: 'swapLogic', difficulty: 'easy',
+    question: 'What is the final order after all swaps?',
+    data: { initial: ['Rock', 'Paper', 'Scissors'], steps: ['Swap Rock & Scissors', 'Swap Paper & Rock'] },
+    options: ['Rock, Paper, Scissors', 'Scissors, Paper, Rock', 'Scissors, Rock, Paper', 'Paper, Rock, Scissors'],
+    answer: 'Scissors, Rock, Paper',
+  },
+  {
+    id: 'sl_e8', type: 'swapLogic', difficulty: 'easy',
+    question: 'What is the final order after all swaps?',
+    data: { initial: ['One', 'Two', 'Three'], steps: ['Swap One & Two', 'Swap Two & Three'] },
+    options: ['One, Two, Three', 'Two, Three, One', 'Three, One, Two', 'Two, One, Three'],
+    answer: 'Three, One, Two',
+  },
+  {
+    id: 'sl_e9', type: 'swapLogic', difficulty: 'easy',
+    question: 'What is the final order after all swaps?',
+    data: { initial: ['Apple', 'Mango', 'Grape'], steps: ['Swap Apple & Mango', 'Swap Mango & Grape'] },
+    options: ['Apple, Mango, Grape', 'Mango, Apple, Grape', 'Grape, Mango, Apple', 'Grape, Apple, Mango'],
+    answer: 'Grape, Apple, Mango',
+  },
+  // ── Medium: 4 items, 3 swaps ──
+  {
+    id: 'sl_m6', type: 'swapLogic', difficulty: 'medium',
+    question: 'What is the final order after all swaps?',
+    data: { initial: ['Fire', 'Water', 'Earth', 'Air'], steps: ['Swap Fire & Air', 'Swap Water & Earth', 'Swap Air & Fire'] },
+    options: ['Fire, Water, Earth, Air', 'Air, Earth, Water, Fire', 'Fire, Earth, Water, Air', 'Water, Fire, Air, Earth'],
+    answer: 'Fire, Earth, Water, Air',
+  },
+  {
+    id: 'sl_m7', type: 'swapLogic', difficulty: 'medium',
+    question: 'What is the final order after all swaps?',
+    data: { initial: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'], steps: ['Swap Monday & Thursday', 'Swap Tuesday & Wednesday', 'Swap Thursday & Monday'] },
+    options: ['Thursday, Wednesday, Tuesday, Monday', 'Monday, Tuesday, Wednesday, Thursday', 'Monday, Wednesday, Tuesday, Thursday', 'Thursday, Tuesday, Wednesday, Monday'],
+    answer: 'Monday, Wednesday, Tuesday, Thursday',
+  },
+  {
+    id: 'sl_m8', type: 'swapLogic', difficulty: 'medium',
+    question: 'What is the final order after all swaps?',
+    data: { initial: ['Spade', 'Heart', 'Club', 'Diamond'], steps: ['Swap Spade & Diamond', 'Swap Heart & Club', 'Swap Diamond & Spade'] },
+    options: ['Diamond, Club, Heart, Spade', 'Spade, Heart, Club, Diamond', 'Diamond, Heart, Club, Spade', 'Spade, Club, Heart, Diamond'],
+    answer: 'Spade, Club, Heart, Diamond',
+  },
+  {
+    id: 'sl_m9', type: 'swapLogic', difficulty: 'medium',
+    question: 'What is the final order after all swaps?',
+    data: { initial: ['Winter', 'Spring', 'Summer', 'Autumn'], steps: ['Swap Winter & Summer', 'Swap Spring & Autumn', 'Swap Summer & Winter'] },
+    options: ['Summer, Autumn, Winter, Spring', 'Autumn, Winter, Summer, Spring', 'Winter, Autumn, Summer, Spring', 'Spring, Summer, Autumn, Winter'],
+    answer: 'Winter, Autumn, Summer, Spring',
+  },
+  // ── Hard: 5 items, 4 swaps ──
+  {
+    id: 'sl_h5', type: 'swapLogic', difficulty: 'hard',
+    question: 'What is the final order after all swaps?',
+    data: { initial: ['Ace', 'King', 'Queen', 'Jack', 'Ten'], steps: ['Swap Ace & Ten', 'Swap King & Jack', 'Swap Queen & King', 'Swap Ten & Ace'] },
+    options: ['Ten, Jack, Queen, King, Ace', 'Ten, Jack, King, Queen, Ace', 'Ace, Jack, Queen, King, Ten', 'Ace, Jack, King, Queen, Ten'],
+    answer: 'Ace, Jack, King, Queen, Ten',
+  },
+  {
+    id: 'sl_h6', type: 'swapLogic', difficulty: 'hard',
+    question: 'What is the final order after all swaps?',
+    data: { initial: ['North', 'South', 'East', 'West', 'Center'], steps: ['Swap North & Center', 'Swap South & East', 'Swap West & South', 'Swap Center & North'] },
+    options: ['Center, East, West, South, North', 'North, South, East, West, Center', 'Center, East, South, West, North', 'North, East, West, South, Center'],
+    answer: 'North, East, West, South, Center',
+  },
+  {
+    id: 'sl_h7', type: 'swapLogic', difficulty: 'hard',
+    question: 'What is the final order after all swaps?',
+    data: { initial: ['Lion', 'Tiger', 'Bear', 'Wolf', 'Fox'], steps: ['Swap Lion & Fox', 'Swap Tiger & Wolf', 'Swap Bear & Tiger', 'Swap Fox & Lion'] },
+    options: ['Fox, Wolf, Tiger, Bear, Lion', 'Fox, Wolf, Bear, Tiger, Lion', 'Lion, Tiger, Bear, Wolf, Fox', 'Lion, Wolf, Tiger, Bear, Fox'],
+    answer: 'Lion, Wolf, Tiger, Bear, Fox',
   },
 ];
 
@@ -339,6 +468,79 @@ export const BINARY_DECISION_PUZZLES: AbstractPuzzle[] = [
     options: ['The plant wilts.', 'No flowers bloom.', 'The bees leave.', 'Bees arrive.'],
     answer: 'Bees arrive.',
   },
+  // ── Easy: 1 hop ──
+  {
+    id: 'bd_e6', type: 'binaryDecision', difficulty: 'easy',
+    question: 'What must be true?',
+    data: { conditions: ['If Tom learns piano, he performs on stage.', 'Tom learns piano.'] },
+    options: ['Tom performs on stage.', 'Tom learns guitar.', 'Tom buys a piano.', 'Tom quits music.'],
+    answer: 'Tom performs on stage.',
+  },
+  {
+    id: 'bd_e7', type: 'binaryDecision', difficulty: 'easy',
+    question: 'What must be true?',
+    data: { conditions: ['If the power goes out, the lights turn off.', 'The power goes out.'] },
+    options: ['The lights stay on.', 'The lights turn off.', 'The power comes back.', 'A generator starts.'],
+    answer: 'The lights turn off.',
+  },
+  {
+    id: 'bd_e8', type: 'binaryDecision', difficulty: 'easy',
+    question: 'What must be true?',
+    data: { conditions: ['If you plant seeds, plants grow.', 'You plant seeds.'] },
+    options: ['Seeds disappear.', 'Plants die.', 'Plants grow.', 'The soil hardens.'],
+    answer: 'Plants grow.',
+  },
+  // ── Medium: 2 hops ──
+  {
+    id: 'bd_m6', type: 'binaryDecision', difficulty: 'medium',
+    question: 'What must be true?',
+    data: { conditions: ['If the car runs out of fuel, it stops.', 'If it stops, the driver calls for help.', 'The car runs out of fuel.'] },
+    options: ['The car refuels itself.', 'The driver speeds up.', 'The driver calls for help.', 'The car slows but continues.'],
+    answer: 'The driver calls for help.',
+  },
+  {
+    id: 'bd_m7', type: 'binaryDecision', difficulty: 'medium',
+    question: 'What must be true?',
+    data: { conditions: ['If Leo practices daily, he improves.', 'If Leo improves, he joins the team.', 'Leo practices daily.'] },
+    options: ['Leo joins the team.', 'Leo gets injured.', 'Leo quits training.', 'Leo watches from the sideline.'],
+    answer: 'Leo joins the team.',
+  },
+  {
+    id: 'bd_m8', type: 'binaryDecision', difficulty: 'medium',
+    question: 'What must be true?',
+    data: { conditions: ['If the temperature drops below zero, pipes freeze.', 'If pipes freeze, water stops flowing.', 'The temperature drops below zero.'] },
+    options: ['Pipes burst immediately.', 'Water flows faster.', 'The temperature rises.', 'Water stops flowing.'],
+    answer: 'Water stops flowing.',
+  },
+  // ── Hard: 3-4 hops ──
+  {
+    id: 'bd_h6', type: 'binaryDecision', difficulty: 'hard',
+    question: 'What must be true?',
+    data: { conditions: ['If a volcano erupts, ash clouds form.', 'If ash clouds form, flights are cancelled.', 'If flights are cancelled, passengers are stranded.', 'A volcano erupts.'] },
+    options: ['Ash clouds clear quickly.', 'Flights are delayed but not cancelled.', 'Passengers board early.', 'Passengers are stranded.'],
+    answer: 'Passengers are stranded.',
+  },
+  {
+    id: 'bd_h7', type: 'binaryDecision', difficulty: 'hard',
+    question: 'What must be true?',
+    data: { conditions: ['If Leo practices daily, he improves his skills.', 'If he improves his skills, he wins tournaments.', 'If he wins tournaments, he earns a ranking.', 'If he earns a ranking, he qualifies for nationals.', 'Leo practices daily.'] },
+    options: ['Leo misses the tournament.', 'Leo earns a wildcard entry.', 'Leo qualifies for nationals.', 'Leo changes sports.'],
+    answer: 'Leo qualifies for nationals.',
+  },
+  {
+    id: 'bd_h8', type: 'binaryDecision', difficulty: 'hard',
+    question: 'What must be true?',
+    data: { conditions: ['If it rains heavily, rivers overflow.', 'If rivers overflow, fields flood.', 'If fields flood, crops are damaged.', 'It rains heavily.'] },
+    options: ['Rivers dry up.', 'Fields drain faster.', 'Crops flourish.', 'Crops are damaged.'],
+    answer: 'Crops are damaged.',
+  },
+  {
+    id: 'bd_h9', type: 'binaryDecision', difficulty: 'hard',
+    question: 'What must be true?',
+    data: { conditions: ['If Mia reads every day, she gains knowledge.', 'If she gains knowledge, she becomes wise.', 'If she becomes wise, others seek her advice.', 'If others seek her advice, she becomes a mentor.', 'Mia reads every day.'] },
+    options: ['Mia stops reading.', 'Mia becomes a student again.', 'Mia avoids people.', 'Mia becomes a mentor.'],
+    answer: 'Mia becomes a mentor.',
+  },
 ];
 
 // ─── SetLogic ─────────────────────────────────────────────────────────────────
@@ -451,5 +653,78 @@ export const SET_LOGIC_PUZZLES: AbstractPuzzle[] = [
     data: { premises: ['All Diamonds are hard.', 'All hard things scratch glass.', 'All glass-scratchers are valuable.', 'Some Diamonds are colorless.'] },
     options: ['No Diamonds scratch glass.', 'Some Diamonds are soft.', 'All valuable things are Diamonds.', 'All Diamonds are valuable.'],
     answer: 'All Diamonds are valuable.',
+  },
+  // ── Easy: 2 premises ──
+  {
+    id: 'slo_e6', type: 'setLogic', difficulty: 'easy',
+    question: 'Which statement must be true?',
+    data: { premises: ['All Dogs are Mammals.', 'Some Dogs are friendly.'] },
+    options: ['All Mammals are Dogs.', 'No Mammals are friendly.', 'All Mammals are friendly.', 'Some Mammals are friendly.'],
+    answer: 'Some Mammals are friendly.',
+  },
+  {
+    id: 'slo_e7', type: 'setLogic', difficulty: 'easy',
+    question: 'Which statement must be true?',
+    data: { premises: ['No Reptiles are warm-blooded.', 'All Lizards are Reptiles.'] },
+    options: ['All Reptiles are Lizards.', 'Some Lizards are warm-blooded.', 'No Lizards are warm-blooded.', 'All warm-blooded animals are Lizards.'],
+    answer: 'No Lizards are warm-blooded.',
+  },
+  {
+    id: 'slo_e8', type: 'setLogic', difficulty: 'easy',
+    question: 'Which statement must be true?',
+    data: { premises: ['All Pilots can fly.', 'All Astronauts are Pilots.'] },
+    options: ['All Pilots are Astronauts.', 'All Astronauts can fly.', 'No Astronauts can fly.', 'Some Pilots are not Astronauts.'],
+    answer: 'All Astronauts can fly.',
+  },
+  // ── Medium: 3 premises ──
+  {
+    id: 'slo_m6', type: 'setLogic', difficulty: 'medium',
+    question: 'Which statement must be true?',
+    data: { premises: ['All Solar bodies have mass.', 'All Moons are Solar bodies.', 'All things with mass are affected by gravity.'] },
+    options: ['No Moons are affected by gravity.', 'All Moons are affected by gravity.', 'Only Moons have mass.', 'Some Solar bodies have no mass.'],
+    answer: 'All Moons are affected by gravity.',
+  },
+  {
+    id: 'slo_m7', type: 'setLogic', difficulty: 'medium',
+    question: 'Which statement must be true?',
+    data: { premises: ['All Doctors study medicine.', 'All medicine students learn anatomy.', 'Some Doctors are surgeons.'] },
+    options: ['All surgeons are Doctors.', 'No surgeons learn anatomy.', 'All Doctors are surgeons.', 'Some surgeons learn anatomy.'],
+    answer: 'Some surgeons learn anatomy.',
+  },
+  {
+    id: 'slo_m8', type: 'setLogic', difficulty: 'medium',
+    question: 'Which statement must be true?',
+    data: { premises: ['No Deserts have rivers.', 'Some Parks are in Deserts.', 'All things without rivers are dry.'] },
+    options: ['All Parks are dry.', 'No Parks are dry.', 'Some Parks are dry.', 'All Deserts are Parks.'],
+    answer: 'Some Parks are dry.',
+  },
+  // ── Hard: 4 premises ──
+  {
+    id: 'slo_h6', type: 'setLogic', difficulty: 'hard',
+    question: 'Which statement must be true?',
+    data: { premises: ['All Musicians practice daily.', 'All daily practitioners improve.', 'All improving people gain confidence.', 'All Pianists are Musicians.'] },
+    options: ['No Pianists gain confidence.', 'All Musicians are Pianists.', 'Some Pianists do not improve.', 'All Pianists gain confidence.'],
+    answer: 'All Pianists gain confidence.',
+  },
+  {
+    id: 'slo_h7', type: 'setLogic', difficulty: 'hard',
+    question: 'Which statement must be true?',
+    data: { premises: ['No Oceans are landlocked.', 'All Seas are connected to Oceans.', 'All connected water bodies allow navigation.', 'Some Seas are warm.'] },
+    options: ['No Seas allow navigation.', 'All Oceans are landlocked.', 'All warm bodies of water are Seas.', 'All Seas allow navigation.'],
+    answer: 'All Seas allow navigation.',
+  },
+  {
+    id: 'slo_h8', type: 'setLogic', difficulty: 'hard',
+    question: 'Which statement must be true?',
+    data: { premises: ['All Scientists conduct experiments.', 'All experiments require hypotheses.', 'All hypothesis-formulators are logical thinkers.', 'All Chemists are Scientists.'] },
+    options: ['No Chemists conduct experiments.', 'All logical thinkers are Chemists.', 'Some Chemists skip experiments.', 'All Chemists are logical thinkers.'],
+    answer: 'All Chemists are logical thinkers.',
+  },
+  {
+    id: 'slo_h9', type: 'setLogic', difficulty: 'hard',
+    question: 'Which statement must be true?',
+    data: { premises: ['Some Engineers are Inventors.', 'All Inventors create new things.', 'All creators of new things contribute to society.', 'All contributions to society are valuable.'] },
+    options: ['All Engineers are valuable.', 'No Engineers contribute to society.', 'Some Engineers contribute to society.', 'All Inventors are Engineers.'],
+    answer: 'Some Engineers contribute to society.',
   },
 ];

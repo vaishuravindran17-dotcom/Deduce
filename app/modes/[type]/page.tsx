@@ -67,7 +67,7 @@ export default function PuzzleTypePage() {
       {/* ── Header ─────────────────────────────────────────────────── */}
       <header
         className="sticky top-0 z-10"
-        style={{ background: '#0C0C0F', borderBottom: '1px solid rgba(255,255,255,0.07)' }}
+        style={{ background: 'rgba(12,12,15,0.95)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}
       >
         <div className="game-container h-14 flex items-center gap-3">
           <button
@@ -98,7 +98,7 @@ export default function PuzzleTypePage() {
       {/* ── Body ────────────────────────────────────────────────────── */}
       <div
         className="flex-1 flex flex-col items-center"
-        style={{ padding: '36px 24px 32px', maxWidth: 480, margin: '0 auto', width: '100%' }}
+        style={{ padding: '40px 24px 40px', maxWidth: 480, margin: '0 auto', width: '100%' }}
       >
         {/* Icon + title */}
         <motion.div
@@ -106,12 +106,12 @@ export default function PuzzleTypePage() {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: 'spring' as const, stiffness: 280, damping: 22 }}
           className="flex flex-col items-center"
-          style={{ marginBottom: 32, gap: 18 }}
+          style={{ marginBottom: 36, gap: 16 }}
         >
           <div
             className="flex items-center justify-center"
             style={{
-              width: 80, height: 80, borderRadius: 22,
+              width: 84, height: 84, borderRadius: 24,
               background: '#1C1C22', border: `1px solid ${ca(0.25)}`,
             }}
           >

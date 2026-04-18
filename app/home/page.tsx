@@ -28,6 +28,17 @@ function PuzzleIcon({ type, size }: { type: PuzzleType; size: number }) {
 
 const DETECTIVE_TYPES: PuzzleType[] = ['linkGrid', 'timeTrace', 'trueLie', 'codeBreak'];
 
+const CARD_HOVER = { y: -3, transition: { duration: 0.15, ease: 'easeOut' as const } };
+const CARD_TAP   = { scale: 0.97 };
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="font-bold uppercase" style={{ fontSize: 11, letterSpacing: '0.18em', color: '#5A5A6E', marginBottom: 16 }}>
+      {children}
+    </p>
+  );
+}
+
 export default function HomePage() {
   const router   = useRouter();
   const { user } = useAuthStore();
@@ -52,7 +63,7 @@ export default function HomePage() {
       {/* ── Header ──────────────────────────────────────────────────── */}
       <header
         className="sticky top-0 z-10 w-full shrink-0"
-        style={{ background: '#0C0C0F', borderBottom: '1px solid rgba(255,255,255,0.07)' }}
+        style={{ background: 'rgba(12,12,15,0.95)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}
       >
         <div
           className="flex items-center justify-between"
@@ -60,31 +71,31 @@ export default function HomePage() {
         >
           <div className="flex items-center gap-2.5">
             <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-              style={{ background: '#B5F23D' }}
+              className="flex items-center justify-center shrink-0 rounded-lg"
+              style={{ width: 32, height: 32, background: '#B5F23D' }}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
                 <circle cx="10" cy="10" r="6" stroke="#0C0C0F" strokeWidth="2.5"/>
                 <line x1="14.5" y1="14.5" x2="20" y2="20" stroke="#0C0C0F" strokeWidth="2.5" strokeLinecap="round"/>
               </svg>
             </div>
-            <span className="font-game text-white tracking-widest" style={{ fontSize: '17px' }}>DEDUCE</span>
+            <span className="font-game text-white" style={{ fontSize: 17, letterSpacing: '0.1em' }}>DEDUCE</span>
           </div>
 
           <div className="flex items-center gap-2.5">
             {streak > 0 && (
               <div
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg"
-                style={{ background: '#1C1C22', border: '1px solid rgba(255,255,255,0.07)' }}
+                className="flex items-center gap-1.5 rounded-lg"
+                style={{ background: '#1C1C22', border: '1px solid rgba(255,255,255,0.07)', padding: '6px 10px' }}
               >
                 <FlameIcon size={14} color="#FB923C" />
-                <span className="font-bold text-xs" style={{ color: '#FB923C' }}>{streak}</span>
+                <span className="font-bold" style={{ fontSize: 12, color: '#FB923C' }}>{streak}</span>
               </div>
             )}
             <button
               onClick={() => { useAuthStore.getState().logout(); router.replace('/auth'); }}
-              className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm"
-              style={{ background: '#1C1C22', border: '1px solid rgba(255,255,255,0.13)', color: '#A0A0B0' }}
+              className="flex items-center justify-center font-bold rounded-full"
+              style={{ width: 36, height: 36, background: '#1C1C22', border: '1px solid rgba(255,255,255,0.13)', color: '#A0A0B0', fontSize: 13 }}
             >
               {avatar}
             </button>
@@ -94,21 +105,20 @@ export default function HomePage() {
 
       {/* ── Scrollable body ─────────────────────────────────────────── */}
       <div className="flex-1 overflow-y-auto">
-        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px 48px' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '32px 24px 56px' }}>
 
-          {/* ── Daily Challenge ───────────────────────────────────────── */}
-          <section style={{ paddingTop: 28 }}>
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] mb-3" style={{ color: '#5A5A6E' }}>
-              Daily Challenge
-            </p>
+          {/* ── Daily Challenge ────────────────────────────────────────── */}
+          <section style={{ marginBottom: 44 }}>
+            <SectionLabel>Daily Challenge</SectionLabel>
 
-            <div
+            <motion.div
+              whileHover={!isCaseDone ? { y: -2, transition: { duration: 0.15 } } : {}}
               onClick={() => !isCaseDone && router.push('/daily')}
-              className={`rounded-[20px] overflow-hidden ${!isCaseDone ? 'cursor-pointer' : ''}`}
-              style={{ background: '#141418', border: '1px solid rgba(255,255,255,0.13)' }}
+              className={`rounded-2xl overflow-hidden ${!isCaseDone ? 'cursor-pointer' : ''}`}
+              style={{ background: '#141418', border: '1px solid rgba(255,255,255,0.1)' }}
             >
               {/* 8-segment accent bar */}
-              <div className="flex" style={{ height: 4 }}>
+              <div className="flex" style={{ height: 3 }}>
                 {DETECTIVE_TYPES.map((t, i) => {
                   const s = daily?.puzzles[i]?.status;
                   return (
@@ -120,56 +130,54 @@ export default function HomePage() {
                           ? PUZZLE_COLOR[t]
                           : s === 'active'
                           ? `${PUZZLE_COLOR[t]}55`
-                          : 'rgba(255,255,255,0.07)',
+                          : 'rgba(255,255,255,0.06)',
                       }}
                     />
                   );
                 })}
                 {ABSTRACT_PUZZLE_TYPES.map(t => (
-                  <div key={t} className="flex-1" style={{ background: 'rgba(255,255,255,0.07)' }} />
+                  <div key={t} className="flex-1" style={{ background: 'rgba(255,255,255,0.06)' }} />
                 ))}
               </div>
 
-              <div className="flex items-center justify-between gap-6" style={{ padding: '22px 28px' }}>
+              <div className="flex items-center justify-between gap-6" style={{ padding: '24px 28px' }}>
                 <div className="flex-1 min-w-0">
-                  {/* Meta row */}
-                  <div className="flex items-center gap-2 mb-2 flex-wrap">
-                    <span className="text-[11px] font-bold uppercase tracking-[0.1em]" style={{ color: '#FB923C' }}>
+                  <div className="flex items-center gap-2 flex-wrap" style={{ marginBottom: 8 }}>
+                    <span className="font-bold uppercase" style={{ fontSize: 11, letterSpacing: '0.1em', color: '#FB923C' }}>
                       {todayCase.difficulty}
                     </span>
-                    <div className="w-1 h-1 rounded-full" style={{ background: '#5A5A6E' }} />
-                    <span className="text-xs uppercase tracking-[0.05em]" style={{ color: '#5A5A6E' }}>
+                    <div className="w-1 h-1 rounded-full" style={{ background: '#3A3A4A' }} />
+                    <span className="uppercase" style={{ fontSize: 11, letterSpacing: '0.05em', color: '#5A5A6E' }}>
                       8 Puzzles · Detective + Abstract
                     </span>
                     {isCaseDone && (
                       <>
-                        <div className="w-1 h-1 rounded-full" style={{ background: '#5A5A6E' }} />
-                        <span className="text-[11px] font-bold" style={{ color: '#B5F23D' }}>✓ Done</span>
+                        <div className="w-1 h-1 rounded-full" style={{ background: '#3A3A4A' }} />
+                        <span className="font-bold" style={{ fontSize: 11, color: '#B5F23D' }}>✓ Complete</span>
                       </>
                     )}
                   </div>
 
-                  {/* Title */}
                   <h2
                     className="font-game text-white"
-                    style={{ fontSize: 'clamp(22px, 3vw, 34px)', lineHeight: 1, letterSpacing: '-0.01em', marginBottom: 18 }}
+                    style={{ fontSize: 'clamp(22px, 3vw, 36px)', lineHeight: 1.05, letterSpacing: '-0.01em', marginBottom: 20 }}
                   >
                     {todayCase.title.toUpperCase()}
                   </h2>
 
-                  {/* Progress pills */}
                   {isCaseStarted && !isCaseDone && (
-                    <div className="flex gap-1.5 flex-wrap mb-4">
+                    <div className="flex gap-1.5 flex-wrap" style={{ marginBottom: 16 }}>
                       {DETECTIVE_TYPES.map((t, i) => {
                         const s = daily?.puzzles[i]?.status;
                         return (
                           <div
                             key={t}
-                            className="flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold"
+                            className="flex items-center gap-1 rounded-md font-bold"
                             style={{
-                              background: s === 'solved' ? `${PUZZLE_COLOR[t]}18` : '#1C1C22',
+                              padding: '4px 10px', fontSize: 11,
+                              background: s === 'solved' ? `${PUZZLE_COLOR[t]}15` : '#1C1C22',
                               color:      s === 'solved' ? PUZZLE_COLOR[t] : '#5A5A6E',
-                              border:     `1px solid ${s === 'solved' ? `${PUZZLE_COLOR[t]}35` : 'rgba(255,255,255,0.07)'}`,
+                              border:     `1px solid ${s === 'solved' ? `${PUZZLE_COLOR[t]}30` : 'rgba(255,255,255,0.06)'}`,
                             }}
                           >
                             {s === 'solved' && '✓ '}{PUZZLE_META[t].label}
@@ -180,17 +188,17 @@ export default function HomePage() {
                   )}
 
                   {isCaseDone ? (
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-5">
                       <div>
-                        <p className="text-[10px] uppercase tracking-widest mb-1" style={{ color: '#5A5A6E' }}>Score</p>
-                        <p className="font-game" style={{ fontSize: 40, lineHeight: 1, color: '#B5F23D' }}>
+                        <p className="uppercase font-bold" style={{ fontSize: 10, letterSpacing: '0.14em', color: '#5A5A6E', marginBottom: 4 }}>Score</p>
+                        <p className="font-game" style={{ fontSize: 44, lineHeight: 1, color: '#B5F23D' }}>
                           {daily?.score?.toLocaleString() ?? '—'}
                         </p>
                       </div>
                       <button
                         onClick={e => { e.stopPropagation(); router.push('/result'); }}
-                        className="px-4 py-2 rounded-lg text-sm font-bold"
-                        style={{ background: '#1C1C22', border: '1px solid rgba(255,255,255,0.13)', color: '#F0F0F4' }}
+                        className="rounded-lg font-bold transition-colors"
+                        style={{ padding: '8px 16px', background: '#1C1C22', border: '1px solid rgba(255,255,255,0.1)', color: '#F0F0F4', fontSize: 13 }}
                       >
                         Results →
                       </button>
@@ -198,12 +206,8 @@ export default function HomePage() {
                   ) : (
                     <button
                       onClick={() => router.push('/daily')}
-                      className="inline-flex items-center gap-1.5 rounded-lg font-bold"
-                      style={{
-                        background: '#B5F23D', color: '#0C0C0F',
-                        fontSize: 13, letterSpacing: '0.06em',
-                        padding: '9px 18px',
-                      }}
+                      className="inline-flex items-center gap-2 rounded-xl font-bold transition-all"
+                      style={{ background: '#B5F23D', color: '#0C0C0F', fontSize: 13, letterSpacing: '0.05em', padding: '10px 20px' }}
                     >
                       {isCaseStarted ? `Continue · ${solvedCount}/8` : 'Begin Investigation'}
                       <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
@@ -213,31 +217,29 @@ export default function HomePage() {
                   )}
                 </div>
 
-                {/* Graphic */}
                 <div
-                  className="shrink-0 flex items-center justify-center rounded-xl"
-                  style={{ width: 68, height: 68, background: '#1C1C22', border: '1px solid rgba(255,255,255,0.07)' }}
+                  className="shrink-0 flex items-center justify-center rounded-2xl"
+                  style={{ width: 72, height: 72, background: '#1C1C22', border: '1px solid rgba(255,255,255,0.07)' }}
                 >
                   {isCaseDone
-                    ? <span className="font-game text-3xl" style={{ color: '#B5F23D' }}>✓</span>
+                    ? <span className="font-game" style={{ fontSize: 32, color: '#B5F23D' }}>✓</span>
                     : <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                        <circle cx="10" cy="10" r="7" stroke="#5A5A6E" strokeWidth="2"/>
-                        <line x1="15" y1="15" x2="21" y2="21" stroke="#5A5A6E" strokeWidth="2" strokeLinecap="round"/>
+                        <circle cx="10" cy="10" r="7" stroke="#3A3A4A" strokeWidth="2"/>
+                        <line x1="15" y1="15" x2="21" y2="21" stroke="#3A3A4A" strokeWidth="2" strokeLinecap="round"/>
                       </svg>
                   }
                 </div>
               </div>
-            </div>
+            </motion.div>
           </section>
 
-          {/* ── Game Modes — all 8 ────────────────────────────────────── */}
-          <section style={{ paddingTop: 36 }}>
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] mb-4" style={{ color: '#5A5A6E' }}>
-              Game Modes
-            </p>
-            <div className="grid grid-cols-2 sm:grid-cols-4" style={{ gap: 12 }}>
+          {/* ── Game Modes — all 8 ─────────────────────────────────────── */}
+          <section style={{ marginBottom: 44 }}>
+            <SectionLabel>Game Modes</SectionLabel>
 
-              {/* ── 4 Detective games ── */}
+            <div className="grid grid-cols-2 sm:grid-cols-4" style={{ gap: 14 }}>
+
+              {/* ── Detective games ── */}
               {DETECTIVE_TYPES.map((type, i) => {
                 const meta  = PUZZLE_META[type];
                 const color = PUZZLE_COLOR[type];
@@ -247,34 +249,35 @@ export default function HomePage() {
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05 }}
-                    whileTap={{ scale: 0.97 }}
+                    whileHover={CARD_HOVER}
+                    whileTap={CARD_TAP}
                     onClick={() => router.push(`/modes/${type}`)}
-                    className="text-left rounded-2xl transition-colors"
-                    style={{ background: '#141418', border: '1px solid rgba(255,255,255,0.07)', padding: 16 }}
+                    className="text-left rounded-2xl"
+                    style={{ background: '#141418', border: '1px solid rgba(255,255,255,0.07)', padding: '18px 18px 16px' }}
                   >
                     <div
-                      className="flex items-center justify-center rounded-[10px] mb-2.5"
-                      style={{ width: 36, height: 36, background: `${color}18` }}
+                      className="flex items-center justify-center rounded-xl"
+                      style={{ width: 40, height: 40, background: `${color}15`, marginBottom: 14 }}
                     >
-                      <PuzzleIcon type={type} size={18} />
+                      <PuzzleIcon type={type} size={20} />
                     </div>
                     <p
                       className="font-game text-white"
-                      style={{ fontSize: 13, letterSpacing: '0.06em', textTransform: 'uppercase' }}
+                      style={{ fontSize: 14, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}
                     >
                       {meta.label}
                     </p>
-                    <p className="text-xs mt-0.5 mb-2" style={{ color: '#5A5A6E' }}>{meta.description}</p>
-                    <div className="flex items-center gap-1.5 flex-wrap">
+                    <p style={{ fontSize: 12, color: '#5A5A6E', lineHeight: 1.4, marginBottom: 12 }}>{meta.description}</p>
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span
-                        className="inline-block text-[10px] font-bold uppercase tracking-[0.1em] rounded-[5px]"
-                        style={{ background: `${color}12`, color, padding: '3px 8px' }}
+                        className="inline-block font-bold uppercase rounded-md"
+                        style={{ fontSize: 10, letterSpacing: '0.1em', background: `${color}12`, color, padding: '3px 8px' }}
                       >
                         Time Attack
                       </span>
                       <span
-                        className="inline-block text-[10px] font-bold uppercase tracking-[0.1em] rounded-[5px]"
-                        style={{ background: 'rgba(255,255,255,0.05)', color: '#5A5A6E', padding: '3px 8px' }}
+                        className="inline-block font-bold uppercase rounded-md"
+                        style={{ fontSize: 10, letterSpacing: '0.1em', background: 'rgba(255,255,255,0.04)', color: '#4A4A5A', padding: '3px 8px' }}
                       >
                         Detective
                       </span>
@@ -283,7 +286,7 @@ export default function HomePage() {
                 );
               })}
 
-              {/* ── 4 Abstract games ── */}
+              {/* ── Abstract games ── */}
               {ABSTRACT_PUZZLE_TYPES.map((type, i) => {
                 const meta  = ABSTRACT_TYPE_META[type];
                 const color = meta.color;
@@ -293,34 +296,35 @@ export default function HomePage() {
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: (i + 4) * 0.05 }}
-                    whileTap={{ scale: 0.97 }}
+                    whileHover={CARD_HOVER}
+                    whileTap={CARD_TAP}
                     onClick={() => router.push(`/abstract/${type}`)}
-                    className="text-left rounded-2xl transition-colors"
-                    style={{ background: '#141418', border: '1px solid rgba(255,255,255,0.07)', padding: 16 }}
+                    className="text-left rounded-2xl"
+                    style={{ background: '#141418', border: '1px solid rgba(255,255,255,0.07)', padding: '18px 18px 16px' }}
                   >
                     <div
-                      className="flex items-center justify-center rounded-[10px] mb-2.5"
-                      style={{ width: 36, height: 36, background: `${color}18`, fontSize: 18 }}
+                      className="flex items-center justify-center rounded-xl"
+                      style={{ width: 40, height: 40, background: `${color}15`, marginBottom: 14, fontSize: 20 }}
                     >
                       {meta.emoji}
                     </div>
                     <p
                       className="font-game text-white"
-                      style={{ fontSize: 13, letterSpacing: '0.06em', textTransform: 'uppercase' }}
+                      style={{ fontSize: 14, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}
                     >
                       {meta.label}
                     </p>
-                    <p className="text-xs mt-0.5 mb-2" style={{ color: '#5A5A6E' }}>{meta.description}</p>
-                    <div className="flex items-center gap-1.5 flex-wrap">
+                    <p style={{ fontSize: 12, color: '#5A5A6E', lineHeight: 1.4, marginBottom: 12 }}>{meta.description}</p>
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span
-                        className="inline-block text-[10px] font-bold uppercase tracking-[0.1em] rounded-[5px]"
-                        style={{ background: `${color}12`, color, padding: '3px 8px' }}
+                        className="inline-block font-bold uppercase rounded-md"
+                        style={{ fontSize: 10, letterSpacing: '0.1em', background: `${color}12`, color, padding: '3px 8px' }}
                       >
                         Time Attack
                       </span>
                       <span
-                        className="inline-block text-[10px] font-bold uppercase tracking-[0.1em] rounded-[5px]"
-                        style={{ background: 'rgba(255,255,255,0.05)', color: '#5A5A6E', padding: '3px 8px' }}
+                        className="inline-block font-bold uppercase rounded-md"
+                        style={{ fontSize: 10, letterSpacing: '0.1em', background: 'rgba(255,255,255,0.04)', color: '#4A4A5A', padding: '3px 8px' }}
                       >
                         Abstract
                       </span>
@@ -328,36 +332,30 @@ export default function HomePage() {
                   </motion.button>
                 );
               })}
-
             </div>
           </section>
 
           {/* ── Stats ─────────────────────────────────────────────────── */}
-          <section style={{ paddingTop: 36 }}>
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] mb-3" style={{ color: '#5A5A6E' }}>
-              Your Stats
-            </p>
-            <div className="grid grid-cols-3" style={{ gap: 10 }}>
+          <section>
+            <SectionLabel>Your Stats</SectionLabel>
+            <div className="grid grid-cols-3" style={{ gap: 12 }}>
               {[
-                { label: 'Streak',     value: streak,      color: '#FB923C', icon: <FlameIcon  size={14} color="#FB923C" /> },
-                { label: 'Best Score', value: bestScore,   color: '#B5F23D', icon: <StarIcon   size={14} color="#B5F23D" /> },
-                { label: 'Solved',     value: totalSolved, color: '#A78BFA', icon: <TrophyIcon size={14} color="#A78BFA" /> },
+                { label: 'Streak',     value: streak,      color: '#FB923C', icon: <FlameIcon  size={16} color="#FB923C" /> },
+                { label: 'Best Score', value: bestScore,   color: '#B5F23D', icon: <StarIcon   size={16} color="#B5F23D" /> },
+                { label: 'Solved',     value: totalSolved, color: '#A78BFA', icon: <TrophyIcon size={16} color="#A78BFA" /> },
               ].map(s => (
                 <div
                   key={s.label}
-                  className="rounded-xl"
-                  style={{ background: '#141418', border: '1px solid rgba(255,255,255,0.07)', padding: '14px 16px' }}
+                  className="rounded-2xl"
+                  style={{ background: '#141418', border: '1px solid rgba(255,255,255,0.07)', padding: '18px 20px' }}
                 >
-                  <div className="flex items-center gap-1.5 mb-1.5" style={{ color: '#5A5A6E' }}>
+                  <div className="flex items-center gap-1.5" style={{ marginBottom: 10, color: '#5A5A6E' }}>
                     {s.icon}
                   </div>
-                  <p className="font-game leading-none" style={{ fontSize: 24, color: s.color }}>
+                  <p className="font-game leading-none" style={{ fontSize: 28, color: s.color, marginBottom: 6 }}>
                     {s.value.toLocaleString()}
                   </p>
-                  <p
-                    className="font-bold uppercase"
-                    style={{ fontSize: 10, letterSpacing: '0.12em', color: '#5A5A6E', marginTop: 3 }}
-                  >
+                  <p className="font-bold uppercase" style={{ fontSize: 10, letterSpacing: '0.14em', color: '#5A5A6E' }}>
                     {s.label}
                   </p>
                 </div>
