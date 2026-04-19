@@ -5,23 +5,32 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '@/lib/store/authStore';
 import { isFirebaseConfigured } from '@/lib/firebase/config';
 import { ABSTRACT_TYPE_META } from '@/types/abstract';
+import { PUZZLE_META } from '@/lib/data/cases';
 import type { AbstractPuzzleType, AbstractDifficulty } from '@/types/abstract';
+import type { PuzzleType } from '@/types';
+import type { DuelCategory, DuelPuzzleType } from '@/types/duel';
 
 function LobbyContent() {
   const router   = useRouter();
   const params   = useSearchParams();
   const { user } = useAuthStore();
 
-  const type       = params.get('type') as AbstractPuzzleType;
-  const difficulty = (params.get('d') ?? 'medium') as AbstractDifficulty;
+  const type       = params.get('type') as DuelPuzzleType;
+  const difficulty = params.get('d') ?? 'medium';
+  const cat        = (params.get('cat') ?? 'abstract') as DuelCategory;
+  const mode       = params.get('mode'); // 'private' | null
+
+  const meta  = cat === 'abstract'
+    ? ABSTRACT_TYPE_META[type as AbstractPuzzleType]
+    : PUZZLE_META[type as PuzzleType];
+  const color = meta?.color ?? '#60A5FA';
 
   const [status, setStatus] = useState<'searching' | 'matched' | 'error'>('searching');
   const [errorMsg, setErrorMsg] = useState('');
   const initRef  = useRef(false);
   const unsubRef = useRef<(() => void) | null>(null);
 
-  const meta  = ABSTRACT_TYPE_META[type];
-  const color = meta?.color ?? '#60A5FA';
+  const diffLabel = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
 
   useEffect(() => {
     if (!user) { router.replace('/auth'); return; }
@@ -36,23 +45,34 @@ function LobbyContent() {
     if (initRef.current) return;
     initRef.current = true;
 
+    const playerInfo = {
+      uid:         user.uid,
+      displayName: user.displayName ?? 'Detective',
+      photoURL:    user.photoURL,
+      isGuest:     user.isGuest ?? false,
+    };
+
     const run = async () => {
       try {
-        const { createOrJoinMatchmaking, subscribeToDuel } = await import('@/lib/firebase/duel');
-        const duelId = await createOrJoinMatchmaking(type, difficulty, {
-          uid:         user.uid,
-          displayName: user.displayName ?? 'Detective',
-          photoURL:    user.photoURL,
-          isGuest:     user.isGuest ?? false,
-        });
+        if (mode === 'private') {
+          // Private room: create immediately and navigate to the duel page
+          const { createPrivateRoom } = await import('@/lib/firebase/duel');
+          const { duelId } = await createPrivateRoom(type, difficulty, playerInfo, cat);
+          setStatus('matched');
+          setTimeout(() => router.replace(`/duel/${duelId}`), 300);
+        } else {
+          // Quick match: wait in queue
+          const { createOrJoinMatchmaking, subscribeToDuel } = await import('@/lib/firebase/duel');
+          const duelId = await createOrJoinMatchmaking(type, difficulty, playerInfo, cat);
 
-        unsubRef.current = await subscribeToDuel(duelId, (duel) => {
-          const twoPlayers = Object.keys(duel.players).length >= 2;
-          if (twoPlayers || duel.status === 'starting' || duel.status === 'finished') {
-            setStatus('matched');
-            setTimeout(() => router.replace(`/duel/${duelId}`), 350);
-          }
-        });
+          unsubRef.current = await subscribeToDuel(duelId, (duel) => {
+            const twoPlayers = Object.keys(duel.players).length >= 2;
+            if (twoPlayers || duel.status === 'starting' || duel.status === 'finished') {
+              setStatus('matched');
+              setTimeout(() => router.replace(`/duel/${duelId}`), 350);
+            }
+          });
+        }
       } catch {
         setStatus('error');
         setErrorMsg('Connection failed. Check your internet and try again.');
@@ -60,19 +80,19 @@ function LobbyContent() {
     };
 
     run();
-  }, [user, router, type, difficulty, meta]);
+  }, [user, router, type, difficulty, cat, mode, meta]);
 
   useEffect(() => () => { unsubRef.current?.(); }, []);
 
   const handleCancel = async () => {
-    if (user && type && difficulty && isFirebaseConfigured) {
+    if (user && type && difficulty && isFirebaseConfigured && mode !== 'private') {
       const { cancelMatchmaking } = await import('@/lib/firebase/duel');
       cancelMatchmaking(type, difficulty, user.uid).catch(() => {});
     }
     router.back();
   };
 
-  const diffLabel = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+  const isPrivate = mode === 'private';
 
   return (
     <div
@@ -105,41 +125,42 @@ function LobbyContent() {
             className="flex flex-col items-center"
             style={{ gap: 24, maxWidth: 300, textAlign: 'center' }}
           >
-            {/* Spinner */}
             <div style={{ position: 'relative', width: 80, height: 80 }}>
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1.4, repeat: Infinity, ease: 'linear' }}
                 style={{
                   width: 80, height: 80, borderRadius: '50%', position: 'absolute',
-                  border: `3px solid rgba(96,165,250,0.08)`,
+                  border: '3px solid rgba(255,255,255,0.05)',
                   borderTop: `3px solid ${color}`,
                 }}
               />
               <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>
-                🌐
+                {isPrivate ? '🔗' : '🌐'}
               </div>
             </div>
 
             <div>
               <p className="font-game tracking-widest" style={{ fontSize: 18, color: '#F0F0F4', marginBottom: 6 }}>
-                Finding Opponent
+                {isPrivate ? 'Creating Room…' : 'Finding Opponent'}
               </p>
               <p style={{ fontSize: 13, color: '#5A5A6E' }}>
                 {meta?.label} · {diffLabel}
               </p>
             </div>
 
-            <div style={{ display: 'flex', gap: 7 }}>
-              {[0, 1, 2].map(i => (
-                <motion.div
-                  key={i}
-                  animate={{ opacity: [0.2, 1, 0.2] }}
-                  transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.28 }}
-                  style={{ width: 7, height: 7, borderRadius: '50%', background: color }}
-                />
-              ))}
-            </div>
+            {!isPrivate && (
+              <div style={{ display: 'flex', gap: 7 }}>
+                {[0, 1, 2].map(i => (
+                  <motion.div
+                    key={i}
+                    animate={{ opacity: [0.2, 1, 0.2] }}
+                    transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.28 }}
+                    style={{ width: 7, height: 7, borderRadius: '50%', background: color }}
+                  />
+                ))}
+              </div>
+            )}
 
             <button
               onClick={handleCancel}
@@ -165,10 +186,14 @@ function LobbyContent() {
               transition={{ duration: 0.45 }}
               style={{ fontSize: 56, lineHeight: 1 }}
             >
-              ⚡
+              {isPrivate ? '🔗' : '⚡'}
             </motion.div>
-            <p className="font-game tracking-widest" style={{ fontSize: 20, color }}>Opponent Found!</p>
-            <p style={{ fontSize: 13, color: '#5A5A6E' }}>Starting duel…</p>
+            <p className="font-game tracking-widest" style={{ fontSize: 20, color }}>
+              {isPrivate ? 'Room Ready!' : 'Opponent Found!'}
+            </p>
+            <p style={{ fontSize: 13, color: '#5A5A6E' }}>
+              {isPrivate ? 'Opening your room…' : 'Starting duel…'}
+            </p>
           </motion.div>
         )}
 

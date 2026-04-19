@@ -180,29 +180,26 @@ export default function AbstractTypePage() {
           </motion.div>
 
           {/* Online Duel */}
-          <motion.button
+          <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.14 }}
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => router.push(`/duel/lobby?type=${type}&d=${selectedDifficulty}`)}
             style={{
               background: ca(0.05), border: `1px solid ${ca(0.2)}`,
               borderRadius: 16, padding: '18px 18px',
-              display: 'flex', alignItems: 'flex-start', gap: 16, textAlign: 'left', width: '100%',
             }}
           >
-            <div
-              style={{
-                width: 44, height: 44, borderRadius: 12, flexShrink: 0,
-                background: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.2)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
-              }}
-            >
-              🌐
-            </div>
-            <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, marginBottom: 14 }}>
+              <div
+                style={{
+                  width: 44, height: 44, borderRadius: 12, flexShrink: 0,
+                  background: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.2)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
+                }}
+              >
+                🌐
+              </div>
+              <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
                 <p style={{ fontSize: 15, fontWeight: 600, color: '#F0F0F4' }}>Online Duel</p>
                 <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '2px 7px', borderRadius: 4, background: 'rgba(96,165,250,0.12)', color: '#60A5FA', border: '1px solid rgba(96,165,250,0.25)' }}>
@@ -211,7 +208,27 @@ export default function AbstractTypePage() {
               </div>
               <p style={{ fontSize: 12, color: '#5A5A6E' }}>Race a real opponent · same puzzles · 90 seconds</p>
             </div>
-          </motion.button>
+            </div>
+            {/* Quick Match + Private Room buttons */}
+            <div style={{ display: 'flex', gap: 8 }}>
+              <motion.button
+                whileTap={{ scale: 0.96 }}
+                onClick={() => router.push(`/duel/lobby?type=${type}&d=${selectedDifficulty}&cat=abstract`)}
+                style={{ flex: 1, padding: '10px 8px', borderRadius: 10, background: ca(0.12), border: `1px solid ${ca(0.35)}`, textAlign: 'center' }}
+              >
+                <p style={{ fontSize: 13, fontWeight: 700, color, marginBottom: 2 }}>⚡ Quick Match</p>
+                <p style={{ fontSize: 10, color: '#5A5A6E' }}>Random opponent</p>
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.96 }}
+                onClick={() => router.push(`/duel/lobby?type=${type}&d=${selectedDifficulty}&cat=abstract&mode=private`)}
+                style={{ flex: 1, padding: '10px 8px', borderRadius: 10, background: '#1A1A20', border: '1px solid rgba(255,255,255,0.08)', textAlign: 'center' }}
+              >
+                <p style={{ fontSize: 13, fontWeight: 700, color: '#F0F0F4', marginBottom: 2 }}>🔗 Private Room</p>
+                <p style={{ fontSize: 10, color: '#5A5A6E' }}>Invite a friend</p>
+              </motion.button>
+            </div>
+          </motion.div>
 
           {/* Start button */}
           <motion.button

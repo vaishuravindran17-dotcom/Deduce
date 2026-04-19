@@ -1,9 +1,9 @@
-import type { DuelPlayer, Duel } from '@/types/duel';
-import type { AbstractPuzzleType, AbstractDifficulty } from '@/types/abstract';
+import type { DuelPlayer, Duel, DuelCategory, DuelPuzzleType } from '@/types/duel';
 
 const QUEUE_TIMEOUT_MS = 180_000; // 3 minutes stale threshold
 const COUNTDOWN_MS     = 3_500;   // countdown before game starts
 const DURATION_S       = 90;
+const CODE_CHARS       = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no ambiguous chars
 
 async function getDb() {
   const { getFirebaseModules } = await import('@/lib/firebase/config');
@@ -18,15 +18,44 @@ function freshPlayer(
   return { ...p, solved: 0, mistakes: 0, score: 0, finished: false, finishedAt: null };
 }
 
+function generateInviteCode(): string {
+  return Array.from(
+    { length: 6 },
+    () => CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]
+  ).join('');
+}
+
+function buildDuel(
+  type: DuelPuzzleType,
+  difficulty: string,
+  puzzleCategory: DuelCategory,
+  player: Pick<DuelPlayer, 'uid' | 'displayName' | 'photoURL' | 'isGuest'>,
+  inviteCode: string | null = null,
+): Omit<Duel, 'id'> {
+  return {
+    type, difficulty, puzzleCategory,
+    status: 'waiting',
+    duration: DURATION_S,
+    createdAt: Date.now(),
+    startAt: null,
+    winnerId: null,
+    isTie: false,
+    inviteCode,
+    players: { [player.uid]: freshPlayer(player) },
+  };
+}
+
+// ── Quick Match ───────────────────────────────────────────────────────────────
+
 /**
- * Join the matchmaking queue for a given type+difficulty.
- * If someone is already waiting, create a match and return the shared duelId.
- * If no one is waiting, create a new duel room and put ourselves in the queue.
+ * Join the matchmaking queue for a given type+difficulty+category.
+ * If someone is already waiting, create a match; otherwise create a new room.
  */
 export async function createOrJoinMatchmaking(
-  type: AbstractPuzzleType,
-  difficulty: AbstractDifficulty,
-  player: Pick<DuelPlayer, 'uid' | 'displayName' | 'photoURL' | 'isGuest'>
+  type: DuelPuzzleType,
+  difficulty: string,
+  player: Pick<DuelPlayer, 'uid' | 'displayName' | 'photoURL' | 'isGuest'>,
+  puzzleCategory: DuelCategory,
 ): Promise<string> {
   const db = await getDb();
   const { runTransaction, doc, collection } = await import('firebase/firestore');
@@ -40,29 +69,15 @@ export async function createOrJoinMatchmaking(
     const stale = !snap.exists() || Date.now() - (data?.timestamp ?? 0) > QUEUE_TIMEOUT_MS;
 
     if (stale) {
-      // No one waiting — create a new duel and sit in queue
       const duelRef = doc(collection(db, 'duels'));
       duelId = duelRef.id;
-      const duel: Omit<Duel, 'id'> = {
-        type, difficulty,
-        status: 'waiting',
-        duration: DURATION_S,
-        createdAt: Date.now(),
-        startAt: null,
-        winnerId: null,
-        isTie: false,
-        players: { [player.uid]: freshPlayer(player) },
-      };
-      tx.set(duelRef, duel);
+      tx.set(duelRef, buildDuel(type, difficulty, puzzleCategory, player));
       tx.set(queueRef, { uid: player.uid, duelId, timestamp: Date.now() });
     } else if (data!.uid === player.uid) {
-      // Same player reconnecting (e.g. page refresh)
-      duelId = data!.duelId;
+      duelId = data!.duelId; // reconnecting
     } else {
-      // Match found — join the waiting player's duel
       duelId = data!.duelId;
-      const duelRef = doc(db, 'duels', duelId);
-      tx.update(duelRef, {
+      tx.update(doc(db, 'duels', duelId), {
         status: 'starting',
         startAt: Date.now() + COUNTDOWN_MS,
         [`players.${player.uid}`]: freshPlayer(player),
@@ -74,11 +89,11 @@ export async function createOrJoinMatchmaking(
   return duelId;
 }
 
-/** Remove ourselves from the matchmaking queue and delete the empty duel room. */
+/** Remove ourselves from the matchmaking queue and delete the empty room. */
 export async function cancelMatchmaking(
-  type: AbstractPuzzleType,
-  difficulty: AbstractDifficulty,
-  uid: string
+  type: DuelPuzzleType,
+  difficulty: string,
+  uid: string,
 ): Promise<void> {
   const db = await getDb();
   const { doc, getDoc, deleteDoc } = await import('firebase/firestore');
@@ -91,10 +106,89 @@ export async function cancelMatchmaking(
   }
 }
 
+// ── Private Room ──────────────────────────────────────────────────────────────
+
+/**
+ * Create a private room with a shareable invite code.
+ * Returns both the duelId (for URL routing) and the 6-char invite code.
+ */
+export async function createPrivateRoom(
+  type: DuelPuzzleType,
+  difficulty: string,
+  player: Pick<DuelPlayer, 'uid' | 'displayName' | 'photoURL' | 'isGuest'>,
+  puzzleCategory: DuelCategory,
+): Promise<{ duelId: string; inviteCode: string }> {
+  const db = await getDb();
+  const { doc, collection, setDoc } = await import('firebase/firestore');
+
+  const inviteCode = generateInviteCode();
+  const duelRef    = doc(collection(db, 'duels'));
+  const duelId     = duelRef.id;
+
+  await setDoc(duelRef, buildDuel(type, difficulty, puzzleCategory, player, inviteCode));
+  // Invite code lookup document
+  await setDoc(doc(db, 'inviteCodes', inviteCode), { duelId, createdAt: Date.now() });
+
+  return { duelId, inviteCode };
+}
+
+/**
+ * Join an existing duel room directly (via shareable link).
+ * Throws if the room is already full or not in waiting state.
+ */
+export async function joinDuelById(
+  duelId: string,
+  player: Pick<DuelPlayer, 'uid' | 'displayName' | 'photoURL' | 'isGuest'>,
+): Promise<void> {
+  const db = await getDb();
+  const { doc, runTransaction } = await import('firebase/firestore');
+  const duelRef = doc(db, 'duels', duelId);
+
+  await runTransaction(db, async (tx) => {
+    const snap = await tx.get(duelRef);
+    if (!snap.exists()) throw new Error('Room not found');
+    const duel = snap.data() as Omit<Duel, 'id'>;
+    if (duel.status !== 'waiting') throw new Error('Room already started');
+    if (player.uid in duel.players) return; // already joined, no-op
+    tx.update(duelRef, {
+      status: 'starting',
+      startAt: Date.now() + COUNTDOWN_MS,
+      [`players.${player.uid}`]: freshPlayer(player),
+    });
+  });
+}
+
+/**
+ * Look up a duel by invite code, then join it.
+ * Returns the duelId for navigation.
+ */
+export async function joinByInviteCode(
+  code: string,
+  player: Pick<DuelPlayer, 'uid' | 'displayName' | 'photoURL' | 'isGuest'>,
+): Promise<string> {
+  const db = await getDb();
+  const { doc, getDoc } = await import('firebase/firestore');
+
+  const codeSnap = await getDoc(doc(db, 'inviteCodes', code.toUpperCase().trim()));
+  if (!codeSnap.exists()) throw new Error('Invalid invite code');
+
+  const { duelId } = codeSnap.data() as { duelId: string };
+  const duelSnap   = await getDoc(doc(db, 'duels', duelId));
+  if (!duelSnap.exists()) throw new Error('Room not found');
+
+  const duel = duelSnap.data() as Omit<Duel, 'id'>;
+  if (duel.players[player.uid]) return duelId; // already in the room
+
+  await joinDuelById(duelId, player);
+  return duelId;
+}
+
+// ── Shared ────────────────────────────────────────────────────────────────────
+
 /** Subscribe to live duel updates. Returns an unsubscribe function. */
 export async function subscribeToDuel(
   duelId: string,
-  onUpdate: (duel: Duel) => void
+  onUpdate: (duel: Duel) => void,
 ): Promise<() => void> {
   const db = await getDb();
   const { doc, onSnapshot } = await import('firebase/firestore');
@@ -103,13 +197,13 @@ export async function subscribeToDuel(
   });
 }
 
-/** Write intermediate progress to Firestore so the opponent can see live updates. */
+/** Write intermediate progress so the opponent sees live score updates. */
 export async function updateMyProgress(
   duelId: string,
   uid: string,
   solved: number,
   mistakes: number,
-  score: number
+  score: number,
 ): Promise<void> {
   const db = await getDb();
   const { doc, updateDoc } = await import('firebase/firestore');
@@ -122,14 +216,14 @@ export async function updateMyProgress(
 
 /**
  * Mark the current player as finished.
- * If both players are now finished, atomically determine and write the winner.
+ * If both players are done, atomically determine and write the winner.
  */
 export async function finishDuel(
   duelId: string,
   uid: string,
   solved: number,
   mistakes: number,
-  score: number
+  score: number,
 ): Promise<void> {
   const db = await getDb();
   const { doc, runTransaction } = await import('firebase/firestore');
@@ -142,15 +236,9 @@ export async function finishDuel(
     const duel = snap.data() as Omit<Duel, 'id'>;
     const updatedPlayers: Record<string, DuelPlayer> = {
       ...duel.players,
-      [uid]: {
-        ...duel.players[uid],
-        solved, mistakes, score,
-        finished: true,
-        finishedAt: Date.now(),
-      },
+      [uid]: { ...duel.players[uid], solved, mistakes, score, finished: true, finishedAt: Date.now() },
     };
-
-    const all = Object.values(updatedPlayers);
+    const all      = Object.values(updatedPlayers);
     const bothDone = all.length === 2 && all.every(p => p.finished);
 
     const update: Record<string, unknown> = {
@@ -165,9 +253,7 @@ export async function finishDuel(
       const [p1, p2] = all;
       update.status   = 'finished';
       update.isTie    = p1.score === p2.score;
-      update.winnerId = p1.score > p2.score ? p1.uid
-                      : p2.score > p1.score ? p2.uid
-                      : null;
+      update.winnerId = p1.score > p2.score ? p1.uid : p2.score > p1.score ? p2.uid : null;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
