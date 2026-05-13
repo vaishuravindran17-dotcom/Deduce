@@ -22,6 +22,16 @@ export const LINK_GRID_POOL: LinkGridPuzzle[] = [
   { people:['Gauri','Hiren','Ilona'], categoryA:['Loft','Atelier','Gallery'], categoryB:['Canvas','Brush','Palette'], clues:['Hiren is in the Loft','Atelier has the Brush','Gauri has the Palette','Ilona is not in the Gallery'], question:'Who has the Canvas?', answer:'Hiren' },
   { people:['Jay','Keya','Lexi'], categoryA:['Port','Harbor','Quay'], categoryB:['Crate','Chain','Winch'], clues:['Keya is at the Port','Harbor has the Chain','Jay has the Winch','Lexi is not at the Quay'], question:'Who has the Crate?', answer:'Keya' },
   { people:['Mira','Neel','Ora'], categoryA:['Café','Bistro','Diner'], categoryB:['Menu','Cup','Fork'], clues:['Neel is at the Café','Bistro has the Cup','Ora has the Fork','Mira is not at the Diner'], question:'Who has the Menu?', answer:'Neel' },
+  { people:['Priya','Raj','Sana'], categoryA:['Forest','River','Mountain'], categoryB:['Tent','Canoe','Rope'], clues:['Raj is at the River','Forest has the Tent','Sana has the Rope','Priya is not at the Mountain'], question:'Who has the Canoe?', answer:'Raj' },
+  { people:['Tom','Uma','Viv'], categoryA:['Bank','Post','Court'], categoryB:['Stamp','Coin','Gavel'], clues:['Uma is at the Bank','Court has the Gavel','Viv has the Stamp','Tom is not at the Post'], question:'Who has the Coin?', answer:'Uma' },
+  { people:['Walt','Xena','Yuki'], categoryA:['Airport','Station','Port'], categoryB:['Ticket','Pass','Manifest'], clues:['Xena is at the Station','Airport has the Ticket','Yuki has the Pass','Walt is not at the Port'], question:'Who has the Manifest?', answer:'Xena' },
+  { people:['Zara','Amir','Bela'], categoryA:['Zoo','Park','Museum'], categoryB:['Map','Badge','Tag'], clues:['Amir is at the Zoo','Park has the Badge','Bela has the Tag','Zara is not at the Museum'], question:'Who has the Map?', answer:'Amir' },
+  { people:['Cara','Dan','Eva'], categoryA:['North Wing','South Wing','East Wing'], categoryB:['Folder','Binder','Clip'], clues:['Dan is in the South Wing','North Wing has the Folder','Eva has the Clip','Cara is not in the East Wing'], question:'Who has the Binder?', answer:'Dan' },
+  { people:['Finn','Gwen','Hal'], categoryA:['Rooftop','Garage','Basement'], categoryB:['Wrench','Bolt','Tape'], clues:['Gwen is on the Rooftop','Garage has the Bolt','Finn has the Tape','Hal is not in the Basement'], question:'Who has the Wrench?', answer:'Gwen' },
+  { people:['Iris','Jake','Kim'], categoryA:['Tower','Bridge','Tunnel'], categoryB:['Light','Chain','Sign'], clues:['Jake is at the Bridge','Tower has the Light','Kim has the Chain','Iris is not at the Tunnel'], question:'Who has the Sign?', answer:'Jake' },
+  { people:['Leo','Mae','Ned'], categoryA:['Arena','Stage','Court'], categoryB:['Trophy','Medal','Ribbon'], clues:['Mae is on the Stage','Arena has the Trophy','Leo has the Medal','Ned is not at the Court'], question:'Who has the Ribbon?', answer:'Mae' },
+  { people:['Ola','Pat','Ria'], categoryA:['Lab','Library','Office'], categoryB:['Flask','Book','Pen'], clues:['Pat is in the Library','Lab has the Flask','Ria has the Pen','Ola is not in the Office'], question:'Who has the Book?', answer:'Pat' },
+  { people:['Sam','Tee','Uri'], categoryA:['Dock','Quay','Berth'], categoryB:['Rope','Hook','Bell'], clues:['Tee is at the Quay','Dock has the Bell','Sam has the Hook','Uri is not at the Berth'], question:'Who has the Rope?', answer:'Tee' },
 ];
 
 // ─── TimeTrace Pool ───────────────────────────────────────────────────────────
@@ -46,6 +56,16 @@ export const TIME_TRACE_POOL: TimeTracePuzzle[] = [
   { slots:['3 AM','4 AM','5 AM'], entities:['Dhruv','Esha','Faran'], clues:['Faran was first to arrive','Dhruv came last','The incident was at 4 AM'], question:'Who was present at 4 AM?', answer:'Esha' },
   { slots:['10 AM','11 AM','12 PM'], entities:['Gauri','Hiren','Ilona'], clues:['Ilona arrived first','Hiren came last','The fire was reported at 11 AM'], question:'Who was there at 11 AM?', answer:'Gauri' },
   { slots:['5 PM','6 PM','7 PM'], entities:['Jay','Keya','Lexi'], clues:['Keya was first','Lexi came after Jay','The incident happened at 6 PM'], question:'Who was present at 6 PM?', answer:'Jay' },
+  { slots:['8 PM','9 PM','10 PM'], entities:['Priya','Raj','Sana'], clues:['Raj arrived before Priya','Sana came last','The meeting was at 9 PM'], question:'Who was present at 9 PM?', answer:'Priya' },
+  { slots:['1 AM','2 AM','3 AM'], entities:['Tom','Uma','Viv'], clues:['Uma arrived first','Tom came last','The break-in happened at 2 AM'], question:'Who was there at 2 AM?', answer:'Viv' },
+  { slots:['6 AM','7 AM','8 AM'], entities:['Walt','Xena','Yuki'], clues:['Xena was earliest','Walt came last','The incident was at 7 AM'], question:'Who was present at 7 AM?', answer:'Yuki' },
+  { slots:['2 PM','3 PM','4 PM'], entities:['Zara','Amir','Bela'], clues:['Bela arrived before Zara','Amir was last','The theft happened at 3 PM'], question:'Who was there at 3 PM?', answer:'Zara' },
+  { slots:['9 AM','10 AM','11 AM'], entities:['Cara','Dan','Eva'], clues:['Dan was first','Eva arrived after Cara','The accident happened at 10 AM'], question:'Who was present at 10 AM?', answer:'Cara' },
+  { slots:['11 PM','12 AM','1 AM'], entities:['Finn','Gwen','Hal'], clues:['Gwen arrived before Finn','Hal came last','The sighting was at 12 AM'], question:'Who was there at 12 AM?', answer:'Finn' },
+  { slots:['4 AM','5 AM','6 AM'], entities:['Iris','Jake','Kim'], clues:['Kim arrived first','Jake came last','The fire started at 5 AM'], question:'Who was present at 5 AM?', answer:'Iris' },
+  { slots:['12 PM','1 PM','2 PM'], entities:['Leo','Mae','Ned'], clues:['Leo arrived before Mae','Ned was last','The crime happened at 1 PM'], question:'Who was there at 1 PM?', answer:'Mae' },
+  { slots:['7 PM','8 PM','9 PM'], entities:['Ola','Pat','Ria'], clues:['Ola was first','Ria arrived after Pat','The incident was at 8 PM'], question:'Who was present at 8 PM?', answer:'Pat' },
+  { slots:['3 AM','4 AM','5 AM'], entities:['Sam','Tee','Uri'], clues:['Tee arrived before Sam','Uri came last','The break-in happened at 4 AM'], question:'Who was present at 4 AM?', answer:'Sam' },
 ];
 
 // ─── TrueLie Pool ─────────────────────────────────────────────────────────────
@@ -70,6 +90,16 @@ export const TRUE_LIE_POOL: TrueLiePuzzle[] = [
   { statements:[{person:'Dhruv',text:'Esha deleted the files'},{person:'Esha',text:"I didn't touch the computer"},{person:'Faran',text:'Dhruv is telling the truth'}], question:'Who is lying?', answer:'Esha' },
   { statements:[{person:'Gauri',text:'Ilona tampered with the lock'},{person:'Hiren',text:'I saw Gauri near the lock'},{person:'Ilona',text:'Gauri is blaming me falsely'}], question:'Who is lying?', answer:'Gauri' },
   { statements:[{person:'Jay',text:'Keya snuck out during the night'},{person:'Keya',text:'I was in my room the entire time'},{person:'Lexi',text:'Jay noticed what I also noticed'}], question:'Who is lying?', answer:'Keya' },
+  { statements:[{person:'Priya',text:"Raj was in the server room at midnight"},{person:'Raj',text:'I never went near the server room that night'},{person:'Sana',text:"Priya's account is what I witnessed too"}], question:'Who is lying?', answer:'Raj' },
+  { statements:[{person:'Tom',text:'Uma had the only key to the cabinet'},{person:'Uma',text:'The cabinet was already unlocked when I arrived'},{person:'Viv',text:"Tom is right about Uma having the key"}], question:'Who is lying?', answer:'Uma' },
+  { statements:[{person:'Walt',text:"I didn't leave my post the entire shift"},{person:'Xena',text:'I saw Walt step away from his post at 2 AM'},{person:'Yuki',text:"Xena's version of events is what I saw"}], question:'Who is lying?', answer:'Walt' },
+  { statements:[{person:'Zara',text:'Amir moved the evidence before the team arrived'},{person:'Amir',text:'I touched nothing in that room'},{person:'Bela',text:"Zara is telling the truth about Amir"}], question:'Who is lying?', answer:'Amir' },
+  { statements:[{person:'Cara',text:"Dan wasn't there when the alarm triggered"},{person:'Dan',text:'I was at my desk when the alarm went off'},{person:'Eva',text:"Cara's memory of who was where is accurate"}], question:'Who is lying?', answer:'Cara' },
+  { statements:[{person:'Finn',text:"Gwen erased the security footage"},{person:'Gwen',text:"I don't even have access to the security system"},{person:'Hal',text:"Finn saw what he says he saw"}], question:'Who is lying?', answer:'Gwen' },
+  { statements:[{person:'Iris',text:'Jake was the last one to handle the package'},{person:'Jake',text:"Kim took the package after me — I wasn't last"},{person:'Kim',text:"I didn't touch the package at all"}], question:'Who is lying?', answer:'Kim' },
+  { statements:[{person:'Leo',text:"Mae didn't report to the meeting"},{person:'Mae',text:'I attended every part of the meeting'},{person:'Ned',text:"Leo is mistaken — I saw Mae at the meeting"}], question:'Who is lying?', answer:'Leo' },
+  { statements:[{person:'Ola',text:"Pat forged the signature on the document"},{person:'Pat',text:'I never signed anything that day'},{person:'Ria',text:"Ola's accusation against Pat is unfounded"}], question:'Who is lying?', answer:'Ola' },
+  { statements:[{person:'Sam',text:'Tee left the scene before the others arrived'},{person:'Tee',text:'I stayed until everyone had left'},{person:'Uri',text:"Sam is describing exactly what I witnessed"}], question:'Who is lying?', answer:'Tee' },
 ];
 
 // ─── CodeBreak Pool ───────────────────────────────────────────────────────────
